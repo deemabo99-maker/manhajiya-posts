@@ -1,0 +1,485 @@
+<title>منشورات الأكاديمية — الأسبوع الأول</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap">
+<style>
+/* Layout: a vertical run of publish cards, each design beside its caption */
+:root{
+  --bg:#F7F4EC; --surface:#FFFFFF; --line:#E3DBC8; --ink:#1B2A22; --dim:#5E6B61;
+  --emerald:#0F5236; --gold:#A8842A; --goldsoft:#F2E7C8;
+  --ff:"Cairo",system-ui,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0A1711; --surface:#11241B; --line:#27402F; --ink:#EDF3EE; --dim:#9BB0A2;
+  --emerald:#2E8B5E; --gold:#D9B758; --goldsoft:#2A3A26; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0A1711; --surface:#11241B; --line:#27402F; --ink:#EDF3EE; --dim:#9BB0A2;
+  --emerald:#2E8B5E; --gold:#D9B758; --goldsoft:#2A3A26; color-scheme:dark;}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--ff);direction:rtl;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0 56px;line-height:1.75}
+.wrap{max-width:1040px;margin:0 auto}
+
+header.top{padding-block:34px 22px;border-bottom:2px solid var(--gold)}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;color:var(--gold);font-weight:700;margin:0 0 6px}
+h1{font-size:clamp(1.55rem,4.4vw,2.3rem);font-weight:900;margin:0;text-wrap:balance;color:var(--emerald)}
+.lede{margin:10px 0 0;color:var(--dim);max-width:62ch;font-size:.97rem}
+.howto{margin:18px 0 0;padding:14px 16px;background:var(--surface);border:1px solid var(--line);
+  border-inline-start:4px solid var(--gold);border-radius:10px;font-size:.92rem}
+.howto ol{margin:6px 0 0;padding-inline-start:1.25rem}
+.howto li{margin:2px 0}
+
+nav.toc{margin-block:26px;display:grid;gap:6px}
+.tocrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;text-decoration:none;color:inherit;
+  background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:9px 13px;font-size:.88rem}
+.tocrow:hover{border-color:var(--gold)}
+.tocd{font-weight:700;min-width:0}
+.tocf{font-family:ui-monospace,monospace;color:var(--dim);font-size:.8rem;min-width:0}
+.tock{margin-inline-start:auto;font-size:.72rem;font-weight:700;padding:2px 9px;border-radius:999px;
+  background:var(--goldsoft);color:var(--gold)}
+.tock.reelb,.badge.reelb{background:var(--emerald);color:#fff}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  padding:18px;margin-block:18px;scroll-margin-top:16px}
+.chead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding-bottom:12px;border-bottom:1px dashed var(--line)}
+.when{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.when strong{font-size:1.02rem}
+.when span{color:var(--dim);font-variant-numeric:tabular-nums;font-size:.9rem}
+.badge{margin-inline-start:auto;font-size:.74rem;font-weight:700;padding:3px 11px;border-radius:999px;
+  background:var(--goldsoft);color:var(--gold)}
+.card h2{font-size:1.14rem;font-weight:700;margin:13px 0 4px;color:var(--emerald);text-wrap:balance}
+.files{font-family:ui-monospace,monospace;font-size:.78rem;color:var(--dim);margin-bottom:14px}
+.files code{background:var(--goldsoft);color:var(--gold);padding:2px 7px;border-radius:5px}
+.files code.muted{background:transparent;color:var(--dim);padding:0}
+.sep{margin:0 7px;opacity:.5}
+
+.grid{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:760px){.grid{grid-template-columns:minmax(0,1fr)}}
+.mediawrap{display:flex;gap:12px;align-items:flex-start;min-width:0}
+.media{flex:1 1 0;min-width:0}
+.media img,.media video{width:100%;max-width:100%;display:block;border-radius:9px;border:1px solid var(--line)}
+.media.story{flex:0 0 86px;position:relative}
+.media.reel{flex:0 0 190px}
+.stlabel{display:block;text-align:center;font-size:.66rem;color:var(--dim);margin-top:5px}
+
+.capwrap{min-width:0}
+.caphead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.caplabel{font-size:.76rem;font-weight:700;letter-spacing:.1em;color:var(--gold)}
+.count{font-size:.74rem;color:var(--dim);font-variant-numeric:tabular-nums}
+.copy{margin-inline-start:auto;font-family:var(--ff);font-size:.82rem;font-weight:700;cursor:pointer;
+  background:var(--emerald);color:#fff;border:0;border-radius:8px;padding:7px 15px}
+.copy:hover{filter:brightness(1.12)}
+.copy.done{background:var(--gold)}
+.copy:focus-visible,.tocrow:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+pre.cap{margin:0;white-space:pre-wrap;word-break:break-word;font-family:var(--ff);font-size:.9rem;
+  line-height:1.85;background:var(--bg);border:1px solid var(--line);border-radius:10px;
+  padding:14px;max-height:430px;overflow:auto;user-select:all}
+
+footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);color:var(--dim);font-size:.85rem}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <p class="eyebrow">أكاديمية العلماء العرب للاستشارات والتدريب</p>
+  <h1>منشورات الأسبوع الأول</h1>
+  <p class="lede">سبعة تصاميم وريلزان، كل واحد مع كابشنه الجاهز ونسخة الستوري. الملفات الأصلية عندك على اللابتوب في مجلد <code>Downloads\ASA-week1</code>.</p>
+  <div class="howto">
+    <strong>طريقة النشر على Meta Business Suite</strong>
+    <ol>
+      <li>افتح «إنشاء منشور» واختر صفحة الفيسبوك وحساب الانستغرام.</li>
+      <li>ارفع الملف المكتوب اسمه بالبطاقة من مجلد <code>ASA-week1</code>.</li>
+      <li>اضغط «نسخ الكابشن» من هنا والصقه بخانة النص.</li>
+      <li>اختار «جدولة» وحدّد التاريخ والساعة المكتوبين بالبطاقة.</li>
+      <li>الستوري على الواتساب ترفعه يدوي من ملف <code>story-NN.png</code>.</li>
+    </ol>
+  </div>
+  <nav class="toc"><a class="tocrow" href="#p1"><span class="tocd">الأربعاء 28 تشرين الأول · 10:00</span><span class="tocf">01.png</span><span class="tock ">صورة</span></a>
+<a class="tocrow" href="#p2"><span class="tocd">الخميس 29 تشرين الأول · 10:00</span><span class="tocf">02.png</span><span class="tock ">صورة</span></a>
+<a class="tocrow" href="#p3"><span class="tocd">الخميس 29 تشرين الأول · 19:00</span><span class="tocf">reel-1.mp4</span><span class="tock reelb">ريلز</span></a>
+<a class="tocrow" href="#p4"><span class="tocd">الجمعة 30 تشرين الأول · 10:00</span><span class="tocf">03.png</span><span class="tock ">صورة</span></a>
+<a class="tocrow" href="#p5"><span class="tocd">السبت 31 تشرين الأول · 10:00</span><span class="tocf">04.png</span><span class="tock ">صورة</span></a>
+<a class="tocrow" href="#p6"><span class="tocd">الأحد 1 تشرين الثاني · 10:00</span><span class="tocf">05.png</span><span class="tock ">صورة</span></a>
+<a class="tocrow" href="#p7"><span class="tocd">الأحد 1 تشرين الثاني · 19:00</span><span class="tocf">reel-2.mp4</span><span class="tock reelb">ريلز</span></a>
+<a class="tocrow" href="#p8"><span class="tocd">الاثنين 2 تشرين الثاني · 10:00</span><span class="tocf">06.png</span><span class="tock ">صورة</span></a>
+<a class="tocrow" href="#p9"><span class="tocd">الثلاثاء 3 تشرين الثاني · 10:00</span><span class="tocf">07.png</span><span class="tock ">صورة</span></a></nav>
+</header>
+
+<article class="card" id="p1">
+  <header class="chead">
+    <div class="when"><strong>الأربعاء 28 تشرين الأول</strong><span>10:00</span></div>
+    <span class="badge ">منشور صورة</span>
+  </header>
+  <h2>رسائل الماجستير والدكتوراه</h2>
+  <div class="files"><code>01.png</code><span class="sep">·</span><code class="muted">story-01.png</code></div>
+  <div class="grid">
+    <div class="mediawrap"><div class="media"><img src="img/01.webp" alt="تصميم 1" loading="lazy"></div>
+        <div class="media story"><img src="img/story-01.webp" alt="ستوري 1" loading="lazy">
+          <span class="stlabel">نسخة الستوري</span></div></div>
+    <div class="capwrap">
+      <div class="caphead"><span class="caplabel">الكابشن</span>
+        <span class="count">785 حرف</span>
+        <button class="copy" data-t="c1">نسخ الكابشن</button></div>
+      <pre class="cap" id="c1">🎓 رسالة الماجستير أو أطروحة الدكتوراه.. ليست مجرد بحث، إنها مستقبلك الأكاديمي!
+
+كثير من طلبة الدراسات العليا يضيعون شهوراً بين ضغط الوقت وملاحظات المشرف وكثرة التعديلات، والسبب غالباً غياب التوجيه الصحيح من البداية.
+
+في أكاديمية العلماء العرب نرافقك في كل مرحلة:
+✅ اقتراح عنوان مبتكر يناسب تخصصك
+✅ إعداد خطة البحث والإطار النظري
+✅ التحليل الإحصائي وتفسير النتائج
+✅ متابعة مستمرة وتعديلات طوال فترة الرسالة حتى يوم المناقشة
+
+✨ طريقك نحو التميز الأكاديمي يبدأ هنا.. واستشارتك الأولى مجانية
+
+📞 للتواصل والاستفسار:
+📱 رقم الهاتف: 00962778597330
+💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778597330
+📧 البريد الإلكتروني: asaforconsultingandtraining@gmail.com
+
+🌍 نخدمكم أونلاين في جميع الدول العربية
+
+#أكاديمية_العلماء_العرب #الدراسات_العليا #رسائل_ماجستير #أطروحة_دكتوراه #البحث_العلمي #خطة_بحث</pre>
+    </div>
+  </div>
+</article>
+
+<article class="card" id="p2">
+  <header class="chead">
+    <div class="when"><strong>الخميس 29 تشرين الأول</strong><span>10:00</span></div>
+    <span class="badge ">منشور صورة</span>
+  </header>
+  <h2>ثقة وخبرة</h2>
+  <div class="files"><code>02.png</code><span class="sep">·</span><code class="muted">story-02.png</code></div>
+  <div class="grid">
+    <div class="mediawrap"><div class="media"><img src="img/02.webp" alt="تصميم 2" loading="lazy"></div>
+        <div class="media story"><img src="img/story-02.webp" alt="ستوري 2" loading="lazy">
+          <span class="stlabel">نسخة الستوري</span></div></div>
+    <div class="capwrap">
+      <div class="caphead"><span class="caplabel">الكابشن</span>
+        <span class="count">758 حرف</span>
+        <button class="copy" data-t="c2">نسخ الكابشن</button></div>
+      <pre class="cap" id="c2">🏆 الأرقام لا تكذب..
+
++5000 عمل بحثي تم الإشراف عليه
++100 باحث متخصص في مختلف التخصصات الجامعية
+
+هذه ليست مجرد أرقام، بل آلاف الطلبة والباحثين الذين وثقوا بنا في رحلتهم الأكاديمية، من طلبة الماجستير والدكتوراه إلى المدرّسين في الجامعات العربية.
+
+في أكاديمية العلماء العرب نضع خبرتنا بين يديك:
+✅ رسائل الماجستير وأطاريح الدكتوراه
+✅ إعداد خطط البحث والإطار النظري
+✅ التحليل الإحصائي
+✅ النشر في مجلات Scopus بتصنيفاتها (Q1 – Q2 – Q3 – Q4) و Arcif
+
+🤝 كن الباحث التالي في قصة نجاحنا.. والاستشارة الأولى مجانية
+
+📞 للتواصل والاستفسار:
+📱 رقم الهاتف: 00962778597330
+💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778597330
+📧 البريد الإلكتروني: asaforconsultingandtraining@gmail.com
+
+#أكاديمية_العلماء_العرب #الدراسات_العليا #البحث_العلمي #ماجستير #دكتوراه #استشارات_أكاديمية</pre>
+    </div>
+  </div>
+</article>
+
+<article class="card" id="p3">
+  <header class="chead">
+    <div class="when"><strong>الخميس 29 تشرين الأول</strong><span>19:00</span></div>
+    <span class="badge reelb">ريلز</span>
+  </header>
+  <h2>خطتك رُدّت؟</h2>
+  <div class="files"><code>reel-1.mp4</code><span class="sep">·</span><code class="muted">reel-1-cover.png</code></div>
+  <div class="grid">
+    <div class="mediawrap"><div class="media reel"><video src="img/reel-1.mp4" poster="img/reel-1.webp" controls preload="none" playsinline></video></div></div>
+    <div class="capwrap">
+      <div class="caphead"><span class="caplabel">الكابشن</span>
+        <span class="count">756 حرف</span>
+        <button class="copy" data-t="c3">نسخ الكابشن</button></div>
+      <pre class="cap" id="c3">📌 خطتك رُدّت.. مرة واثنتين وثلاث؟
+
+&quot;المشكلة غير واضحة&quot;.. &quot;الأهداف عامة&quot;.. &quot;المنهج لا يناسب الدراسة&quot;
+ملاحظات تتكرر، وكل تعديل يعني أسابيع إضافية من التأخير، وربما فصلاً دراسياً كاملاً!
+
+💡 في أكاديمية العلماء العرب نعيد بناء خطتك معك نقطة نقطة:
+✅ صياغة مشكلة بحثية واضحة ومحددة
+✅ الأهمية والأهداف وأسئلة الدراسة
+✅ الفرضيات والمنهج والأدوات المناسبة
+✅ الإطار النظري والدراسات السابقة الحديثة
+
+🎯 خطة واضحة.. وثقة أكبر أمام المشرف ولجنة القسم
+لا تضيّع فصلاً دراسياً آخر، واستشارتك الأولى مجانية
+
+📞 للتواصل والاستفسار:
+📱 رقم الهاتف: 00962778597330
+💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778597330
+📧 البريد الإلكتروني: asaforconsultingandtraining@gmail.com
+
+#أكاديمية_العلماء_العرب #خطة_بحث #بروبوزل #رسائل_ماجستير #أطروحة_دكتوراه #الدراسات_العليا #البحث_العلمي</pre>
+    </div>
+  </div>
+</article>
+
+<article class="card" id="p4">
+  <header class="chead">
+    <div class="when"><strong>الجمعة 30 تشرين الأول</strong><span>10:00</span></div>
+    <span class="badge ">منشور صورة</span>
+  </header>
+  <h2>إعداد خطة البحث</h2>
+  <div class="files"><code>03.png</code><span class="sep">·</span><code class="muted">story-03.png</code></div>
+  <div class="grid">
+    <div class="mediawrap"><div class="media"><img src="img/03.webp" alt="تصميم 3" loading="lazy"></div>
+        <div class="media story"><img src="img/story-03.webp" alt="ستوري 3" loading="lazy">
+          <span class="stlabel">نسخة الستوري</span></div></div>
+    <div class="capwrap">
+      <div class="caphead"><span class="caplabel">الكابشن</span>
+        <span class="count">684 حرف</span>
+        <button class="copy" data-t="c4">نسخ الكابشن</button></div>
+      <pre class="cap" id="c4">😔 خطتك رجعت من المشرف مليانة ملاحظات؟
+
+&quot;المشكلة غير واضحة&quot;.. &quot;الأهداف عامة&quot;.. &quot;المنهج غير مناسب&quot;
+جمل يسمعها كثير من الطلبة، وكل تعديل يعني أسابيع إضافية من التأخير!
+
+💡 لا تقلق.. في أكاديمية العلماء العرب نراجع خطتك معك نقطة نقطة:
+✅ صياغة مشكلة بحثية واضحة ومحددة
+✅ أهمية وأهداف وأسئلة دراسة متماسكة
+✅ فرضيات قابلة للاختبار
+✅ منهج وأدوات مناسبة لدراستك
+✅ إطار نظري ودراسات سابقة حديثة
+
+📩 أرسل لنا خطتك الآن، والاستشارة الأولى مجانية
+
+📞 للتواصل والاستفسار:
+📱 رقم الهاتف: 00962778597330
+💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778597330
+📧 البريد الإلكتروني: asaforconsultingandtraining@gmail.com
+
+#أكاديمية_العلماء_العرب #خطة_بحث #بروبوزل #رسائل_ماجستير #أطروحة_دكتوراه #الدراسات_العليا</pre>
+    </div>
+  </div>
+</article>
+
+<article class="card" id="p5">
+  <header class="chead">
+    <div class="when"><strong>السبت 31 تشرين الأول</strong><span>10:00</span></div>
+    <span class="badge ">منشور صورة</span>
+  </header>
+  <h2>النشر العلمي</h2>
+  <div class="files"><code>04.png</code><span class="sep">·</span><code class="muted">story-04.png</code></div>
+  <div class="grid">
+    <div class="mediawrap"><div class="media"><img src="img/04.webp" alt="تصميم 4" loading="lazy"></div>
+        <div class="media story"><img src="img/story-04.webp" alt="ستوري 4" loading="lazy">
+          <span class="stlabel">نسخة الستوري</span></div></div>
+    <div class="capwrap">
+      <div class="caphead"><span class="caplabel">الكابشن</span>
+        <span class="count">765 حرف</span>
+        <button class="copy" data-t="c5">نسخ الكابشن</button></div>
+      <pre class="cap" id="c5">🚫 خرافة: &quot;النشر في مجلات Scopus مستحيل على الباحث العربي&quot;
+✅ الحقيقة: بالمنهجية الصحيحة.. النشر ممكن!
+
+السر ليس في الحظ، بل في بحث رصين، ومجلة مناسبة لتخصصك، ومتابعة دقيقة لملاحظات المحكّمين.
+
+في أكاديمية العلماء العرب نرافقك في رحلة النشر:
+🔹 مجلات Scopus بجميع تصنيفاتها: Q1 – Q2 – Q3 – Q4
+🔹 مجلات Arcif العربية
+✅ إعداد بحث علمي رصين قابل للنشر
+✅ اختيار المجلة الأنسب لتخصصك
+✅ متابعة التحكيم والتعديلات خطوة بخطوة
+✅ أبحاث جاهزة للنشر وأبحاث الترقية لأعضاء هيئة التدريس
+
+🚀 ابدأ رحلة النشر اليوم باستشارة مجانية
+
+📞 للتواصل والاستفسار:
+📱 رقم الهاتف: 00962778597330
+💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778597330
+📧 البريد الإلكتروني: asaforconsultingandtraining@gmail.com
+
+#أكاديمية_العلماء_العرب #النشر_العلمي #سكوبس #Scopus #Arcif #أبحاث_محكمة #الترقية_الأكاديمية</pre>
+    </div>
+  </div>
+</article>
+
+<article class="card" id="p6">
+  <header class="chead">
+    <div class="when"><strong>الأحد 1 تشرين الثاني</strong><span>10:00</span></div>
+    <span class="badge ">منشور صورة</span>
+  </header>
+  <h2>العناوين والمراجع</h2>
+  <div class="files"><code>05.png</code><span class="sep">·</span><code class="muted">story-05.png</code></div>
+  <div class="grid">
+    <div class="mediawrap"><div class="media"><img src="img/05.webp" alt="تصميم 5" loading="lazy"></div>
+        <div class="media story"><img src="img/story-05.webp" alt="ستوري 5" loading="lazy">
+          <span class="stlabel">نسخة الستوري</span></div></div>
+    <div class="capwrap">
+      <div class="caphead"><span class="caplabel">الكابشن</span>
+        <span class="count">740 حرف</span>
+        <button class="copy" data-t="c6">نسخ الكابشن</button></div>
+      <pre class="cap" id="c6">📝 قبل ما تبدأ رسالتك.. تأكّد من هذه النقاط!
+
+☑️ عنوان مبتكر وغير مكرر
+☑️ مشكلة بحثية واضحة ومحددة
+☑️ دراسات سابقة حديثة
+☑️ مراجع عربية وأجنبية موثقة
+☑️ منهج وأدوات مناسبة
+
+إذا كانت نقطة واحدة ناقصة، فقد تواجه رفض العنوان أو تعديلات طويلة لاحقاً.
+
+✨ في أكاديمية العلماء العرب نساعدك في كل نقطة:
+✅ نقترح لك عناوين مبتكرة في تخصصك
+✅ نوفّر لك المراجع والدراسات السابقة العربية والأجنبية
+✅ نساعدك في بناء الإطار النظري بشكل علمي
+
+🎁 أرسل لنا تخصصك ودرجتك العلمية، واحصل على استشارة مجانية
+
+📞 للتواصل والاستفسار:
+📱 رقم الهاتف: 00962778597330
+💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778597330
+📧 البريد الإلكتروني: asaforconsultingandtraining@gmail.com
+
+#أكاديمية_العلماء_العرب #عنوان_رسالة #دراسات_سابقة #مراجع_علمية #رسائل_ماجستير #أطروحة_دكتوراه</pre>
+    </div>
+  </div>
+</article>
+
+<article class="card" id="p7">
+  <header class="chead">
+    <div class="when"><strong>الأحد 1 تشرين الثاني</strong><span>19:00</span></div>
+    <span class="badge reelb">ريلز</span>
+  </header>
+  <h2>٧ خطوات من العنوان إلى المناقشة</h2>
+  <div class="files"><code>reel-2.mp4</code><span class="sep">·</span><code class="muted">reel-2-cover.png</code></div>
+  <div class="grid">
+    <div class="mediawrap"><div class="media reel"><video src="img/reel-2.mp4" poster="img/reel-2.webp" controls preload="none" playsinline></video></div></div>
+    <div class="capwrap">
+      <div class="caphead"><span class="caplabel">الكابشن</span>
+        <span class="count">772 حرف</span>
+        <button class="copy" data-t="c7">نسخ الكابشن</button></div>
+      <pre class="cap" id="c7">🎓 من العنوان إلى المناقشة في 7 خطوات.. احفظ الفيديو وشاركه مع زملائك 👇
+
+1️⃣ اختيار عنوان مبتكر يناسب تخصصك
+2️⃣ خطة البحث: المشكلة والأهداف والمنهج
+3️⃣ الإطار النظري والدراسات السابقة الحديثة
+4️⃣ إعداد أدوات الدراسة وتحكيمها
+5️⃣ جمع البيانات من مصادر موثوقة
+6️⃣ التحليل الإحصائي واستخراج النتائج
+7️⃣ التدقيق والتنسيق وعرض تقديمي احترافي للمناقشة
+
+✨ في كل خطوة.. أكاديمية العلماء العرب معك
+أكثر من 5000 عمل بحثي تم الإشراف عليه، وأكثر من 100 باحث متخصص في خدمتك
+
+🚀 ابدأ الخطوة الأولى اليوم باستشارة مجانية
+
+📞 للتواصل والاستفسار:
+📱 رقم الهاتف: 00962778597330
+💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778597330
+📧 البريد الإلكتروني: asaforconsultingandtraining@gmail.com
+
+#أكاديمية_العلماء_العرب #الدراسات_العليا #رسائل_ماجستير #أطروحة_دكتوراه #البحث_العلمي #خطوات_البحث_العلمي</pre>
+    </div>
+  </div>
+</article>
+
+<article class="card" id="p8">
+  <header class="chead">
+    <div class="when"><strong>الاثنين 2 تشرين الثاني</strong><span>10:00</span></div>
+    <span class="badge ">منشور صورة</span>
+  </header>
+  <h2>التحليل الإحصائي</h2>
+  <div class="files"><code>06.png</code><span class="sep">·</span><code class="muted">story-06.png</code></div>
+  <div class="grid">
+    <div class="mediawrap"><div class="media"><img src="img/06.webp" alt="تصميم 6" loading="lazy"></div>
+        <div class="media story"><img src="img/story-06.webp" alt="ستوري 6" loading="lazy">
+          <span class="stlabel">نسخة الستوري</span></div></div>
+    <div class="capwrap">
+      <div class="caphead"><span class="caplabel">الكابشن</span>
+        <span class="count">699 حرف</span>
+        <button class="copy" data-t="c8">نسخ الكابشن</button></div>
+      <pre class="cap" id="c8">📊 بياناتك جاهزة.. لكن الأرقام لا تتكلم وحدها!
+
+التحليل الإحصائي هو قلب الجزء الميداني في رسالتك، وأي خطأ فيه قد يغيّر نتائجك أو يؤخر مناقشتك.
+
+في أكاديمية العلماء العرب نحوّل بياناتك إلى نتائج واضحة ومقنعة:
+✅ التحقق من صدق وثبات أدوات الدراسة
+✅ اختبار الفرضيات بالأساليب الإحصائية المناسبة
+✅ تحليل البيانات وعرضها في جداول ورسوم واضحة
+✅ تفسير النتائج وربطها بالفرضيات والدراسات السابقة
+
+🎯 أرسل بياناتك الآن، واحصل على استشارة مجانية
+
+📞 للتواصل والاستفسار:
+📱 رقم الهاتف: 00962778597330
+💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778597330
+📧 البريد الإلكتروني: asaforconsultingandtraining@gmail.com
+
+#أكاديمية_العلماء_العرب #التحليل_الإحصائي #تحليل_البيانات #الدراسات_العليا #رسائل_ماجستير #البحث_العلمي</pre>
+    </div>
+  </div>
+</article>
+
+<article class="card" id="p9">
+  <header class="chead">
+    <div class="when"><strong>الثلاثاء 3 تشرين الثاني</strong><span>10:00</span></div>
+    <span class="badge ">منشور صورة</span>
+  </header>
+  <h2>التدقيق والتنسيق والترجمة</h2>
+  <div class="files"><code>07.png</code><span class="sep">·</span><code class="muted">story-07.png</code></div>
+  <div class="grid">
+    <div class="mediawrap"><div class="media"><img src="img/07.webp" alt="تصميم 7" loading="lazy"></div>
+        <div class="media story"><img src="img/story-07.webp" alt="ستوري 7" loading="lazy">
+          <span class="stlabel">نسخة الستوري</span></div></div>
+    <div class="capwrap">
+      <div class="caphead"><span class="caplabel">الكابشن</span>
+        <span class="count">714 حرف</span>
+        <button class="copy" data-t="c9">نسخ الكابشن</button></div>
+      <pre class="cap" id="c9">✨ رسالتك جاهزة؟ اللمسة الأخيرة هي أول ما تراه لجنة المناقشة!
+
+❌ أخطاء لغوية وإملائية
+❌ تنسيق غير مطابق لدليل الجامعة
+❌ نسبة اقتباس مرتفعة
+تفاصيل صغيرة.. لكنها قد تؤخّر مناقشتك أو تضعف انطباع اللجنة.
+
+في أكاديمية العلماء العرب نحوّل رسالتك إلى نسخة احترافية:
+✅ تدقيق لغوي وإملائي شامل
+✅ تنسيق شكلي حسب دليل جامعتك
+✅ فحص نسبة الاقتباس ببرنامج Turnitin
+✅ ترجمة معتمدة بدقة عالية
+✅ تصميم عرض تقديمي احترافي (PowerPoint) ليوم المناقشة
+
+👌 قبل التسليم.. خلّيها مثالية
+
+📞 للتواصل والاستفسار:
+📱 رقم الهاتف: 00962778597330
+💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778597330
+📧 البريد الإلكتروني: asaforconsultingandtraining@gmail.com
+
+#أكاديمية_العلماء_العرب #تدقيق_لغوي #ترجمة_معتمدة #Turnitin #مناقشة_رسالة #الدراسات_العليا</pre>
+    </div>
+  </div>
+</article>
+
+<footer>الريلز يُرفع كـ Reel على الفيسبوك والانستغرام، وغطاؤه من ملف <code>reel-N-cover.png</code> إذا طلبه.</footer>
+</div>
+
+<script>
+document.querySelectorAll(".copy").forEach(function(b){
+  b.addEventListener("click", function(){
+    var el = document.getElementById(b.dataset.t);
+    var txt = el.textContent;
+    function ok(){ var o = b.textContent; b.textContent = "تم النسخ ✓"; b.classList.add("done");
+      setTimeout(function(){ b.textContent = o; b.classList.remove("done"); }, 1800); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(ok, select);
+    } else { select(); }
+    function select(){
+      var r = document.createRange(); r.selectNodeContents(el);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      b.textContent = "محدّد — انسخ بـ Ctrl+C";
+      setTimeout(function(){ b.textContent = "نسخ الكابشن"; }, 2600);
+    }
+  });
+});
+</script>

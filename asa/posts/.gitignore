@@ -1,0 +1,4 @@
+# Rendered media is delivered to the owner (artifact page + laptop), not versioned:
+# the academy publishes by hand through Meta Business Suite, so no public URLs are needed.
+*.png
+*.mp4
