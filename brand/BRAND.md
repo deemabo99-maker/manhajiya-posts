@@ -82,12 +82,22 @@ before writing copy or rendering designs.
 - Graphic illustrations only (shapes, charts, icons). No people photos unless the owner
   supplies licensed images.
 
-## Rules for captions
+## Rules for captions (owner asked for stronger captions, 26 Oct 2026)
 
-- Modern Standard Arabic, warm and direct; opening hook question or statement + emoji.
-- 3–6 lines of value (✅ / numbered list), then CTA: "استشارة مجانية" + `واتساب: 00962778707204`.
-- 5–7 hashtags, always starting with #المنهجية.
-- Keep under ~600 characters.
+- Modern Standard Arabic. Structure: **hook** (emoji + pain point or bold promise) →
+  **problem** (one or two lines the student recognises) → **solution** (✅ / numbered list of
+  the real services) → **push** (start today, first consultation free) → **contact block** →
+  regions line (optional) → hashtags.
+- The contact block is mandatory and always exactly:
+
+```
+📞 للتواصل والاستفسار:
+📱 رقم الهاتف: 00962778707204
+💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778707204
+```
+
+- 6–8 hashtags, always starting with #المنهجية.
+- No invented numbers, prices or guarantees. Up to ~1,100 characters is fine.
 
 ## Weekly workflow
 
@@ -98,7 +108,15 @@ before writing copy or rendering designs.
    `https://raw.githubusercontent.com/deemabo99-maker/manhajiya-posts/main/posts/batch-NN/01.png`
 5. Send the owner the images and captions for approval, then schedule in Metricool
    (brand id 7664477, timezone Asia/Amman, networks: facebook + instagram, type POST).
-6. Metricool free plan = 20 published posts per month → 5 posts per week.
+6. Metricool free plan = 20 published posts per month. With one weekly reel that means
+   4 image posts + 1 reel per week (a reel counts as a post).
+
+## Weekly reel
+
+- One 9:16 reel (1080 × 1920, ~20 s, H.264 + original background music) every week.
+- Built with `engine/reel.py`; the owner asked to focus on **data collection services**
+  (جمع البيانات): ASE financial data, online questionnaires, study tools, references.
+- Scheduled as Facebook REEL + Instagram REEL in Metricool.
 
 ## Templates (`engine/templates.py`)
 
