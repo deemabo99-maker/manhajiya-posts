@@ -74,8 +74,21 @@ before writing copy or rendering designs.
 
 ## Rules for designs
 
+- **Owner's standing request (26 Oct 2026): every design must be distinctive, innovative and
+  eye-catching ("مميزة ومبتكرة وجذابة").** Reusing the same few layouts is not enough:
+  - Every week, at least **2 of the 4 designs use a brand-new template** written for that
+    batch (add it to `engine/templates.py`), with a new composition idea: e.g. big-number
+    typography, split diagonal layouts, a mock phone/chat screen, a "before → after" panel,
+    a calendar or checklist card, a journal-cover mock-up, a timeline, an infographic,
+    a bold quote card, layered paper cards, isometric-style stacks, a myth vs. fact card.
+  - Never repeat the same template two weeks in a row; alternate dark, vivid-purple and light
+    backgrounds across the week.
+  - Every design needs one strong focal point (oversized headline, illustration or number)
+    and a clear visual hierarchy; it should stop the scroll on a phone screen.
+  - Before scheduling, compare the batch against the last 3 batches side by side; if a
+    design looks like an earlier one, redesign it.
+  - Reels: new hook, new scene layouts and new motion each week (not just new text).
 - One service (or one angle on a service) per post; rotate through all six groups above.
-- Each week uses different templates, so no two posts in a batch look alike.
 - Headline ≤ 4 words per line, max two lines; at most 3 bullets or 6 short cards.
 - Every design: logo badge, WhatsApp pill with the number, social footer, a short CTA line.
 - No invented claims: no prices, guarantees, percentages, counts of clients or "100%".
