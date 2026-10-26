@@ -99,17 +99,47 @@ before writing copy or rendering designs.
 - 6–8 hashtags, always starting with #المنهجية.
 - No invented numbers, prices or guarantees. Up to ~1,100 characters is fine.
 
-## Weekly workflow
+## Weekly workflow (owner's choices, 26 Oct 2026)
 
-1. Create `posts/batch-NN/content.json` (template + copy + caption per post).
-2. Render: `python3 engine/render.py posts/batch-NN`
-3. Check every PNG visually (no overlaps, numbers correct), commit and push.
-4. Image links for Metricool:
+Runs every **Sunday morning** (Amman time). The owner chose **direct scheduling**: no
+approval step — prepare, schedule, then send the owner a summary with all files.
+
+Each week = **4 image posts + 1 reel**, plus WhatsApp-status versions of the 4 designs.
+
+| Slot | Content |
+|---|---|
+| Monday 10:00 | image post 01 |
+| Tuesday 10:00 | image post 02 |
+| Wednesday 10:00 | image post 03 |
+| Thursday 10:00 | image post 04 |
+| Saturday 10:00 | weekly reel |
+
+Steps:
+
+1. Pick the next batch number (`posts/batch-NN`, NN = highest existing + 1). Read the
+   `content.json` and `reel.json` of the last 3 batches so services, hooks, headlines and
+   templates are not repeated.
+2. Create `posts/batch-NN/content.json` (4 posts: template + copy + caption) and
+   `posts/batch-NN/reel.json` (scenes + caption). Use 4 different templates; add a new
+   template to `engine/templates.py` when the rotation gets repetitive.
+3. Render: `python3 engine/render.py posts/batch-NN`,
+   `python3 engine/story.py posts/batch-NN`,
+   `python3 engine/reel.py posts/batch-NN/reel.json posts/batch-NN/reel.mp4`.
+4. Look at every PNG and a contact sheet of reel frames: no overlaps, no clipped text,
+   phone number exactly 00962778707204, Scopus always Q1/Q2/Q3/Q4. Fix and re-render.
+5. Write `posts/batch-NN/captions.md`, commit and push to `main`.
+6. Media links for Metricool:
    `https://raw.githubusercontent.com/deemabo99-maker/manhajiya-posts/main/posts/batch-NN/01.png`
-5. Send the owner the images and captions for approval, then schedule in Metricool
-   (brand id 7664477, timezone Asia/Amman, networks: facebook + instagram, type POST).
-6. Metricool free plan = 20 published posts per month. With one weekly reel that means
-   4 image posts + 1 reel per week (a reel counts as a post).
+   (reel: `reel.mp4`, cover: `reel-cover.png` as `videoThumbnailUrl`).
+7. **Monthly cap:** Metricool free plan publishes max **20 posts per calendar month**
+   (a reel counts). Before scheduling, call getScheduledPosts for each month the week
+   touches and count posts already there. If a slot would make a month exceed 20, skip that
+   slot (drop the lowest-priority image post, never the reel) and tell the owner.
+8. Schedule with createScheduledPost: brand id 7664477, timezone Asia/Amman,
+   providers facebook + instagram, autoPublish true; images `type: POST`,
+   reel `facebookData.type REEL` + `instagramData.type REEL, showReelOnFeed true`.
+9. Verify with getScheduledPosts, then send the owner (SendUserFile): the 4 designs, the 4
+   story PNGs, the reel and `captions.md`, with a short Arabic summary of what goes out when.
 
 ## Weekly reel
 
@@ -117,6 +147,12 @@ before writing copy or rendering designs.
 - Built with `engine/reel.py`; the owner asked to focus on **data collection services**
   (جمع البيانات): ASE financial data, online questionnaires, study tools, references.
 - Scheduled as Facebook REEL + Instagram REEL in Metricool.
+
+## WhatsApp status versions
+
+`engine/story.py` wraps each feed design into a 1080 × 1920 status image with the WhatsApp
+pill. They are not scheduled anywhere: WhatsApp has no publishing API, so the owner posts
+them by hand.
 
 ## Templates (`engine/templates.py`)
 
