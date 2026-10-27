@@ -117,49 +117,78 @@ before writing copy or rendering designs.
 Runs every **Sunday morning** (Amman time). The owner chose **direct scheduling**: no
 approval step — prepare, schedule, then send the owner a summary with all files.
 
-Each week = **4 image posts + 1 reel**, plus WhatsApp-status versions of the 4 designs.
+Each week = **3 image posts + 2 reels** (owner's change, 27 Oct 2026), plus WhatsApp-status
+versions of the 3 designs.
 
 | Slot | Content |
 |---|---|
 | Monday 10:00 | image post 01 |
 | Tuesday 10:00 | image post 02 |
 | Wednesday 10:00 | image post 03 |
-| Thursday 10:00 | image post 04 |
-| Saturday 10:00 | weekly reel |
+| Thursday 19:00 | reel 1 |
+| Saturday 19:00 | reel 2 |
+
+Five items a week is exactly **20 a month**, the free Metricool plan's publishing cap, so a
+normal week schedules in full. In a month that spans five posting weeks the cap bites: drop
+image posts first and keep both reels, then tell the owner which post was dropped and why.
 
 Steps:
 
 1. Pick the next batch number (`posts/batch-NN`, NN = highest existing + 1). Read the
-   `content.json` and `reel.json` of the last 3 batches so services, hooks, headlines and
-   templates are not repeated.
-2. Create `posts/batch-NN/content.json` (4 posts: template + copy + caption) and
-   `posts/batch-NN/reel.json` (scenes + caption). Use 4 different templates; add a new
-   template to `engine/templates.py` when the rotation gets repetitive.
+   `content.json` and `reel-*.json` of the last 3 batches so services, hooks, headlines and
+   templates are not repeated, and so the reel service rotation below carries forward.
+2. Create `posts/batch-NN/content.json` (3 posts: template + copy + caption) and
+   `posts/batch-NN/reel-1.json` + `reel-2.json` (each with `service`, scenes and caption).
+   Use 3 different templates; add a new template to `engine/templates.py` when the rotation
+   gets repetitive.
 3. Render: `python3 engine/render.py posts/batch-NN`,
    `python3 engine/story.py posts/batch-NN`,
-   `python3 engine/reel.py posts/batch-NN/reel.json posts/batch-NN/reel.mp4`.
-4. Look at every PNG and a contact sheet of reel frames: no overlaps, no clipped text,
-   phone number exactly 00962778707204, Scopus always Q1/Q2/Q3/Q4. Fix and re-render.
+   `python3 engine/reel.py posts/batch-NN/reel-1.json posts/batch-NN/reel-1.mp4`,
+   `python3 engine/reel.py posts/batch-NN/reel-2.json posts/batch-NN/reel-2.mp4`.
+4. Look at every PNG and a contact sheet of frames from both reels: no overlaps, no clipped
+   text, phone number exactly 00962778707204, Scopus always Q1/Q2/Q3/Q4. Fix and re-render.
 5. Write `posts/batch-NN/captions.md`, commit and push to `main`.
 6. Media links for Metricool:
    `https://raw.githubusercontent.com/deemabo99-maker/manhajiya-posts/main/posts/batch-NN/01.png`
-   (reel: `reel.mp4`, cover: `reel-cover.png` as `videoThumbnailUrl`).
+   (reels: `reel-1.mp4` with `reel-1-cover.png` as `videoThumbnailUrl`, same for 2).
 7. **Monthly cap:** Metricool free plan publishes max **20 posts per calendar month**
    (a reel counts). Before scheduling, call getScheduledPosts for each month the week
-   touches and count posts already there. If a slot would make a month exceed 20, skip that
-   slot (drop the lowest-priority image post, never the reel) and tell the owner.
+   touches and count posts already there. If a slot would make a month exceed 20, drop an
+   image post — never a reel — and tell the owner which one and why.
 8. Schedule with createScheduledPost: brand id 7664477, timezone Asia/Amman,
    providers facebook + instagram, autoPublish true; images `type: POST`,
-   reel `facebookData.type REEL` + `instagramData.type REEL, showReelOnFeed true`.
-9. Verify with getScheduledPosts, then send the owner (SendUserFile): the 4 designs, the 4
-   story PNGs, the reel and `captions.md`, with a short Arabic summary of what goes out when.
+   reels `facebookData.type REEL` + `instagramData.type REEL, showReelOnFeed true`.
+9. Verify with getScheduledPosts, then send the owner (SendUserFile): the 3 designs, the 3
+   story PNGs, both reels and `captions.md`, with a short Arabic summary of what goes out
+   when and which service each reel covers.
 
-## Weekly reel
+## Weekly reels (owner's change, 27 Oct 2026)
 
-- One 9:16 reel (1080 × 1920, ~20 s, H.264 + original background music) every week.
-- Built with `engine/reel.py`; the owner asked to focus on **data collection services**
-  (جمع البيانات): ASE financial data, online questionnaires, study tools, references.
-- Scheduled as Facebook REEL + Instagram REEL in Metricool.
+**Two** 9:16 reels every week (1080 × 1920, ~20 s, H.264 + original background music), built
+with `engine/reel.py`, scheduled as Facebook REEL + Instagram REEL in Metricool.
+
+Each reel covers **one service**, and the two in a week cover two different ones. Data
+collection is no longer the standing subject: it is one entry in the rotation like the rest.
+Work down this list and start again at the top, so no service waits more than a few weeks:
+
+1. إعداد الرسائل والأطاريح من العنوان حتى المناقشة
+2. خطة البحث (Proposal) ومشكلة الدراسة
+3. جمع البيانات: بيانات بورصة عمان المالية
+4. جمع البيانات: الاستبيانات الإلكترونية عبر Google Forms
+5. التحليل الإحصائي وربط النتائج بالفرضيات
+6. النشر العلمي في Scopus Q1 / Q2 / Q3 / Q4 و Arcif
+7. أدوات الدراسة وتحكيمها
+8. المراجع والدراسات السابقة
+9. التدقيق اللغوي وفحص Turnitin والتنسيق
+10. مشاريع تخرج البكالوريوس
+11. أبحاث النشر والترقية لأعضاء هيئة التدريس
+12. الترجمة المعتمدة والعروض التقديمية
+
+Record each week's two services in `reel-1.json` / `reel-2.json` under a `"service"` key, so
+the next run can read the last 3 batches and carry the rotation forward.
+
+File names are `reel-1.json` → `reel-1.mp4` (+ `reel-1-cover.png`) and the same for 2. New
+hook, new scene layouts and new motion every week — not just new text.
 
 ## WhatsApp status versions
 
