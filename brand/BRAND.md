@@ -135,7 +135,9 @@ image posts first and keep both reels, then tell the owner which post was droppe
 Steps:
 
 1. Pick the next batch number (`posts/batch-NN`, NN = highest existing + 1). Read the
-   `content.json` and `reel-*.json` of the last 3 batches so services, hooks, headlines and
+   `content.json` and every reel JSON of the last 3 batches (`reel-1.json`, `reel-2.json`,
+   and `reel.json` in batch-01, which predates the two-reel week) so services, hooks,
+   headlines and
    templates are not repeated, and so the reel service rotation below carries forward.
 2. Create `posts/batch-NN/content.json` (3 posts: template + copy + caption) and
    `posts/batch-NN/reel-1.json` + `reel-2.json` (each with `service`, scenes and caption).
