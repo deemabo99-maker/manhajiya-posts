@@ -189,8 +189,35 @@ Work down this list and start again at the top, so no service waits more than a 
 Record each week's two services in `reel-1.json` / `reel-2.json` under a `"service"` key, so
 the next run can read the last 3 batches and carry the rotation forward.
 
-File names are `reel-1.json` → `reel-1.mp4` (+ `reel-1-cover.png`) and the same for 2. New
-hook, new scene layouts and new motion every week — not just new text.
+File names are `reel-1.json` → `reel-1.mp4` (+ `reel-1-cover.png`) and the same for 2.
+
+### Reel creativity standard (owner, 28 Oct 2026: "٢ ريلز ابداعي" is the week's priority)
+
+The two reels are the most important thing the weekly run produces. Judge them the way the
+owner will: in the first second on a phone, does this stop the scroll? Three hard rules:
+
+1. **Each reel is built on a visual idea, not a list of text cards.** Pick a different
+   *format* for each of the two, and a format not used in the last 3 batches. Formats worth
+   building, each needing its own motion: a countdown or timer driving the edit · a split
+   screen comparing two paths · a phone screen being typed into · a document filling itself
+   in line by line · a chart drawing itself to a result · a stamp-of-approval climax · a
+   journal cover assembling · a checklist ticking off under time pressure · a question
+   fired at the viewer and answered · numbers counting up · a path or timeline travelled
+   end to end · one object revealed from an unexpected scale.
+2. **Extend the engine every week.** Each run adds at least one genuinely new element type
+   or animation to `engine/reel.py`. Today's elements are text, pill, whatsapp, logo, card,
+   doc, table header/row, ring, grid, cycle; today's animations are up, right, left, pop,
+   fade, pulse. Reusing only these means the reel will move like last week's — so write the
+   new one the format actually needs (a counter, a typewriter, a wipe, a mask reveal, a
+   draw-on line, a camera push, a shake on impact) rather than forcing the idea into the
+   existing set.
+3. **Check them like the owner would.** Before scheduling, pull a contact sheet of frames
+   from both reels and put it beside last week's. If the pacing, layouts or motion look like
+   a repeat, rebuild rather than ship it. Also confirm the first second carries a hook on
+   its own, with no text clipped and the Arabic shaped correctly.
+
+Music stays original (synthesised in numpy) and there is no voice-over. Keep each reel around
+20 seconds, and vary where the CTA lands instead of always closing the same way.
 
 ## WhatsApp status versions
 
