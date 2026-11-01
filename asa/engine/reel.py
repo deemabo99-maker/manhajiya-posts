@@ -1020,6 +1020,28 @@ def music(path, seconds, bpm=92, sr=44100, seed=1, hits=(), mood="hijaz"):
         w.writeframes((st * 32767).astype("<i2").tobytes())
 
 
+def mix_voice(wav_path, vo, seconds, duck=0.22):
+    """Lay the narration over the music track in place, ducking the music under it.
+    `duck` is what the music drops to while the voice speaks (0.22 = -13 dB)."""
+    import voice as voice_mod
+
+    with wave.open(wav_path, "rb") as w:
+        sr, nch = w.getframerate(), w.getnchannels()
+        bed = np.frombuffer(w.readframes(w.getnframes()), dtype="<i2").astype(np.float32) / 32768
+    bed = bed.reshape(-1, nch)
+    speech, gate = voice_mod.track(vo, seconds, sr)
+    n = min(len(bed), len(speech))
+    bed, speech, gate = bed[:n], speech[:n], gate[:n]
+    ducked = bed * (1 - (1 - duck) * gate)[:, None]
+    out = ducked + speech[:, None] * 0.95
+    out = 0.92 * np.tanh(out * 1.15) / np.tanh(1.15)
+    with wave.open(wav_path, "wb") as w:
+        w.setnchannels(nch)
+        w.setsampwidth(2)
+        w.setframerate(sr)
+        w.writeframes((np.clip(out, -1, 1) * 32767).astype("<i2").tobytes())
+
+
 def render(spec_path, out_path):
     with open(spec_path, encoding="utf-8") as fh:
         spec = json.load(fh)
@@ -1035,6 +1057,8 @@ def render(spec_path, out_path):
         st += sc["dur"]
     music(wav, reel.total, bpm=spec.get("bpm", 92), seed=spec.get("music_seed", 1), hits=hits,
           mood=spec.get("mood", "hijaz"))
+    if spec.get("vo"):
+        mix_voice(wav, spec["vo"], reel.total, duck=spec.get("duck", 0.22))
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{RW}x{RH}",
            "-r", str(FPS), "-i", "-", "-i", wav, "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
            "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", out_path]
