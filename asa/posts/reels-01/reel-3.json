@@ -1,0 +1,309 @@
+{
+ "title": "جمع البيانات — الاستبانة الإلكترونية",
+ "service": "جمع البيانات: الاستبانات الإلكترونية وتوزيعها عبر Google Forms",
+ "format": "responses arriving: a phone, then a counter running to 400 responses while check rows pop in, then the clean file with a 'ready to analyse' stamp",
+ "mood": "pulse",
+ "bpm": 120,
+ "music_seed": 5,
+ "fadein": 0.05,
+ "cover_scene": 1,
+ "cover_t": 3.2,
+ "caption": "📱 استبانتك جاهزة.. بس مين رح يعبّيها؟\n\nهاي أكثر مرحلة بتوقف الباحث: الأداة صارت جاهزة، والمشرف موافق، وبعدها بيضيع أسابيع وهو بيدوّر على مستجيبين، أو بيجمع استجابات ما بتمثّل مجتمع الدراسة أصلاً فيرجع يعيد التوزيع.\n\n📥 في أكاديمية العلماء العرب منجمع بياناتك بدلك:\n✅ تحويل الاستبانة لنموذج جوجل مرتّب وسهل التعبئة\n✅ توزيع إلكتروني موجّه للعيّنة اللي بتناسب دراستك تخصصاً وبلداً\n✅ متابعة يومية لحد ما تكتمل العيّنة المطلوبة\n✅ تفريغ الاستجابات وترميزها على Excel و SPSS\n✅ تنظيف البيانات من الاستجابات الناقصة والمكررة\n✅ ربط كل فقرة بمحورها وبأسئلة الدراسة\n\n🎯 بتستلم بياناتك نظيفة وجاهزة للتحليل.. وتكمّل من هناك\nواستشارتك الأولى مجانية\n\n📞 للتواصل والاستفسار:\n📱 رقم الهاتف: 00962778597330\n💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778597330\n📧 البريد الإلكتروني: asaforconsultingandtraining@gmail.com\n\n#أكاديمية_العلماء_العرب #جمع_البيانات #الاستبانة #Google_Forms #عينة_الدراسة #الدراسات_العليا #البحث_العلمي",
+ "scenes": [
+  {
+   "bg": "night",
+   "glow": "#C8A02E",
+   "dur": 3.4,
+   "shake": 1.2,
+   "elements": [
+    {
+     "type": "text",
+     "text": "استبانتك جاهزة",
+     "font": "cairo",
+     "size": 96,
+     "wght": 900,
+     "x": 540,
+     "y": 400,
+     "t": 0.1,
+     "dur": 0.6,
+     "anim": "up",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "بس مين رح يعبّيها؟",
+     "font": "cairo",
+     "size": 56,
+     "wght": 700,
+     "color": "#FBF8F1",
+     "x": 540,
+     "y": 560,
+     "t": 0.5,
+     "dur": 0.5,
+     "anim": "up",
+     "dark_bg": true
+    },
+    {
+     "type": "photo",
+     "name": "phone",
+     "height": 760,
+     "x": 540,
+     "bottom": 1880,
+     "t": 0.9,
+     "dur": 0.6,
+     "anim": "up"
+    }
+   ]
+  },
+  {
+   "bg": "emerald",
+   "glow": "#C8A02E",
+   "dur": 5.0,
+   "elements": [
+    {
+     "type": "text",
+     "text": "منوزّعها ومنتابعها",
+     "font": "cairo",
+     "size": 58,
+     "wght": 700,
+     "color": "#FBF8F1",
+     "x": 540,
+     "y": 330,
+     "t": 0.1,
+     "dur": 0.5,
+     "anim": "up",
+     "dark_bg": true
+    },
+    {
+     "type": "counter",
+     "value": 400,
+     "prefix": "",
+     "suffix": " استجابة",
+     "size": 150,
+     "x": 540,
+     "y": 640,
+     "t": 0.5,
+     "dur": 2.4,
+     "step": 5
+    },
+    {
+     "type": "text",
+     "text": "من العيّنة اللي بتناسب دراستك",
+     "font": "cairo",
+     "size": 46,
+     "wght": 700,
+     "color": "#EED9A0",
+     "x": 540,
+     "y": 850,
+     "t": 2.9,
+     "dur": 0.5,
+     "anim": "up",
+     "dark_bg": true
+    },
+    {
+     "type": "check",
+     "text": "نموذج جوجل مرتّب وسهل التعبئة",
+     "size": 44,
+     "w": 820,
+     "x": 540,
+     "y": 1060,
+     "t": 3.2,
+     "dur": 0.5,
+     "anim": "pop"
+    },
+    {
+     "type": "check",
+     "text": "توزيع موجّه حسب التخصص والبلد",
+     "size": 44,
+     "w": 820,
+     "x": 540,
+     "y": 1200,
+     "t": 3.7,
+     "dur": 0.5,
+     "anim": "pop"
+    },
+    {
+     "type": "check",
+     "text": "متابعة يومية لحد ما تكتمل العيّنة",
+     "size": 44,
+     "w": 820,
+     "x": 540,
+     "y": 1340,
+     "t": 4.2,
+     "dur": 0.5,
+     "anim": "pop"
+    }
+   ]
+  },
+  {
+   "bg": "ivory",
+   "glow": "#C8A02E",
+   "dur": 4.4,
+   "elements": [
+    {
+     "type": "text",
+     "text": "وبتوصلك نظيفة",
+     "font": "cairo",
+     "size": 74,
+     "wght": 900,
+     "x": 540,
+     "y": 350,
+     "t": 0.1,
+     "dur": 0.6,
+     "anim": "up",
+     "dark_bg": false,
+     "color": "#0F5236"
+    },
+    {
+     "type": "text",
+     "text": "مفرّغة ومرمّزة وجاهزة للتحليل",
+     "font": "cairo",
+     "size": 48,
+     "wght": 700,
+     "color": "#1F2A24",
+     "x": 540,
+     "y": 480,
+     "t": 0.5,
+     "dur": 0.5,
+     "anim": "up",
+     "dark_bg": false
+    },
+    {
+     "type": "bar",
+     "text": "Excel / SPSS",
+     "light": true,
+     "w": 820,
+     "x": 540,
+     "y": 760,
+     "t": 1.0,
+     "dur": 0.7,
+     "anim": "wipe"
+    },
+    {
+     "type": "check",
+     "text": "بدون استجابات ناقصة أو مكررة",
+     "light": true,
+     "size": 44,
+     "w": 820,
+     "x": 540,
+     "y": 980,
+     "t": 1.7,
+     "dur": 0.5,
+     "anim": "pop"
+    },
+    {
+     "type": "check",
+     "text": "كل فقرة مربوطة بمحورها",
+     "light": true,
+     "size": 44,
+     "w": 820,
+     "x": 540,
+     "y": 1120,
+     "t": 2.2,
+     "dur": 0.5,
+     "anim": "pop"
+    },
+    {
+     "type": "stamp",
+     "text": "جاهزة للتحليل",
+     "size": 54,
+     "rot": -8,
+     "color": "#0F5236",
+     "x": 540,
+     "y": 1340,
+     "t": 2.9,
+     "dur": 0.5,
+     "anim": "slam"
+    }
+   ]
+  },
+  {
+   "bg": "emerald",
+   "glow": "#C8A02E",
+   "dur": 5.0,
+   "elements": [
+    {
+     "type": "emblem",
+     "width": 150,
+     "x": 540,
+     "y": 270,
+     "t": 0.1,
+     "dur": 0.5,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "أكاديمية العلماء العرب",
+     "font": "cairo",
+     "size": 46,
+     "wght": 700,
+     "color": "#FBF8F1",
+     "x": 540,
+     "y": 400,
+     "t": 0.3,
+     "dur": 0.5,
+     "anim": "up",
+     "dark_bg": true
+    },
+    {
+     "type": "text",
+     "text": "عيّنتك تكتمل.. وإنت مرتاح",
+     "font": "cairo",
+     "size": 78,
+     "wght": 900,
+     "x": 540,
+     "y": 530,
+     "t": 0.5,
+     "dur": 0.6,
+     "anim": "up",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "whatsapp",
+     "scale": 1.0,
+     "x": 540,
+     "y": 680,
+     "t": 0.85,
+     "dur": 0.5,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "الاستشارة الأولى مجانية",
+     "font": "cairo",
+     "size": 44,
+     "wght": 700,
+     "color": "#EED9A0",
+     "x": 540,
+     "y": 790,
+     "t": 1.1,
+     "dur": 0.5,
+     "anim": "up",
+     "dark_bg": true
+    },
+    {
+     "type": "arch",
+     "w": 720,
+     "h": 1000,
+     "x": 540,
+     "bottom": 1960,
+     "t": 0.5,
+     "dur": 0.8,
+     "anim": "fade"
+    },
+    {
+     "type": "photo",
+     "name": "twograds",
+     "height": 1020,
+     "x": 540,
+     "bottom": 1925,
+     "t": 0.7,
+     "dur": 0.7,
+     "anim": "up"
+    }
+   ]
+  }
+ ]
+}

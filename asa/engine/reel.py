@@ -244,14 +244,20 @@ def sprite_note(e):
 
 
 def sprite_check_row(e):
+    """Set `light` on an ivory scene, where the translucent card and ivory label vanish."""
     w, h = e.get("w", 840), 120
-    img, m = rrect(w, h, 26, fill=(255, 255, 255, 30), outline=C["gold"], ow=2, shadow=False)
+    if e.get("light"):
+        img, m = rrect(w, h, 26, fill="#FFFFFF", outline=C["gold"], ow=2, shadow=True)
+        label, box = rgb(C["ink"]), rgb(C["gold"])
+    else:
+        img, m = rrect(w, h, 26, fill=(255, 255, 255, 30), outline=C["gold"], ow=2, shadow=False)
+        label, box = rgb(C["ivory"]), rgb(C["gold_lt"])
     d = ImageDraw.Draw(img)
     bx, by = m + (w - 80) * SS, m + h / 2 * SS
     d.rounded_rectangle([bx - 30 * SS, by - 30 * SS, bx + 30 * SS, by + 30 * SS], radius=10 * SS,
-                        outline=rgb(C["gold_lt"]), width=4 * SS)
+                        outline=box, width=4 * SS)
     d.text((bx - 70 * SS, by), e["text"], font=font("cairo", e.get("size", 44), 700),
-           fill=rgb(C["ivory"]), anchor="rm", **_kw(e["text"]))
+           fill=label, anchor="rm", **_kw(e["text"]))
     return _finish(img)
 
 
@@ -442,14 +448,20 @@ def sprite_scale5(e):
 
 
 def sprite_bar(e):
-    """Labelled meter. Pair it with the `wipe` animation and the gold track fills RTL."""
+    """Labelled meter. Pair it with the `wipe` animation and the gold track fills RTL.
+    Set `light` on an ivory scene: the translucent-white card and ivory label vanish there."""
     w, h = e.get("w", 820), 120
-    img, m = rrect(w, h, 26, fill=(255, 255, 255, 30), outline=C["gold"], ow=2, shadow=False)
+    if e.get("light"):
+        img, m = rrect(w, h, 26, fill="#FFFFFF", outline=C["gold"], ow=2, shadow=True)
+        label, track_bg = rgb(C["ink"]), rgb("#E4DAC2")
+    else:
+        img, m = rrect(w, h, 26, fill=(255, 255, 255, 30), outline=C["gold"], ow=2, shadow=False)
+        label, track_bg = rgb(C["ivory"]), rgb("#06170F")
     d = ImageDraw.Draw(img)
     d.text((m + (w - 36) * SS, m + 40 * SS), e["text"], font=font("cairo", 36, 700),
-           fill=rgb(C["ivory"]), anchor="rm", **_kw(e["text"]))
+           fill=label, anchor="rm", **_kw(e["text"]))
     tx0, tx1, ty = m + 36 * SS, m + (w - 36) * SS, m + 80 * SS
-    d.rounded_rectangle([tx0, ty, tx1, ty + 22 * SS], radius=11 * SS, fill=rgb("#06170F"))
+    d.rounded_rectangle([tx0, ty, tx1, ty + 22 * SS], radius=11 * SS, fill=track_bg)
     track = Image.new("L", img.size, 0)
     ImageDraw.Draw(track).rounded_rectangle([tx0, ty, tx1, ty + 22 * SS], radius=11 * SS, fill=255)
     fill_mask(img, track, None, GOLD, 0)
@@ -857,57 +869,141 @@ class Reel:
 
 
 # ------------------------------------------------------------------ music
-def music(path, seconds, bpm=92, sr=44100, seed=1, hits=()):
-    """Original track: D Hijaz plucked melody, drone and a dum-tak frame drum."""
+MOODS = {
+    # root: Hz of the tonic · semis: scale steps · lead: melodic voice · drum: pattern name
+    # phrase: scale-degree line · swing: 0-0.25 · air: bed texture
+    "hijaz": dict(root=146.83, semis=[0, 1, 4, 5, 7, 8, 10, 12, 13, 16], lead="oud", drum="maqsum",
+                  phrase=[0, 1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 4, 3, 2, 0], swing=0.0, air="drone",
+                  bright=1.0),
+    # thesis writing: warm minor, patient, resolves upward — "you will finish this"
+    "resolve": dict(root=130.81, semis=[0, 2, 3, 5, 7, 8, 10, 12, 14, 15, 17, 19], lead="oud",
+                    drum="maqsum", phrase=[0, 2, 4, 2, 3, 5, 4, 2, 0, 2, 4, 7, 5, 4, 2, 0],
+                    swing=0.06, air="pad", bright=0.85),
+    # statistics: bright, precise, ticking — numbers clicking into place
+    "insight": dict(root=174.61, semis=[0, 1, 3, 5, 7, 8, 10, 12, 13, 15, 17, 19], lead="bell",
+                    drum="tick", phrase=[0, 3, 2, 5, 4, 3, 7, 5, 4, 3, 2, 3, 5, 7, 5, 3],
+                    swing=0.0, air="shimmer", bright=1.25),
+    # questionnaires: fast, upbeat, forward motion — responses arriving
+    "pulse": dict(root=164.81, semis=[0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19], lead="pluck",
+                  drum="ayyub", phrase=[0, 4, 2, 4, 5, 4, 2, 0, 2, 5, 4, 7, 5, 4, 2, 4],
+                  swing=0.10, air="shaker", bright=1.15),
+    # market data: low, serious, driving — a trading floor at work
+    "market": dict(root=110.00, semis=[0, 2, 3, 5, 7, 8, 11, 12, 14, 15, 17], lead="pizz",
+                   drum="drive", phrase=[0, 0, 3, 2, 0, 5, 3, 2, 0, 0, 7, 5, 3, 2, 0, 0],
+                   swing=0.0, air="sub", bright=0.9),
+    # study tools: slow, careful, hand-made — craft and validation
+    "craft": dict(root=196.00, semis=[0, 1, 3, 5, 6, 8, 10, 12, 13, 15, 17], lead="felt",
+                  drum="wahda", phrase=[0, 2, 1, 3, 2, 4, 3, 2, 1, 3, 5, 4, 3, 2, 1, 0],
+                  swing=0.12, air="pad", bright=0.8),
+}
+
+
+def _lead_tone(kind, fr, pt, rng):
+    """One plucked/struck note of the mood's melodic voice."""
+    if kind == "bell":
+        body = (np.sin(2 * np.pi * fr * pt) + 0.6 * np.sin(2 * np.pi * 2.76 * fr * pt)
+                + 0.3 * np.sin(2 * np.pi * 5.4 * fr * pt))
+        return np.exp(-pt * 4.5) * body
+    if kind == "pluck":
+        body = np.sign(np.sin(2 * np.pi * fr * pt)) * 0.35 + np.sin(2 * np.pi * fr * pt)
+        return np.exp(-pt * 11) * body
+    if kind == "pizz":
+        body = np.sin(2 * np.pi * fr * pt) + 0.4 * np.sin(2 * np.pi * 3 * fr * pt)
+        return np.exp(-pt * 16) * body + 0.25 * np.exp(-pt * 60) * rng.standard_normal(len(pt))
+    if kind == "felt":
+        body = np.sin(2 * np.pi * fr * pt) + 0.25 * np.sin(2 * np.pi * 2 * fr * pt)
+        return (1 - np.exp(-pt * 40)) * np.exp(-pt * 3.2) * body
+    # "oud": the original plucked stack
+    body = (np.sin(2 * np.pi * fr * pt) + 0.5 * np.sin(2 * np.pi * 2 * fr * pt)
+            + 0.25 * np.sin(2 * np.pi * 3 * fr * pt))
+    return np.exp(-pt * 7) * body
+
+
+DRUMS = {
+    "maqsum": [("dum", 0.0), ("tak", 1.0), ("dum", 2.0), ("tak", 3.0), ("tak", 3.5)],
+    "ayyub":  [("dum", 0.0), ("tak", 0.75), ("dum", 1.5), ("tak", 2.0), ("dum", 2.5), ("tak", 3.25)],
+    "drive":  [("dum", 0.0), ("dum", 1.0), ("tak", 1.5), ("dum", 2.0), ("dum", 3.0), ("tak", 3.5)],
+    "tick":   [("tak", 0.0), ("tak", 0.5), ("dum", 1.0), ("tak", 1.5), ("tak", 2.0),
+               ("tak", 2.5), ("dum", 3.0), ("tak", 3.5)],
+    "wahda":  [("dum", 0.0), ("tak", 2.0)],
+}
+
+
+def music(path, seconds, bpm=92, sr=44100, seed=1, hits=(), mood="hijaz"):
+    """Original track. `mood` picks the scale, melodic voice, drum pattern and bed,
+    so two reels in the same batch do not sound like the same cue retimed."""
+    m = MOODS.get(mood, MOODS["hijaz"])
     n = int(seconds * sr)
     t = np.arange(n) / sr
     out = np.zeros(n)
     beat = 60 / bpm
-    # D Hijaz: D Eb F# G A Bb C D
-    base = 146.83
-    semis = [0, 1, 4, 5, 7, 8, 10, 12, 13, 16]
-    scale = [base * 2 ** (s / 12) for s in semis]
-    # drone (D + A), soft
-    out += 0.05 * (np.sin(2 * np.pi * base / 2 * t) + 0.6 * np.sin(2 * np.pi * base * 0.75 * t))
+    base = m["root"]
+    scale = [base * 2 ** (s / 12) for s in m["semis"]]
     rng = np.random.default_rng(seed)
-    phrase = [0, 1, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 4, 3, 2, 0]
-    k = 0
-    pos = 0.0
+
+    # bed
+    air = m["air"]
+    if air == "drone":
+        out += 0.05 * (np.sin(2 * np.pi * base / 2 * t) + 0.6 * np.sin(2 * np.pi * base * 0.75 * t))
+    elif air == "pad":
+        sweep = 0.5 + 0.5 * np.sin(2 * np.pi * t / max(4.0, seconds / 2))
+        out += 0.045 * (1 + 0.3 * sweep) * (np.sin(2 * np.pi * base / 2 * t)
+                                            + 0.5 * np.sin(2 * np.pi * base * 1.5 * t))
+    elif air == "sub":
+        out += 0.07 * np.sin(2 * np.pi * base / 2 * t) * (0.8 + 0.2 * np.sin(2 * np.pi * t / 3))
+    elif air == "shimmer":
+        out += 0.03 * np.sin(2 * np.pi * base * 4 * t) * (0.5 + 0.5 * np.sin(2 * np.pi * t / 2.5))
+        out += 0.035 * np.sin(2 * np.pi * base / 2 * t)
+    elif air == "shaker":
+        step = beat / 2
+        pos = 0.0
+        while pos < seconds:
+            s0 = int(pos * sr)
+            ln = min(int(0.08 * sr), n - s0)
+            if ln > 0:
+                pt = np.arange(ln) / sr
+                amp = 0.035 if int(pos / step) % 2 else 0.055
+                out[s0:s0 + ln] += amp * np.exp(-pt * 70) * rng.standard_normal(ln)
+            pos += step
+
+    # melody
+    phrase = m["phrase"]
+    swing, k, pos = m["swing"], 0, 0.0
     while pos < seconds:
         step = beat / 2
         idx = phrase[k % len(phrase)] + (2 if (k // 16) % 2 else 0)
         fr = scale[min(idx, len(scale) - 1)] * 2
-        s0 = int(pos * sr)
-        ln = min(int(0.5 * sr), n - s0)
+        off = swing * beat if k % 2 else 0.0
+        s0 = int((pos + off) * sr)
+        ln = min(int(0.55 * sr), n - s0)
         if ln > 0 and not (k % 8 == 7):
             pt = np.arange(ln) / sr
-            # Karplus-ish pluck: decaying harmonics
-            tone = (np.sin(2 * np.pi * fr * pt) + 0.5 * np.sin(2 * np.pi * 2 * fr * pt)
-                    + 0.25 * np.sin(2 * np.pi * 3 * fr * pt))
-            out[s0:s0 + ln] += 0.09 * np.exp(-pt * 7) * tone
+            out[s0:s0 + ln] += 0.09 * m["bright"] * _lead_tone(m["lead"], fr, pt, rng)
         pos += step
         k += 1
-    # frame drum: dum (low) on 1 and 3-and, tak (high) on 2 and 4
-    pattern = [("dum", 0.0), ("tak", 1.0), ("dum", 2.5), ("tak", 3.0), ("tak", 3.5)]
-    bar = beat * 4
-    b = 0
+
+    # drums
+    pattern = DRUMS.get(m["drum"], DRUMS["maqsum"])
+    bar, b = beat * 4, 0
     while b * bar < seconds:
-        for kind, off in pattern:
-            s0 = int((b * bar + off * beat) * sr)
+        for kind, offb in pattern:
+            s0 = int((b * bar + offb * beat) * sr)
             if s0 >= n:
                 continue
             ln = min(int(0.3 * sr), n - s0)
             pt = np.arange(ln) / sr
             if kind == "dum":
-                out[s0:s0 + ln] += 0.38 * np.exp(-pt * 14) * np.sin(2 * np.pi * (70 + 60 * np.exp(-pt * 25)) * pt)
+                lo = 62 if m["drum"] == "drive" else 70
+                out[s0:s0 + ln] += 0.38 * np.exp(-pt * 14) * np.sin(2 * np.pi * (lo + 60 * np.exp(-pt * 25)) * pt)
             else:
                 out[s0:s0 + ln] += 0.10 * np.exp(-pt * 45) * rng.standard_normal(ln)
-                out[s0:s0 + ln] += 0.08 * np.exp(-pt * 30) * np.sin(2 * np.pi * 420 * pt)
+                out[s0:s0 + ln] += 0.08 * np.exp(-pt * 30) * np.sin(2 * np.pi * 420 * m["bright"] * pt)
         b += 1
+
     fade = np.minimum(1, t / 1.0) * np.minimum(1, (seconds - t) / 1.5)
     out *= fade
     out /= max(1e-6, np.abs(out).max()) / 0.6
-    # impact accents on slams / counters landing: deep frame-drum boom + a bright riq shimmer
+    # impact accents on slams / counters landing
     for th in hits:
         s0 = int(th * sr)
         if 0 <= s0 < n:
@@ -937,7 +1033,8 @@ def render(spec_path, out_path):
             elif e["type"] == "counter":
                 hits.append(st + e.get("t", 0) + e.get("dur", 1.2))
         st += sc["dur"]
-    music(wav, reel.total, bpm=spec.get("bpm", 92), seed=spec.get("music_seed", 1), hits=hits)
+    music(wav, reel.total, bpm=spec.get("bpm", 92), seed=spec.get("music_seed", 1), hits=hits,
+          mood=spec.get("mood", "hijaz"))
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{RW}x{RH}",
            "-r", str(FPS), "-i", "-", "-i", wav, "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
            "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", out_path]

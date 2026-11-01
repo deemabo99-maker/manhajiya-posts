@@ -1,0 +1,371 @@
+{
+ "title": "التحليل الإحصائي — الأرقام بتاخد مكانها",
+ "service": "التحليل الإحصائي وربط النتائج بالفرضيات",
+ "format": "numbers clicking into place: bars wipe in one after another, a Likert scale settles, four hypotheses resolve, then a counter runs up and a stamp lands",
+ "mood": "insight",
+ "bpm": 112,
+ "music_seed": 11,
+ "fadein": 0.05,
+ "cover_scene": 1,
+ "cover_t": 3.4,
+ "caption": "📊 عندك البيانات.. بس الأرقام ما بتحكي لحالها.\n\nكثير باحثين بيوصلوا لمرحلة التحليل ومعهم ملف كامل، وبعدين بيوقفوا: أي اختبار بناسب؟ وليش الفرضية انرفضت؟ وكيف بترجم مخرجات SPSS لكلام ينحط في الرسالة ويثبت قدّام اللجنة؟\n\n📈 في أكاديمية العلماء العرب منحوّل بياناتك لنتائج تنقرأ:\n✅ حساب الصدق والثبات واختبار التوزيع الطبيعي\n✅ اختيار الاختبار المناسب لأسئلة دراستك وطبيعة بياناتك\n✅ الارتباط والانحدار وتحليل التباين واختبار الفرضيات\n✅ جداول ورسومات جاهزة للرسالة بصيغة APA\n✅ تفسير كل نتيجة وربطها بالفرضية وبالدراسات السابقة\n✅ تجهيزك للأسئلة المتوقعة عن التحليل في المناقشة\n\n🎯 التحليل مش جدول بينحط.. التحليل قصة بتحكيها بياناتك\nواستشارتك الأولى مجانية\n\n📞 للتواصل والاستفسار:\n📱 رقم الهاتف: 00962778597330\n💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778597330\n📧 البريد الإلكتروني: asaforconsultingandtraining@gmail.com\n\n#أكاديمية_العلماء_العرب #التحليل_الإحصائي #SPSS #اختبار_الفرضيات #الدراسات_العليا #البحث_العلمي #رسائل_ماجستير",
+ "scenes": [
+  {
+   "bg": "night",
+   "glow": "#C8A02E",
+   "dur": 3.4,
+   "shake": 1.3,
+   "elements": [
+    {
+     "type": "text",
+     "text": "عندك البيانات",
+     "font": "cairo",
+     "size": 96,
+     "wght": 900,
+     "x": 540,
+     "y": 400,
+     "t": 0.1,
+     "dur": 0.6,
+     "anim": "up",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "بس الأرقام ما بتحكي لحالها",
+     "font": "cairo",
+     "size": 54,
+     "wght": 700,
+     "color": "#FBF8F1",
+     "x": 540,
+     "y": 560,
+     "t": 0.5,
+     "dur": 0.5,
+     "anim": "up",
+     "dark_bg": true
+    },
+    {
+     "type": "bar",
+     "text": "SPSS",
+     "w": 820,
+     "x": 540,
+     "y": 1120,
+     "t": 1.0,
+     "dur": 0.7,
+     "anim": "wipe"
+    }
+   ]
+  },
+  {
+   "bg": "ivory",
+   "glow": "#C8A02E",
+   "dur": 5.4,
+   "elements": [
+    {
+     "type": "text",
+     "text": "منحوّلها لنتائج تنقرأ",
+     "font": "cairo",
+     "size": 58,
+     "wght": 700,
+     "color": "#1F2A24",
+     "x": 540,
+     "y": 330,
+     "t": 0.1,
+     "dur": 0.5,
+     "anim": "up",
+     "dark_bg": false
+    },
+    {
+     "type": "bar",
+     "text": "الصدق والثبات",
+     "light": true,
+     "w": 860,
+     "x": 540,
+     "y": 560,
+     "t": 0.5,
+     "dur": 0.6,
+     "anim": "wipe"
+    },
+    {
+     "type": "bar",
+     "text": "التوزيع الطبيعي",
+     "light": true,
+     "w": 860,
+     "x": 540,
+     "y": 720,
+     "t": 1.0,
+     "dur": 0.6,
+     "anim": "wipe"
+    },
+    {
+     "type": "bar",
+     "text": "الارتباط والانحدار",
+     "light": true,
+     "w": 860,
+     "x": 540,
+     "y": 880,
+     "t": 1.5,
+     "dur": 0.6,
+     "anim": "wipe"
+    },
+    {
+     "type": "bar",
+     "text": "اختبار الفرضيات",
+     "light": true,
+     "w": 860,
+     "x": 540,
+     "y": 1040,
+     "t": 2.0,
+     "dur": 0.6,
+     "anim": "wipe"
+    },
+    {
+     "type": "scale5",
+     "text": "درجة الموافقة",
+     "mark": 4,
+     "w": 880,
+     "x": 540,
+     "y": 1260,
+     "t": 2.7,
+     "dur": 0.7,
+     "anim": "up"
+    }
+   ]
+  },
+  {
+   "bg": "emerald",
+   "glow": "#C8A02E",
+   "dur": 4.8,
+   "elements": [
+    {
+     "type": "text",
+     "text": "وكل فرضية بتاخد جوابها",
+     "font": "cairo",
+     "size": 56,
+     "wght": 700,
+     "color": "#FBF8F1",
+     "x": 540,
+     "y": 350,
+     "t": 0.1,
+     "dur": 0.5,
+     "anim": "up",
+     "dark_bg": true
+    },
+    {
+     "type": "check",
+     "text": "H1 — مقبولة",
+     "size": 46,
+     "w": 760,
+     "x": 540,
+     "y": 600,
+     "t": 0.6,
+     "dur": 0.5,
+     "anim": "pop"
+    },
+    {
+     "type": "check",
+     "text": "H2 — مقبولة",
+     "size": 46,
+     "w": 760,
+     "x": 540,
+     "y": 750,
+     "t": 1.2,
+     "dur": 0.5,
+     "anim": "pop"
+    },
+    {
+     "type": "check",
+     "text": "H3 — مرفوضة",
+     "size": 46,
+     "w": 760,
+     "x": 540,
+     "y": 900,
+     "t": 1.7999999999999998,
+     "dur": 0.5,
+     "anim": "pop"
+    },
+    {
+     "type": "check",
+     "text": "H4 — مقبولة",
+     "size": 46,
+     "w": 760,
+     "x": 540,
+     "y": 1050,
+     "t": 2.4,
+     "dur": 0.5,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "ومعها التفسير.. مش بس الجدول",
+     "font": "cairo",
+     "size": 46,
+     "wght": 700,
+     "color": "#EED9A0",
+     "x": 540,
+     "y": 1320,
+     "t": 3.2,
+     "dur": 0.5,
+     "anim": "up",
+     "dark_bg": true
+    }
+   ]
+  },
+  {
+   "bg": "night",
+   "glow": "#C8A02E",
+   "dur": 3.6,
+   "elements": [
+    {
+     "type": "text",
+     "text": "نتائج اشتغلنا عليها",
+     "font": "cairo",
+     "size": 52,
+     "wght": 700,
+     "color": "#FBF8F1",
+     "x": 540,
+     "y": 420,
+     "t": 0.1,
+     "dur": 0.5,
+     "anim": "up",
+     "dark_bg": true
+    },
+    {
+     "type": "counter",
+     "value": 5000,
+     "prefix": "+",
+     "size": 190,
+     "x": 540,
+     "y": 700,
+     "t": 0.5,
+     "dur": 1.6,
+     "step": 50
+    },
+    {
+     "type": "text",
+     "text": "عمل بحثي تم الإشراف عليه",
+     "font": "cairo",
+     "size": 46,
+     "wght": 700,
+     "color": "#EED9A0",
+     "x": 540,
+     "y": 900,
+     "t": 2.2,
+     "dur": 0.5,
+     "anim": "up",
+     "dark_bg": true
+    },
+    {
+     "type": "stamp",
+     "text": "نتائج موثوقة",
+     "size": 56,
+     "rot": -10,
+     "color": "#C8A02E",
+     "x": 540,
+     "y": 1180,
+     "t": 2.6,
+     "dur": 0.5,
+     "anim": "slam"
+    }
+   ]
+  },
+  {
+   "bg": "emerald",
+   "glow": "#C8A02E",
+   "dur": 5.0,
+   "elements": [
+    {
+     "type": "emblem",
+     "width": 150,
+     "x": 540,
+     "y": 270,
+     "t": 0.1,
+     "dur": 0.5,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "أكاديمية العلماء العرب",
+     "font": "cairo",
+     "size": 46,
+     "wght": 700,
+     "color": "#FBF8F1",
+     "x": 540,
+     "y": 400,
+     "t": 0.3,
+     "dur": 0.5,
+     "anim": "up",
+     "dark_bg": true
+    },
+    {
+     "type": "text",
+     "text": "خلّي أرقامك تحكي",
+     "font": "cairo",
+     "size": 78,
+     "wght": 900,
+     "x": 540,
+     "y": 530,
+     "t": 0.5,
+     "dur": 0.6,
+     "anim": "up",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "whatsapp",
+     "scale": 1.0,
+     "x": 540,
+     "y": 680,
+     "t": 0.85,
+     "dur": 0.5,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "الاستشارة الأولى مجانية",
+     "font": "cairo",
+     "size": 44,
+     "wght": 700,
+     "color": "#EED9A0",
+     "x": 540,
+     "y": 790,
+     "t": 1.1,
+     "dur": 0.5,
+     "anim": "up",
+     "dark_bg": true
+    },
+    {
+     "type": "arch",
+     "w": 720,
+     "h": 1000,
+     "x": 540,
+     "bottom": 1960,
+     "t": 0.5,
+     "dur": 0.8,
+     "anim": "fade"
+    },
+    {
+     "type": "photo",
+     "name": "grad-man",
+     "height": 1020,
+     "x": 540,
+     "bottom": 1925,
+     "t": 0.7,
+     "dur": 0.7,
+     "anim": "up"
+    },
+    {
+     "type": "badge",
+     "big": "+5000",
+     "small": "عمل بحثي",
+     "r": 105,
+     "x": 870,
+     "y": 1180,
+     "t": 1.5,
+     "dur": 0.6,
+     "anim": "pop"
+    }
+   ]
+  }
+ ]
+}
