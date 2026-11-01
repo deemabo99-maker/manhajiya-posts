@@ -2,3 +2,7 @@
 # Facebook Page + Instagram) needs a public URL for every image and video, and the
 # raw.githubusercontent.com URL of this repo is that URL. Keep the repo public or
 # the links stop resolving.
+
+# Render temporaries: reel.py writes a .wav next to the mp4 and deletes it on success.
+# A leftover one is an interrupted render, never a deliverable.
+*.wav
