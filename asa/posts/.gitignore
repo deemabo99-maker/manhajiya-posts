@@ -1,4 +1,4 @@
-# Rendered media is delivered to the owner (artifact page + laptop), not versioned:
-# the academy publishes by hand through Meta Business Suite, so no public URLs are needed.
-*.png
-*.mp4
+# Rendered media IS versioned from batch-02 onwards: automated publishing (Make ->
+# Facebook Page + Instagram) needs a public URL for every image and video, and the
+# raw.githubusercontent.com URL of this repo is that URL. Keep the repo public or
+# the links stop resolving.

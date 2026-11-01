@@ -77,21 +77,37 @@ free) → contact block exactly:
 ```
 then 6–8 hashtags starting with #أكاديمية_العلماء_العرب.
 
-## Publishing (settled 26 Oct 2026 — the owner uploads by hand)
+## Publishing (owner uploads by hand; automation via Make agreed 1 Nov 2026)
 
-Not on Metricool: the free plan allows one brand only and that brand is المنهجية's.
-
-Automated publishing to this page is **not possible** from a Claude session, and this was
-tested rather than assumed:
+What was ruled out, by testing rather than assumption:
 
 - Meta Business Suite only accepts media through the operating system's file-picker dialog.
   Desktop control cannot click inside it — browsers are granted read-only and Claude's own
   app window cannot be granted at all, so the dialog is unreachable by design.
 - Injecting the media into the Facebook page with JavaScript is refused by the safety
   classifier, and Facebook's CSP blocks the page from fetching media from any outside host.
-- No other connector publishes to Facebook or Instagram (the whole registry was searched).
+- No connector in the registry publishes organic posts to Facebook or Instagram. Adspirer
+  covers paid Meta Ads campaigns, not posts; Supermetrics and vidIQ are analytics/research.
+- Buffer, Publer and Later have no connector at all.
 
-So **Claude prepares, the owner uploads.** Every run ends with all three of these:
+**The governing constraint (measured 1 Nov 2026):** a cloud session's egress allowlist
+refuses `graph.facebook.com`, `hooks.zapier.com`, `make.com`, `api.publer.io` and
+`api.bufferapp.com` alike, so Claude cannot call any publishing API directly. MCP connectors
+are not subject to it — they are routed by Anthropic, not through the sandbox. Hence the
+rule: **a service with a connector works; a service that needs a direct HTTP call does not.**
+The owner can lift this for one host via claude.ai → Settings → Capabilities, which is what
+would open the free, no-middleman Meta Graph API route.
+
+Metricool has a connector and does publish, but the account holds one brand and it is
+المنهجية's (`methodology_center`); أكاديمية العلماء العرب is not a brand there, so there is
+no destination to schedule to without a paid upgrade.
+
+**Agreed route (1 Nov 2026): Make.** It has a connector, native Facebook Page and Instagram
+Business publishing modules, and `scenarios_create`/`scenarios_run`, so Claude can build the
+scenario as well as trigger it. The owner connects Make and authorises the academy's Page and
+Instagram inside it; Claude then schedules each week from `posts/batch-NN/manifest.json`.
+Until that is connected, **Claude prepares, the owner uploads.** Every run ends with all
+three of these:
 
 1. **Files on the owner's laptop** at `C:\Users\user\Downloads\ASA-weekNN` via
    `device_commit_files` — only when the laptop is linked to the session. If it is not,
@@ -108,10 +124,14 @@ Slots the owner follows: one design a day at 10:00, and the two reels at 19:00 o
 days that already carry a design. Push notification on every run — the owner reads it on
 their phone.
 
-The rendered PNGs and MP4s are deliberately **not** committed to git (see
-`asa/posts/.gitignore`): nothing needs a public URL, and weekly reels would bloat the repo.
-`content.json`, `reel-N.json` and `captions.md` are committed, so the next run can read the
-last three batches and avoid repeating itself.
+The rendered PNGs and MP4s **are** committed from batch-02 onwards (owner's call,
+1 Nov 2026). Automated publishing needs a public URL per asset, and this repository's
+`raw.githubusercontent.com` links are it — so the repo must stay public or the links die.
+`engine/manifest.py` turns a batch into `manifest.json`: every item with its media URL, its
+caption and its publish time in Asia/Amman, derived from the batch JSON so it can never drift
+from what was rendered. Cost: roughly 22 MB a week; prune old batches when the repo gets
+heavy. `content.json`, `reel-N.json` and `captions.md` stay committed as before, so the next
+run can read the last three batches and avoid repeating itself.
 
 ## Commands
 ```bash
