@@ -164,6 +164,11 @@ Steps:
    story PNGs, both reels and `captions.md`, with a short Arabic summary of what goes out
    when and which service each reel covers.
 
+## Paid ad reels
+
+Paid Meta ad reels follow a different standard from the weekly organic ones: see
+ (shared by both brands). Do not build an ad reel from the rules below.
+
 ## Weekly reels (owner's change, 27 Oct 2026)
 
 **Two** 9:16 reels every week (1080 × 1920, ~20 s, H.264 + original background music), built

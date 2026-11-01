@@ -139,3 +139,8 @@ python3 engine/render.py posts/batch-NN
 python3 engine/story.py  posts/batch-NN
 python3 engine/reel.py   posts/batch-NN/reel-1.json posts/batch-NN/reel-1.mp4
 ```
+
+## Paid ad reels
+
+Meta ad reels follow the shared standard in  (repo root), not the weekly
+rules above. This brand's ad folders are .
