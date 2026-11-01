@@ -43,7 +43,7 @@ NARRATION = [
     "إِطَارٌ نَظَرِيٌّ مِنْ دِرَاسَاتٍ حَقِيقِيَّة.",
     "أَدَوَاتٌ مُحَكَّمَةٌ قَبْلَ التَّوْزِيع.",
     "تَحْلِيلٌ يَرْبِطُ النَّتَائِجَ بِالفَرَضِيَّات.",
-    "وَمُنَاقَشَةٌ تَدْخُلُهَا وَأَنْتَ مُسْتَعِد.",
+    "وَيَوْمُ مُنَاقَشَةٍ بِثِقَةٍ وَاسْتِعْدَاد.",
     "نُرَافِقُكَ فِي كُلِّ مَرْحَلَة.",
     "اِسْتِشَارَتُكَ الأُولَى مَجَّانِيَّة.",
 ]
@@ -65,6 +65,22 @@ CAPTION = (
     "\n\n#أكاديمية_العلماء_العرب #رسائل_ماجستير #أطروحة_دكتوراه #خطة_البحث "
     "#الدراسات_العليا #البحث_العلمي #الأردن"
 )
+
+
+# What a person reads aloud: the same lines without harakat. Keep both forms
+# free of a gendered second person (no أنتَ / أنتِ, no ـكَ / ـكِ, no ـين verbs):
+# the ad speaks to men and women alike.
+READ = [
+    "رسالتك ليست كتابةً فقط.. هي ست مراحل.",
+    "عنوانٌ مبتكرٌ غير مكرر.",
+    "خطة بحثٍ واضحة المشكلة والأهداف.",
+    "إطارٌ نظريٌّ من دراساتٍ حقيقية.",
+    "أدواتٌ محكَّمة قبل التوزيع.",
+    "تحليلٌ يربط النتائج بالفرضيات.",
+    "ويومُ مناقشةٍ بثقةٍ واستعداد.",
+    "نرافقك في كل مرحلة.",
+    "استشارتك الأولى مجانية.",
+]
 
 
 def dur(text):
@@ -97,7 +113,7 @@ def main():
     s2 = (starts[7] - 0.3) - s1
     s3 = total - s1 - s2
 
-    stage_els = [line("سِتُّ مَرَاحِل", 330, 54, 0.05)]
+    stage_els = [line("ست مراحل", 330, 54, 0.05)]
     for i, (n, title, desc) in enumerate(STAGES):
         stage_els.append(dict(type="step", n=n, title=title, desc=desc, w=900,
                               x=540, y=520 + i * 170,
@@ -112,18 +128,19 @@ def main():
         mood="resolve", bpm=92, music_seed=4, fadein=0.05, duck=0.18,
         cover_scene=1, cover_t=min(6.0, s2 - 0.3),
         caption=CAPTION,
-        vo=[dict(t=round(starts[i], 2), text=NARRATION[i], **TONE) for i in range(len(NARRATION))],
+        vo=[dict(t=round(starts[i], 2), text=NARRATION[i], read=READ[i], **TONE)
+            for i in range(len(NARRATION))],
         scenes=[
             dict(bg="night", glow="#C8A02E", dur=round(s1, 2), elements=[
-                head("رِسَالَتُك", 420, 104, 0.1),
-                line("لَيْسَتْ كِتَابَةً فَقَط", 580, 56, 0.55),
+                head("رسالتك", 420, 104, 0.1),
+                line("ليست كتابةً فقط", 580, 56, 0.55),
                 dict(type="doc", w=420, h=540, marks=0, x=540, y=1150, t=0.95, dur=0.7, anim="zoom"),
             ]),
             dict(bg="emerald", glow="#C8A02E", dur=round(s2, 2), elements=stage_els),
             dict(bg="emerald", glow="#C8A02E", dur=round(s3, 2), elements=[
                 dict(type="emblem", width=150, x=540, y=270, t=0.1, dur=0.5, anim="pop"),
                 line("أكاديمية العلماء العرب", 400, 46, 0.3),
-                head("نُرَافِقُكَ فِي كُلِّ مَرْحَلَة", 530, 72, 0.5),
+                head("نرافقك في كل مرحلة", 530, 72, 0.5),
                 dict(type="whatsapp", scale=1.0, x=540, y=680, t=0.9, dur=0.5, anim="pop"),
                 line("الاستشارة الأولى مجانية", 790, 44, 1.2, color="#EED9A0"),
                 dict(type="arch", w=720, h=1000, x=540, bottom=1960, t=0.5, dur=0.8, anim="fade"),

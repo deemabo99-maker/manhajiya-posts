@@ -144,3 +144,34 @@ python3 engine/reel.py   posts/batch-NN/reel-1.json posts/batch-NN/reel-1.mp4
 
 Meta ad reels follow the shared standard in  (repo root), not the weekly
 rules above. This brand's ad folders are .
+
+## Who the copy speaks to (owner, 1 Nov 2026)
+
+Every ad and post addresses **men and women alike**. Write no gendered second
+person: no أنتَ and no أنتِ, no ـكَ / ـكِ ending, no feminine ـين verb
+("تدخلينها"). Rephrase instead of picking a side — "ويومُ مناقشةٍ بثقةٍ واستعداد"
+rather than "ومناقشةٌ تدخلها/تدخلينها". Unvocalised forms such as "رسالتك" and
+"نرافقك" are already neutral on the page and are fine.
+
+The owner caught a narration line written in the feminine while the same line was
+masculine on screen, so the two forms of a line must be checked against each
+other, not only each on its own. `asa/engine/voscript.py` refuses to print a
+recording script that contains a gendered address.
+
+## Voice-over
+
+Reels may carry narration. A spec's `vo` list holds, per line, `t` (start, in
+seconds), `text` (vocalised — espeak-ng needs the harakat and mispronounces bare
+Arabic) and `read` (the plain twin a person reads aloud). On-screen text is never
+vocalised; harakat belong only in `text`.
+
+The owner heard the free synthetic voice (ar_JO-kareem, the only Arabic voice on
+any host this sandbox can reach) and rejected it. **The narration is the owner's
+own recording.** `asa/engine/voscript.py` prints the script with the seconds
+available per line; the owner records it on a phone and sends the file back, and
+`mix_voice` in `asa/engine/reel.py` lays it in and ducks the music under it.
+
+Voice cloning is not possible here and must not be promised: every toolkit that
+does it needs PyPI or HuggingFace, and both are unreachable from the sandbox
+(verified 1 Nov 2026). It is also unnecessary — an ad is a handful of lines, and
+a real recording beats a cloned one.
