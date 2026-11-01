@@ -7,6 +7,10 @@ A reel is a list of scenes; each scene has a background and animated elements.
 Elements are pre-rendered sprites (2x supersampled) animated with slide / pop /
 slam / fade / pulse. Text stays inside the Reels safe zone (y 250-1460).
 Music: an original Hijaz-mode plucked melody over a frame-drum groove.
+
+Ad-01 (Nov 2026) added: bookwall / chapter / hardcover / veil sprites, a counting-up
+`counter`, a `shine` foil glint, a scene camera (pull-back / push) with HUD elements drawn
+above it, impact booms on slams and counters, and spec-level fadein / cover_t.
 """
 from __future__ import annotations
 
@@ -488,6 +492,167 @@ def sprite_slide_card(e):
     return _finish(img)
 
 
+# ------------------------------------------------------------------ ad-01 sprites (Nov 2026)
+def sprite_bookwall(e):
+    """A full library wall of thesis spines on emerald shelves; one hero spine in the middle
+    carries a gold-foil title, so a camera can start tight on it and pull back to the wall."""
+    W, H = e.get("w", 1080), e.get("h", 1500)
+    hx, hy = e.get("hero_x", 540), e.get("hero_y", 860)
+    img = Image.new("RGBA", (W * SS, H * SS), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    rng = np.random.default_rng(e.get("seed", 4))
+    shelf_h, board = 250, 26
+    cols = [C["emerald"], C["forest"], C["deep"], C["red"], "#7A2C2C", C["sand"], "#2F6B4A", C["gold_dk"]]
+    top = 0
+    while top < H:
+        base = top + shelf_h
+        x = -20
+        placed = False
+        while x < W + 20:
+            bw = int(rng.integers(44, 84))
+            bh = int(rng.integers(170, 228))
+            hero = (top <= hy < base) and not placed and x + bw > hx - 60
+            if hero:   # the hero spine sits exactly centred on hero_x
+                x, bw, bh = hx - 60, 120, 232
+                placed = True
+            col = C["emerald"] if hero else cols[int(rng.integers(0, len(cols)))]
+            x0, x1, y0 = x, x + bw, base - bh
+            d.rounded_rectangle([x0 * SS, y0 * SS, x1 * SS, base * SS], radius=6 * SS, fill=rgb(col))
+            # spine shading + gold bands
+            d.rectangle([x0 * SS, y0 * SS, (x0 + 6) * SS, base * SS], fill=(0, 0, 0, 40))
+            band = rgb(C["gold"])
+            for by in (y0 + 18, base - 30):
+                d.rectangle([(x0 + 6) * SS, by * SS, (x1 - 6) * SS, (by + 5) * SS], fill=band)
+            if hero:
+                f = font("cairo", 25, 900)
+                txt = e.get("hero_text", "رسالة ماجستير")
+                tl = Image.new("RGBA", (300 * SS, 70 * SS), (0, 0, 0, 0))
+                m = Image.new("L", tl.size, 0)
+                ImageDraw.Draw(m).text((tl.width / 2, tl.height / 2), txt, font=f, fill=255, anchor="mm", **_kw(txt))
+                fill_mask(tl, m, None, FOIL, 0)
+                tl = tl.rotate(90, expand=True)
+                img.alpha_composite(tl, (int((x0 + bw / 2) * SS - tl.width / 2), int((y0 + bh / 2) * SS - tl.height / 2)))
+            else:
+                d.rounded_rectangle([(x0 + bw * 0.3) * SS, (y0 + 50) * SS, (x1 - bw * 0.3) * SS, (base - 50) * SS],
+                                    radius=4 * SS, fill=rgb(C["gold_lt"])[:3] + (70,))
+            x += bw + int(rng.integers(2, 6))
+        # shelf board
+        d.rectangle([0, base * SS, W * SS, (base + board) * SS], fill=rgb("#3B2A16"))
+        d.rectangle([0, base * SS, W * SS, (base + 5) * SS], fill=rgb(C["gold"]))
+        top = base + board
+    return _finish(img)
+
+
+def sprite_chapter(e):
+    """A chapter page card: gold spine, chapter tag on the right, title."""
+    w, h = e.get("w", 760), 112
+    img, m = rrect(w, h, 18, gradient=[C["ivory"], "#F1E8D6"], angle=90)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([m + (w - 14) * SS, m, m + w * SS, m + h * SS], radius=6 * SS, fill=rgb(C["gold"]))
+    tag = e.get("tag", "")
+    ft = font("cairo", 28, 800)
+    tb = ft.getbbox(tag, **_kw(tag))
+    tw = (tb[2] - tb[0]) / SS + 40
+    d.rounded_rectangle([m + (w - 40 - tw) * SS, m + (h / 2 - 26) * SS, m + (w - 40) * SS, m + (h / 2 + 26) * SS],
+                        radius=26 * SS, fill=rgb(C["forest"]))
+    d.text((m + (w - 40 - tw / 2) * SS, m + h / 2 * SS), tag, font=ft, fill=rgb(C["gold_lt"]), anchor="mm", **_kw(tag))
+    d.text((m + (w - 64 - tw) * SS, m + h / 2 * SS), e["text"], font=font("cairo", 38, 800), fill=rgb(C["ink"]),
+           anchor="rm", **_kw(e["text"]))
+    return _finish(img)
+
+
+def sprite_hardcover(e):
+    """Bound thesis: emerald hardcover, gold double frame, star, gold-foil title."""
+    w, h = e.get("w", 640), e.get("h", 700)
+    img, m = rrect(w, h, 22, gradient=[C["emerald"], C["forest"], C["deep"]], angle=90)
+    d = ImageDraw.Draw(img)
+    d.rectangle([m, m, m + 26 * SS, m + h * SS], fill=(0, 0, 0, 60))
+    for inset, wd in ((34, 4), (48, 2)):
+        fr = Image.new("L", img.size, 0)
+        ImageDraw.Draw(fr).rounded_rectangle([m + inset * SS, m + inset * SS, m + (w - inset) * SS, m + (h - inset) * SS],
+                                             radius=14 * SS, outline=255, width=wd * SS)
+        fill_mask(img, fr, None, GOLD, 30)
+    cx = m + w / 2 * SS
+    r = 58
+    pts = []
+    for k in range(16):
+        rr = r if k % 2 == 0 else r * 0.76
+        a = math.radians(k * 22.5)
+        pts.append((cx + rr * SS * math.cos(a), m + (h * 0.3) * SS + rr * SS * math.sin(a)))
+    st = Image.new("L", img.size, 0)
+    ImageDraw.Draw(st).polygon(pts, fill=255)
+    fill_mask(img, st, None, GOLD_SOFT, 45)
+    for txt, yy, sz in ((e.get("title", "رسالة ماجستير"), 0.55, 66), (e.get("sub", ""), 0.7, 34)):
+        if not txt:
+            continue
+        mk = Image.new("L", img.size, 0)
+        ImageDraw.Draw(mk).text((cx, m + h * yy * SS), txt, font=font("cairo", sz, 900), fill=255, anchor="mm", **_kw(txt))
+        fill_mask(img, mk, None, FOIL, 90)
+    return _finish(img)
+
+
+def sprite_veil(e):
+    """Translucent deep panel / top veil that keeps HUD text readable over busy footage."""
+    w, h = e.get("w", 1080), e.get("h", 400)
+    img = Image.new("RGBA", (w * SS, h * SS), (0, 0, 0, 0))
+    a = e.get("alpha", 215)
+    if e.get("fade") == "down":   # solid at the top, fading out downwards
+        col = np.array(rgb(C["night"])[:3], dtype=np.uint8)
+        arr = np.zeros((h * SS, w * SS, 4), dtype=np.uint8)
+        arr[..., :3] = col
+        arr[..., 3] = (a * np.clip(1 - np.linspace(0, 1, h * SS) ** 1.6, 0, 1))[:, None].astype(np.uint8)
+        return _finish(Image.fromarray(arr, "RGBA"))
+    ImageDraw.Draw(img).rounded_rectangle([0, 0, w * SS - 1, h * SS - 1], radius=e.get("radius", 36) * SS,
+                                          fill=rgb(C["night"])[:3] + (a,), outline=rgb(C["gold"])[:3] + (160,),
+                                          width=2 * SS)
+    return _finish(img)
+
+
+def add_shine(spr, p):
+    """Diagonal light sweep across a sprite (gold-foil glint), p = 0..1."""
+    w, h = spr.size
+    band = Image.new("L", (w, h), 0)
+    d = ImageDraw.Draw(band)
+    cx = -0.3 * w + p * 1.6 * w
+    bw = w * 0.12
+    d.polygon([(cx - bw, 0), (cx + bw, 0), (cx + bw - h * 0.5, h), (cx - bw - h * 0.5, h)], fill=150)
+    band = band.filter(ImageFilter.GaussianBlur(max(2, bw * 0.35)))
+    band = Image.fromarray(np.minimum(np.asarray(band), np.asarray(spr.getchannel("A"))), "L")
+    out = spr.copy()
+    white = Image.new("RGBA", (w, h), (255, 248, 225, 255))
+    out.paste(white, (0, 0), band)
+    out.putalpha(spr.getchannel("A"))
+    return out
+
+
+class Counter:
+    """`counter`: a number that counts up (e.g. the approved +5000), gold foil, eased."""
+
+    def __init__(self, e):
+        self.e = e
+        self.cache = {}
+
+    def sprite(self, n):
+        if n not in self.cache:
+            e = self.e
+            txt = f'{e.get("prefix", "+")}{n}{e.get("suffix", "")}'
+            self.cache[n] = sprite_text({"text": txt, "font": "cairo", "size": e.get("size", 180), "wght": 900,
+                                         "gradient": e.get("gradient", "gold"), "color": e.get("color", "#FFFFFF"),
+                                         "dark_bg": e.get("dark_bg", True), "shadow": e.get("shadow", True)})
+        return self.cache[n]
+
+    def draw(self, f, t):
+        e = self.e
+        t0, dur = e.get("t", 0), e.get("dur", 1.2)
+        if t < t0:
+            return
+        p = clamp((t - t0) / dur)
+        q = 1 - (1 - p) ** 3
+        n = int(round(e["value"] * q / e.get("step", 1))) * e.get("step", 1)
+        sc = 1.0 + (0.08 * math.sin(clamp((t - t0 - dur) / 0.3) * math.pi) if t > t0 + dur else 0)
+        place(f, self.sprite(n), e["x"], e["y"], clamp((t - t0) / 0.2), sc)
+
+
 SPRITES = {
     "text": sprite_text, "pill": sprite_pill, "whatsapp": sprite_whatsapp, "emblem": sprite_emblem,
     "doc": sprite_doc, "stamp": sprite_stamp, "note": sprite_note, "check": sprite_check_row,
@@ -495,6 +660,7 @@ SPRITES = {
     "photo": sprite_photo, "arch": sprite_arch, "badge": sprite_badge,
     "seal": sprite_seal, "scale5": sprite_scale5, "bar": sprite_bar, "quote": sprite_quote,
     "slide": sprite_slide_card,
+    "bookwall": sprite_bookwall, "chapter": sprite_chapter, "hardcover": sprite_hardcover, "veil": sprite_veil,
 }
 
 
@@ -604,6 +770,7 @@ def animate(e, t):
 class Reel:
     def __init__(self, spec):
         self.scenes = []
+        self.fadein = spec.get("fadein", 0.25)
         start = 0.0
         for sc in spec["scenes"]:
             bg = background(sc.get("bg", "deep"))
@@ -616,23 +783,55 @@ class Reel:
                 if "bottom" in e:   # anchor the element's lower edge (people stand on the frame edge)
                     hh = e.get("height", e.get("h", 0))
                     e["y"] = e["bottom"] - hh / 2
+                if e["type"] == "counter":
+                    els.append((e, Counter(e), e["x"], e["y"]))
+                    continue
                 els.append((e, SPRITES[e["type"]](e), e["x"], e["y"]))
             self.scenes.append(dict(start=start, dur=sc["dur"], bg=bg, glow=glow, els=els,
-                                    shake=sc.get("shake")))
+                                    shake=sc.get("shake"), camera=sc.get("camera")))
             start += sc["dur"]
         self.total = start
 
     def scene_frame(self, sc, t):
         f = sc["bg"].copy()
         place(f, sc["glow"], 540 + 240 * math.sin(t * 0.6 + sc["start"]), 760 + 200 * math.cos(t * 0.45))
-        for e, spr, x, y in sc["els"]:
+        def draw(e, spr, x, y):
+            fr = holder[0]
+            if isinstance(spr, Counter):
+                spr.draw(fr, t)
+                return
             a = animate(e, t)
             if a is None:
-                continue
+                return
             if len(a) == 4:
                 a = a + (1.0,)
             dx, dy, al, scale, rev = a
-            place(f, spr, x + dx, y + dy, al, scale, rev)
+            if "shine" in e and e["shine"] <= t < e["shine"] + e.get("shine_dur", 0.8):
+                spr = add_shine(spr, (t - e["shine"]) / e.get("shine_dur", 0.8))
+            place(fr, spr, x + dx, y + dy, al, scale, rev)
+
+        holder = [f]
+        for e, spr, x, y in sc["els"]:
+            if not e.get("hud"):
+                draw(e, spr, x, y)
+        cam = sc.get("camera")
+        if cam:
+            # camera pull-back / push: zoom from `from` to `to` between t0 and t1 around (x, y)
+            q = clamp((t - cam.get("t0", 0)) / max(cam.get("t1", 1) - cam.get("t0", 0), 1e-3))
+            q = q * q * (3 - 2 * q)
+            z = cam.get("from", 3.0) + (cam.get("to", 1.0) - cam.get("from", 3.0)) * q
+            cx = cam.get("x", RW / 2) + (RW / 2 - cam.get("x", RW / 2)) * q
+            cy = cam.get("y", RH / 2) + (RH / 2 - cam.get("y", RH / 2)) * q
+            if z > 1.001:
+                w, h = RW / z, RH / z
+                l = clamp(cx - w / 2, 0, RW - w)
+                tp = clamp(cy - h / 2, 0, RH - h)
+                f = f.crop((int(l), int(tp), int(l + w), int(tp + h))).resize((RW, RH), Image.BICUBIC)
+                holder[0] = f
+        for e, spr, x, y in sc["els"]:
+            if e.get("hud"):
+                draw(e, spr, x, y)
+        f = holder[0]
         if sc["shake"] is not None:
             ts = sc["shake"]
             if ts <= t < ts + 0.3:
@@ -650,14 +849,15 @@ class Reel:
                 if i + 1 < len(self.scenes) and gt > end - XFADE:
                     nxt = self.scene_frame(self.scenes[i + 1], 0.0)
                     f = Image.blend(f, nxt, clamp((gt - (end - XFADE)) / XFADE))
-                if gt < 0.25:
-                    f = Image.blend(Image.new("RGBA", f.size, (0, 0, 0, 255)), f, gt / 0.25)
+                fi = self.fadein
+                if gt < fi:
+                    f = Image.blend(Image.new("RGBA", f.size, (0, 0, 0, 255)), f, gt / fi)
                 return f
         return self.scenes[-1]["bg"].copy()
 
 
 # ------------------------------------------------------------------ music
-def music(path, seconds, bpm=92, sr=44100, seed=1):
+def music(path, seconds, bpm=92, sr=44100, seed=1, hits=()):
     """Original track: D Hijaz plucked melody, drone and a dum-tak frame drum."""
     n = int(seconds * sr)
     t = np.arange(n) / sr
@@ -706,7 +906,16 @@ def music(path, seconds, bpm=92, sr=44100, seed=1):
         b += 1
     fade = np.minimum(1, t / 1.0) * np.minimum(1, (seconds - t) / 1.5)
     out *= fade
-    out /= max(1e-6, np.abs(out).max()) / 0.7
+    out /= max(1e-6, np.abs(out).max()) / 0.6
+    # impact accents on slams / counters landing: deep frame-drum boom + a bright riq shimmer
+    for th in hits:
+        s0 = int(th * sr)
+        if 0 <= s0 < n:
+            ln = min(int(0.8 * sr), n - s0)
+            pt = np.arange(ln) / sr
+            out[s0:s0 + ln] += 0.55 * np.exp(-pt * 7) * np.sin(2 * np.pi * (48 + 110 * np.exp(-pt * 20)) * pt)
+            out[s0:s0 + ln] += 0.08 * np.exp(-pt * 9) * rng.standard_normal(ln)
+    out = 0.89 * np.tanh(out * 1.1) / np.tanh(1.1)
     st = np.stack([out, out], axis=1)
     with wave.open(path, "wb") as w:
         w.setnchannels(2)
@@ -720,7 +929,15 @@ def render(spec_path, out_path):
         spec = json.load(fh)
     reel = Reel(spec)
     wav = out_path.replace(".mp4", ".wav")
-    music(wav, reel.total, bpm=spec.get("bpm", 92), seed=spec.get("music_seed", 1))
+    hits, st = [], 0.0
+    for sc in spec["scenes"]:
+        for e in sc["elements"]:
+            if e.get("anim") == "slam":
+                hits.append(st + e.get("t", 0) + e.get("dur", 0.55) * 0.6)
+            elif e["type"] == "counter":
+                hits.append(st + e.get("t", 0) + e.get("dur", 1.2))
+        st += sc["dur"]
+    music(wav, reel.total, bpm=spec.get("bpm", 92), seed=spec.get("music_seed", 1), hits=hits)
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{RW}x{RH}",
            "-r", str(FPS), "-i", "-", "-i", wav, "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
            "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", out_path]
@@ -734,7 +951,7 @@ def render(spec_path, out_path):
     proc.wait()
     os.remove(wav)
     last = reel.scenes[spec.get("cover_scene", -1)]
-    reel.scene_frame(last, last["dur"] - 0.01).convert("RGB").save(out_path.replace(".mp4", "-cover.png"))
+    reel.scene_frame(last, spec.get("cover_t", last["dur"] - 0.01)).convert("RGB").save(out_path.replace(".mp4", "-cover.png"))
     print("done", out_path)
 
 

@@ -231,6 +231,8 @@ def sprite_ring(r, width, alpha=255):
 
 def sprite_box(w, h, radius=36, fill="#FFFFFF", gradient=None, angle=0, outline=None, width=0, shadow=True):
     grad = RING if gradient == "ring" else (WARM[::-1] if gradient == "warm" else gradient)
+    if isinstance(fill, str):
+        fill = _rgba(fill)  # allows '#RRGGBBAA' for translucent bands
     img, m = _round_rect((w, h), radius, fill=fill if not grad else None, gradient=grad, angle=angle,
                          outline=outline, width=width, shadow=shadow)
     return _finish(img)
@@ -289,7 +291,7 @@ def build_sprite(e):
     if k == "pill":
         grad = RING if e.get("gradient") == "ring" else (WARM[::-1] if e.get("gradient") == "warm" else None)
         return sprite_pill(e["text"], e.get("size", 40), e.get("fg", "#FFFFFF"), e.get("bg"), grad, e.get("outline"),
-                           fname=e.get("fname", "almarai-xb"))
+                           fname=e.get("fname", "almarai-xb"), padx=e.get("padx", 46))
     if k == "whatsapp":
         return sprite_whatsapp(e.get("scale", 1.0))
     if k == "logo":
@@ -364,6 +366,14 @@ def _partial(pts, p):
     return out, out[-1]
 
 
+def _rgba(c):
+    """'#RRGGBB' or '#RRGGBBAA'."""
+    c = c.lstrip("#")
+    if len(c) == 8:
+        return tuple(int(c[i:i + 2], 16) for i in (0, 2, 4, 6))
+    return rgb("#" + c)
+
+
 def _bezier(p0, p1, p2, p3, n=48):
     pts = []
     for i in range(n + 1):
@@ -396,14 +406,24 @@ class DynPath:
         xs, ys = [p[0] for p in self.pts], [p[1] for p in self.pts]
         pad = e.get("width", 12) + 30
         self.box = (min(xs) - pad, min(ys) - pad, max(xs) + pad, max(ys) + pad)
-        self.cols = [rgb(c) for c in (e.get("colors") or [e.get("color", C["gold"])])]
+        self.cols = [_rgba(c) for c in (e.get("colors") or [e.get("color", C["gold"])])]
+
+    def progress(self, t):
+        e = self.e
+        p = clamp((t - e.get("t", 0)) / e.get("dur", 1.0))
+        return ease_out_cubic(p) if e.get("ease", True) else p
+
+    def head_at(self, t):
+        """Where the travelling head is at scene time t (used by the follow camera)."""
+        part, head = _partial(self.pts, max(self.progress(t), 1e-4))
+        return head
 
     def draw(self, frame, t):
         e = self.e
         p = clamp((t - e.get("t", 0)) / e.get("dur", 1.0))
         if p <= 0:
             return
-        part, head = _partial(self.pts, ease_out_cubic(p) if e.get("ease", True) else p)
+        part, head = _partial(self.pts, self.progress(t))
         w = e.get("width", 12)
 
         def fn(d, ox, oy, k):
@@ -416,7 +436,7 @@ class DynPath:
                 d.ellipse([P[i][0] - r, P[i][1] - r, P[i][0] + r, P[i][1] + r], fill=c)
             if e.get("head", True) and head:
                 hx, hy = (head[0] - ox) * k, (head[1] - oy) * k
-                R = (w * 1.25) * k
+                R = e.get("head_r", w * 1.25) * k
                 d.ellipse([hx - R, hy - R, hx + R, hy + R], fill=(255, 255, 255, 255), outline=self.cols[-1], width=int(4 * k))
 
         _overlay_draw(frame, self.box, fn)
@@ -676,6 +696,10 @@ def animate(e, t):
         # drops in from above and settles with a small bounce
         q = ease_out_back(p, 2.2)
         return 0, -(1 - q) * 420, clamp(p * 2.5), 1.0
+    if anim == "blink":
+        # caret-style on/off blinking after it appears
+        on = int((t - t0) * 2.4) % 2 == 0
+        return 0, 0, 1.0 if on else 0.0, 1.0
     if anim == "wipe":
         # mask reveal from the right edge (RTL reading direction); handled in scene_frame
         return 0, 0, 1.0, 1.0
@@ -737,7 +761,11 @@ class Reel:
         gx = 540 + 260 * math.sin(t * 0.7 + sc["start"])
         gy = 700 + 220 * math.cos(t * 0.5 + sc["start"])
         place(f, sc["glow"], gx, gy)
+        hud = []
         for e, spr, x, y in sc["els"]:
+            if e.get("hud"):
+                hud.append((e, spr, x, y))
+                continue
             if "dyn" in e:
                 e["dyn"].draw(f, t)
                 continue
@@ -756,6 +784,16 @@ class Reel:
                 continue
             place(f, spr, x + dx, y + dy, al, scale)
         f = self.camera(sc, f, t)
+        # HUD elements sit on top of the camera move (titles, brand bug)
+        for e, spr, x, y in hud:
+            if "dyn" in e:
+                e["dyn"].draw(f, t)
+                continue
+            a = animate(e, t)
+            if a is None:
+                continue
+            dx, dy, al, scale = a
+            place(f, spr, x + dx, y + dy, al, scale)
         return f
 
     @staticmethod
@@ -764,7 +802,18 @@ class Reel:
         cam = sc.get("camera")
         zoom = 1.0
         cx, cy = RW / 2, RH / 2
-        if cam:
+        if cam and "follow" in cam:
+            # follow camera: rides a path's travelling head zoomed in, then pulls back to reveal the whole map
+            dyn = sc["els"][cam["follow"]][0]["dyn"]
+            hx, hy = dyn.head_at(t)
+            z = cam.get("zoom", 1.8)
+            rel, rd = cam.get("release", 1e9), cam.get("release_dur", 0.9)
+            q = clamp((t - rel) / rd)
+            q = q * q * (3 - 2 * q)
+            zoom = z + (1.0 - z) * q
+            cx = hx + (RW / 2 - hx) * q
+            cy = hy + (RH / 2 - hy) * q
+        elif cam:
             u = clamp(t / sc["dur"])
             zoom = cam.get("from", 1.0) + (cam.get("to", 1.08) - cam.get("from", 1.0)) * (u * u * (3 - 2 * u))
             cx, cy = cam.get("x", cx), cam.get("y", cy)
