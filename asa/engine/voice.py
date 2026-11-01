@@ -82,8 +82,13 @@ def phonemes(text):
     return out.stdout.strip()
 
 
-def synth(text, length_scale=None):
-    """One line of narration as float32 mono at the model's sample rate."""
+def synth(text, length_scale=None, noise_scale=None, noise_w=None):
+    """One line of narration as float32 mono at the model's sample rate.
+
+    length_scale: above 1 slows the delivery down — an explaining voice wants ~1.05.
+    noise_scale:  below the 0.667 default steadies the tone; above it is more expressive.
+    noise_w:      below the 0.8 default evens out phoneme lengths, which reads as calmer.
+    """
     _load()
     idmap = _cfg["phoneme_id_map"]
     ids = list(idmap["^"])
@@ -97,9 +102,9 @@ def synth(text, length_scale=None):
     feed = {
         "input": np.array([ids], dtype=np.int64),
         "input_lengths": np.array([len(ids)], dtype=np.int64),
-        "scales": np.array([inf["noise_scale"],
+        "scales": np.array([noise_scale if noise_scale else inf["noise_scale"],
                             length_scale if length_scale else inf["length_scale"],
-                            inf["noise_w"]], dtype=np.float32),
+                            noise_w if noise_w else inf["noise_w"]], dtype=np.float32),
     }
     if any(i.name == "sid" for i in _session.get_inputs()):
         feed["sid"] = np.array([0], dtype=np.int64)
