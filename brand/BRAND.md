@@ -205,9 +205,13 @@ owner will: in the first second on a phone, does this stop the scroll? Three har
    fired at the viewer and answered · numbers counting up · a path or timeline travelled
    end to end · one object revealed from an unexpected scale.
 2. **Extend the engine every week.** Each run adds at least one genuinely new element type
-   or animation to `engine/reel.py`. Today's elements are text, pill, whatsapp, logo, card,
-   doc, table header/row, ring, grid, cycle; today's animations are up, right, left, pop,
-   fade, pulse. Reusing only these means the reel will move like last week's — so write the
+   or animation to `engine/reel.py`. Elements so far: text, pill, whatsapp, logo, card,
+   doc, table header/row, ring, grid, cycle (batch-01); box, stamp, and the self-drawing
+   path, chart, typewriter, scatter, burst (batch-02). Animations: up, right, left, pop,
+   fade, pulse (batch-01); slam, drop, wipe, plus scene camera push-in, shake on impact,
+   hard cuts, music moods (calm/drive/rise) and synthesised sfx (batch-02). Formats used:
+   batch-01 text cards + table; batch-02 chart drawing itself (statistics), journal cover
+   assembling → stamp climax (Scopus). Reusing only these means the reel will move like last week's — so write the
    new one the format actually needs (a counter, a typewriter, a wipe, a mask reveal, a
    draw-on line, a camera push, a shake on impact) rather than forcing the idea into the
    existing set.
@@ -234,3 +238,6 @@ them by hand.
 | `chart_gradient` | purple gradient, white chart card, 3 pill bullets |
 | `question_type` | white, giant question mark ring, hook + offer pill |
 | `grid_cards` | purple header band, 2 × 3 service cards with icons |
+| `myth_fact` | dark, crossed-out myth card + overlapping bright fact card, 3 chips (batch-02) |
+| `chat_phone` | vivid purple, phone mock-up with a WhatsApp-style chat + 2 stickers (batch-02) |
+| `before_after` | light, marked-up "before" page vs ticked "after" page with an arrow disc (batch-02) |

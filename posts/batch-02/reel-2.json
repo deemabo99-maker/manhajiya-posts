@@ -1,0 +1,712 @@
+{
+ "title": "النشر العلمي — غلاف المجلة يتركّب وختم القبول",
+ "service": "النشر العلمي في Scopus Q1 / Q2 / Q3 / Q4 و Arcif",
+ "format": "journal cover assembling → stamp-of-approval climax (CTA lands mid-reel, the stamp closes it)",
+ "music": {
+  "mood": "rise",
+  "bpm": 100
+ },
+ "fadein": 0.04,
+ "cover": {
+  "scene": 3,
+  "t": 5.1
+ },
+ "scenes": [
+  {
+   "bg": "light",
+   "dur": 3.4,
+   "glow": "#C86BF0",
+   "shake": [
+    {
+     "t": 0.56,
+     "amp": 24
+    }
+   ],
+   "elements": [
+    {
+     "type": "text",
+     "text": "رسالتك نائمة",
+     "font": "kufi",
+     "size": 104,
+     "wght": 900,
+     "color": "#1E1A22",
+     "shadow": false,
+     "x": 540,
+     "y": 430,
+     "t": 0.0,
+     "anim": "pop",
+     "dur": 0.3
+    },
+    {
+     "type": "text",
+     "text": "في الدرج؟",
+     "font": "kufi",
+     "size": 140,
+     "wght": 900,
+     "gradient": "ring",
+     "shadow": false,
+     "x": 540,
+     "y": 610,
+     "t": 0.16,
+     "anim": "slam",
+     "dur": 0.4
+    },
+    {
+     "type": "doc",
+     "x": 400,
+     "y": 1010,
+     "t": 0.5,
+     "anim": "drop",
+     "dur": 0.5
+    },
+    {
+     "type": "doc",
+     "x": 540,
+     "y": 990,
+     "t": 0.62,
+     "anim": "drop",
+     "dur": 0.5
+    },
+    {
+     "type": "doc",
+     "x": 680,
+     "y": 1010,
+     "t": 0.74,
+     "anim": "drop",
+     "dur": 0.5
+    },
+    {
+     "type": "box",
+     "w": 660,
+     "h": 270,
+     "radius": 30,
+     "gradient": [
+      "#7B1FA2",
+      "#9627C4",
+      "#C2309E"
+     ],
+     "x": 540,
+     "y": 1160,
+     "t": 0.0,
+     "anim": "fade",
+     "dur": 0.2
+    },
+    {
+     "type": "box",
+     "w": 200,
+     "h": 36,
+     "radius": 18,
+     "fill": "#FFFFFF",
+     "shadow": false,
+     "x": 540,
+     "y": 1130,
+     "t": 0.0,
+     "anim": "fade",
+     "dur": 0.2
+    },
+    {
+     "type": "pill",
+     "text": "حوّلها إلى بحث منشور",
+     "size": 40,
+     "gradient": "warm",
+     "x": 540,
+     "y": 1400,
+     "t": 1.7,
+     "anim": "pop"
+    }
+   ]
+  },
+  {
+   "bg": "dark",
+   "dur": 4.4,
+   "glow": "#9627C4",
+   "cut": true,
+   "elements": [
+    {
+     "type": "typewriter",
+     "text": "نستلّ من رسالتك بحثاً للنشر",
+     "font": "kufi",
+     "size": 64,
+     "wght": 900,
+     "x": 540,
+     "y": 360,
+     "t": 0.1,
+     "every": 0.2
+    },
+    {
+     "type": "box",
+     "w": 400,
+     "h": 560,
+     "radius": 24,
+     "gradient": [
+      "#4B1A5E",
+      "#7B1FA2",
+      "#9627C4"
+     ],
+     "angle": 90,
+     "outline": "#FFD45C",
+     "width": 3,
+     "x": 770,
+     "y": 920,
+     "t": 0.3,
+     "anim": "drop"
+    },
+    {
+     "type": "text",
+     "text": "رسالة",
+     "font": "kufi",
+     "size": 80,
+     "wght": 900,
+     "color": "#FFD45C",
+     "x": 770,
+     "y": 820,
+     "t": 0.6,
+     "anim": "fade"
+    },
+    {
+     "type": "text",
+     "text": "ماجستير / دكتوراه",
+     "font": "almarai-xb",
+     "size": 38,
+     "x": 770,
+     "y": 935,
+     "t": 0.7,
+     "anim": "fade"
+    },
+    {
+     "type": "box",
+     "w": 240,
+     "h": 12,
+     "radius": 6,
+     "fill": "#FFD45C",
+     "shadow": false,
+     "x": 770,
+     "y": 1025,
+     "t": 0.8,
+     "anim": "fade"
+    },
+    {
+     "type": "path",
+     "bezier": [
+      [
+       640,
+       660
+      ],
+      [
+       580,
+       470
+      ],
+      [
+       420,
+       470
+      ],
+      [
+       330,
+       650
+      ]
+     ],
+     "colors": [
+      "#FFC21A",
+      "#E8457E"
+     ],
+     "width": 11,
+     "t": 1.2,
+     "dur": 0.6
+    },
+    {
+     "type": "box",
+     "w": 360,
+     "h": 500,
+     "radius": 20,
+     "fill": "#FFFFFF",
+     "x": 290,
+     "y": 950,
+     "t": 1.6,
+     "anim": "wipe",
+     "dur": 0.4
+    },
+    {
+     "type": "text",
+     "text": "Research Paper",
+     "font": "latin",
+     "size": 36,
+     "color": "#9627C4",
+     "shadow": false,
+     "x": 290,
+     "y": 780,
+     "t": 1.9,
+     "anim": "fade"
+    },
+    {
+     "type": "box",
+     "w": 280,
+     "h": 16,
+     "radius": 8,
+     "fill": "#E4DAEC",
+     "shadow": false,
+     "x": 290,
+     "y": 860,
+     "t": 2.0,
+     "anim": "wipe",
+     "dur": 0.3
+    },
+    {
+     "type": "box",
+     "w": 280,
+     "h": 16,
+     "radius": 8,
+     "fill": "#E4DAEC",
+     "shadow": false,
+     "x": 290,
+     "y": 905,
+     "t": 2.12,
+     "anim": "wipe",
+     "dur": 0.3
+    },
+    {
+     "type": "box",
+     "w": 200,
+     "h": 16,
+     "radius": 8,
+     "fill": "#E4DAEC",
+     "shadow": false,
+     "x": 330,
+     "y": 950,
+     "t": 2.24,
+     "anim": "wipe",
+     "dur": 0.3
+    },
+    {
+     "type": "box",
+     "w": 280,
+     "h": 16,
+     "radius": 8,
+     "fill": "#E4DAEC",
+     "shadow": false,
+     "x": 290,
+     "y": 995,
+     "t": 2.36,
+     "anim": "wipe",
+     "dur": 0.3
+    },
+    {
+     "type": "box",
+     "w": 240,
+     "h": 16,
+     "radius": 8,
+     "fill": "#E4DAEC",
+     "shadow": false,
+     "x": 310,
+     "y": 1040,
+     "t": 2.48,
+     "anim": "wipe",
+     "dur": 0.3
+    },
+    {
+     "type": "box",
+     "w": 280,
+     "h": 70,
+     "radius": 12,
+     "gradient": "warm",
+     "shadow": false,
+     "x": 290,
+     "y": 1120,
+     "t": 2.6,
+     "anim": "wipe",
+     "dur": 0.3
+    },
+    {
+     "type": "text",
+     "text": "من الرسالة إلى ورقة علمية جاهزة للنشر",
+     "font": "almarai-xb",
+     "size": 46,
+     "color": "#FFD45C",
+     "x": 540,
+     "y": 1330,
+     "t": 2.8
+    }
+   ]
+  },
+  {
+   "bg": "purple",
+   "dur": 6.0,
+   "glow": "#E8457E",
+   "camera": {
+    "from": 1.0,
+    "to": 1.04,
+    "y": 860
+   },
+   "sfx": [
+    {
+     "t": 4.0,
+     "kind": "ding"
+    }
+   ],
+   "elements": [
+    {
+     "type": "box",
+     "w": 640,
+     "h": 860,
+     "radius": 30,
+     "fill": "#FFFFFF",
+     "x": 540,
+     "y": 860,
+     "t": 0.1,
+     "anim": "drop",
+     "dur": 0.55
+    },
+    {
+     "type": "box",
+     "w": 640,
+     "h": 140,
+     "radius": 30,
+     "gradient": "ring",
+     "shadow": false,
+     "x": 540,
+     "y": 500,
+     "t": 0.6,
+     "anim": "wipe",
+     "dur": 0.5
+    },
+    {
+     "type": "text",
+     "text": "INTERNATIONAL JOURNAL",
+     "font": "latin",
+     "size": 36,
+     "shadow": false,
+     "x": 540,
+     "y": 480,
+     "t": 0.9,
+     "anim": "fade"
+    },
+    {
+     "type": "text",
+     "text": "SCOPUS · ARCIF",
+     "font": "latin",
+     "size": 22,
+     "color": "#FFF3D6",
+     "shadow": false,
+     "x": 540,
+     "y": 528,
+     "t": 1.0,
+     "anim": "fade"
+    },
+    {
+     "type": "typewriter",
+     "text": "بحثك هنا",
+     "font": "kufi",
+     "size": 84,
+     "wght": 900,
+     "color": "#1E1A22",
+     "shadow": false,
+     "caret": "#9627C4",
+     "x": 540,
+     "y": 680,
+     "t": 1.3,
+     "every": 0.3
+    },
+    {
+     "type": "box",
+     "w": 500,
+     "h": 16,
+     "radius": 8,
+     "fill": "#E4DAEC",
+     "shadow": false,
+     "x": 540,
+     "y": 790,
+     "t": 1.9,
+     "anim": "wipe",
+     "dur": 0.3
+    },
+    {
+     "type": "box",
+     "w": 500,
+     "h": 16,
+     "radius": 8,
+     "fill": "#E4DAEC",
+     "shadow": false,
+     "x": 540,
+     "y": 830,
+     "t": 2.0,
+     "anim": "wipe",
+     "dur": 0.3
+    },
+    {
+     "type": "box",
+     "w": 340,
+     "h": 16,
+     "radius": 8,
+     "fill": "#E4DAEC",
+     "shadow": false,
+     "x": 620,
+     "y": 870,
+     "t": 2.1,
+     "anim": "wipe",
+     "dur": 0.3
+    },
+    {
+     "type": "pill",
+     "text": "Q1",
+     "size": 38,
+     "fname": "latin",
+     "gradient": "ring",
+     "x": 765,
+     "y": 990,
+     "t": 2.4,
+     "anim": "slam",
+     "dur": 0.3
+    },
+    {
+     "type": "pill",
+     "text": "Q2",
+     "size": 38,
+     "bg": "#9627C4",
+     "x": 615,
+     "y": 990,
+     "t": 2.6,
+     "anim": "slam",
+     "dur": 0.3
+    },
+    {
+     "type": "pill",
+     "text": "Q3",
+     "size": 38,
+     "bg": "#7B1FA2",
+     "x": 465,
+     "y": 990,
+     "t": 2.8,
+     "anim": "slam",
+     "dur": 0.3
+    },
+    {
+     "type": "pill",
+     "text": "Q4",
+     "size": 38,
+     "bg": "#4B1A5E",
+     "x": 315,
+     "y": 990,
+     "t": 3.0,
+     "anim": "slam",
+     "dur": 0.3
+    },
+    {
+     "type": "text",
+     "text": "ومجلات Arcif المعتمدة",
+     "font": "almarai-xb",
+     "size": 40,
+     "color": "#9627C4",
+     "shadow": false,
+     "x": 540,
+     "y": 1110,
+     "t": 3.3,
+     "anim": "up"
+    },
+    {
+     "type": "text",
+     "text": "اختر المجلة الأنسب لتخصصك",
+     "font": "almarai-bold",
+     "size": 32,
+     "color": "#6B6272",
+     "shadow": false,
+     "x": 540,
+     "y": 1190,
+     "t": 3.5,
+     "anim": "fade"
+    },
+    {
+     "type": "whatsapp",
+     "scale": 0.95,
+     "x": 540,
+     "y": 1410,
+     "t": 3.9,
+     "anim": "up"
+    }
+   ]
+  },
+  {
+   "bg": "dark",
+   "dur": 5.2,
+   "glow": "#9627C4",
+   "shake": [
+    {
+     "t": 1.85,
+     "amp": 34,
+     "dur": 0.55
+    }
+   ],
+   "elements": [
+    {
+     "type": "text",
+     "text": "ونتابعه معك",
+     "font": "kufi",
+     "size": 80,
+     "wght": 900,
+     "x": 540,
+     "y": 320,
+     "t": 0.1
+    },
+    {
+     "type": "text",
+     "text": "حتى مرحلة قبول النشر",
+     "font": "almarai-xb",
+     "size": 56,
+     "color": "#FFD45C",
+     "x": 540,
+     "y": 430,
+     "t": 0.35
+    },
+    {
+     "type": "box",
+     "w": 520,
+     "h": 680,
+     "radius": 26,
+     "fill": "#FFFFFF",
+     "x": 540,
+     "y": 900,
+     "t": 0.0,
+     "anim": "fade",
+     "dur": 0.3
+    },
+    {
+     "type": "box",
+     "w": 520,
+     "h": 110,
+     "radius": 26,
+     "gradient": "ring",
+     "shadow": false,
+     "x": 540,
+     "y": 615,
+     "t": 0.0,
+     "anim": "fade",
+     "dur": 0.3
+    },
+    {
+     "type": "text",
+     "text": "INTERNATIONAL JOURNAL",
+     "font": "latin",
+     "size": 28,
+     "shadow": false,
+     "x": 540,
+     "y": 612,
+     "t": 0.1,
+     "anim": "fade"
+    },
+    {
+     "type": "text",
+     "text": "بحثك",
+     "font": "kufi",
+     "size": 72,
+     "wght": 900,
+     "color": "#1E1A22",
+     "shadow": false,
+     "x": 540,
+     "y": 760,
+     "t": 0.2,
+     "anim": "fade"
+    },
+    {
+     "type": "box",
+     "w": 400,
+     "h": 14,
+     "radius": 7,
+     "fill": "#E4DAEC",
+     "shadow": false,
+     "x": 540,
+     "y": 860,
+     "t": 0.3,
+     "anim": "fade"
+    },
+    {
+     "type": "box",
+     "w": 400,
+     "h": 14,
+     "radius": 7,
+     "fill": "#E4DAEC",
+     "shadow": false,
+     "x": 540,
+     "y": 895,
+     "t": 0.3,
+     "anim": "fade"
+    },
+    {
+     "type": "box",
+     "w": 280,
+     "h": 14,
+     "radius": 7,
+     "fill": "#E4DAEC",
+     "shadow": false,
+     "x": 600,
+     "y": 930,
+     "t": 0.3,
+     "anim": "fade"
+    },
+    {
+     "type": "box",
+     "w": 400,
+     "h": 14,
+     "radius": 7,
+     "fill": "#E4DAEC",
+     "shadow": false,
+     "x": 540,
+     "y": 1150,
+     "t": 0.3,
+     "anim": "fade"
+    },
+    {
+     "type": "box",
+     "w": 300,
+     "h": 14,
+     "radius": 7,
+     "fill": "#E4DAEC",
+     "shadow": false,
+     "x": 590,
+     "y": 1185,
+     "t": 0.3,
+     "anim": "fade"
+    },
+    {
+     "type": "stamp",
+     "text": "مقبول للنشر",
+     "sub": "ACCEPTED",
+     "color": "#E0245E",
+     "rot": -12,
+     "size": 74,
+     "x": 540,
+     "y": 1030,
+     "t": 1.4,
+     "anim": "slam",
+     "dur": 0.45,
+     "from": 3.6
+    },
+    {
+     "type": "burst",
+     "x": 540,
+     "y": 1030,
+     "r": 300,
+     "color": "#E8457E",
+     "t": 1.83
+    },
+    {
+     "type": "text",
+     "text": "وأبحاث النشر والترقية لأعضاء هيئة التدريس",
+     "font": "almarai-bold",
+     "size": 38,
+     "color": "#F3E8FA",
+     "x": 540,
+     "y": 1310,
+     "t": 2.4,
+     "anim": "fade"
+    },
+    {
+     "type": "whatsapp",
+     "scale": 0.8,
+     "x": 540,
+     "y": 1410,
+     "t": 2.8,
+     "anim": "up"
+    }
+   ]
+  }
+ ],
+ "caption": "📚 رسالتك أخذت منك سنوات.. فهل تبقى حبيسة الدرج؟\n\nمن رسالة الماجستير أو الدكتوراه يمكن أن يولد بحث علمي محكّم يحمل اسمك في مجلة مصنّفة، لكن الطريق يحتاج صياغة دقيقة واختياراً صحيحاً للمجلة ومتابعة صبورة.\n\nفي المنهجية نرافقك في رحلة النشر خطوة بخطوة:\n✅ استلال بحث للنشر من رسالتك\n✅ النشر في مجلات Scopus بتصنيفاتها Q1 / Q2 / Q3 / Q4 ومجلات Arcif\n✅ متابعة البحث معك حتى مرحلة قبول النشر\n✅ إعداد أبحاث النشر والترقية لأعضاء هيئة التدريس\n✅ صياغة الأوراق العلمية في التخصصات التربوية والإنسانية والنفسية\n\n🌍 نخدمكم أونلاين في جميع الدول العربية\n🚀 ابدأ خطوة النشر اليوم.. والاستشارة الأولى مجانية\n\n📞 للتواصل والاستفسار:\n📱 رقم الهاتف: 00962778707204\n💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778707204\n\n#المنهجية #النشر_العلمي #Scopus #سكوبس #Arcif #الترقية_الأكاديمية #أبحاث_محكمة #دكتوراه"
+}
