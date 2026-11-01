@@ -273,7 +273,7 @@ def reel_ase():
                  color="#1F2A24", dark=False),
             dict(type="bar", text="جاهزة على Excel و SPSS", light=True, w=860, x=540, y=760,
                  t=1.0, dur=0.7, anim="wipe"),
-            dict(type="scale5", text="دقّة المطابقة", mark=5, w=860, x=540, y=1000,
+            dict(type="scale5", text="دقّة المطابقة", mark=4, w=860, x=540, y=1000,
                  t=1.8, dur=0.7, anim="up"),
             dict(type="stamp", text="مطابقة للمصدر", size=52, rot=-9, color="#0F5236",
                  x=540, y=1270, t=2.5, dur=0.5, anim="slam"),
@@ -331,7 +331,7 @@ def reel_fieldwork():
         ]),
         dict(bg="emerald", glow="#C8A02E", dur=4.4, elements=[
             head("وبتطلع بنتائج محكية", y=360, size=76, t=0.1),
-            dict(type="quote", text="كل نتيجة مسنودة باقتباس من كلام المبحوثين", size=46,
+            dict(type="quote", text="كل نتيجة مسنودة باقتباس من المبحوثين", size=40,
                  x=540, y=720, t=0.6, dur=0.7, anim="up"),
             dict(type="check", text="مصفوفة الثيمات جاهزة للرسالة", size=44, w=820,
                  x=540, y=1050, t=1.6, dur=0.5, anim="pop"),
