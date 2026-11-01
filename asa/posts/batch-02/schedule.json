@@ -1,0 +1,88 @@
+{
+  "batch": "batch-02",
+  "timezone": "Asia/Amman",
+  "note": "منشور واحد كل يوم الساعة 10:00، وريلز الساعة 19:00 في يومين منها",
+  "items": [
+    {
+      "file": "01.png",
+      "story": "story-01.png",
+      "kind": "design",
+      "service": "أدوات الدراسة والاستبانة وتحكيمها",
+      "date": "2026-11-03",
+      "day": "الثلاثاء",
+      "time": "10:00"
+    },
+    {
+      "file": "02.png",
+      "story": "story-02.png",
+      "kind": "design",
+      "service": "الإطار النظري والدراسات السابقة",
+      "date": "2026-11-04",
+      "day": "الأربعاء",
+      "time": "10:00"
+    },
+    {
+      "file": "03.png",
+      "story": "story-03.png",
+      "kind": "design",
+      "service": "أبحاث الترقية لأعضاء هيئة التدريس",
+      "date": "2026-11-05",
+      "day": "الخميس",
+      "time": "10:00"
+    },
+    {
+      "file": "04.png",
+      "story": "story-04.png",
+      "kind": "design",
+      "service": "الدورات التدريبية أونلاين",
+      "date": "2026-11-06",
+      "day": "الجمعة",
+      "time": "10:00"
+    },
+    {
+      "file": "05.png",
+      "story": "story-05.png",
+      "kind": "design",
+      "service": "التحضير ليوم المناقشة والعرض التقديمي",
+      "date": "2026-11-07",
+      "day": "السبت",
+      "time": "10:00"
+    },
+    {
+      "file": "06.png",
+      "story": "story-06.png",
+      "kind": "design",
+      "service": "التوثيق والاقتباس وفحص Turnitin",
+      "date": "2026-11-08",
+      "day": "الأحد",
+      "time": "10:00"
+    },
+    {
+      "file": "07.png",
+      "story": "story-07.png",
+      "kind": "design",
+      "service": "الترجمة المعتمدة والملخص بالإنجليزية",
+      "date": "2026-11-09",
+      "day": "الاثنين",
+      "time": "10:00"
+    },
+    {
+      "file": "reel-1.mp4",
+      "cover": "reel-1-cover.png",
+      "kind": "reel",
+      "service": "الأداة قبل البيانات",
+      "date": "2026-11-03",
+      "day": "الثلاثاء",
+      "time": "19:00"
+    },
+    {
+      "file": "reel-2.mp4",
+      "cover": "reel-2-cover.png",
+      "kind": "reel",
+      "service": "يوم المناقشة",
+      "date": "2026-11-07",
+      "day": "السبت",
+      "time": "19:00"
+    }
+  ]
+}

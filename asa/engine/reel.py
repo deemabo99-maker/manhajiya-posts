@@ -246,8 +246,8 @@ def sprite_check_row(e):
     bx, by = m + (w - 80) * SS, m + h / 2 * SS
     d.rounded_rectangle([bx - 30 * SS, by - 30 * SS, bx + 30 * SS, by + 30 * SS], radius=10 * SS,
                         outline=rgb(C["gold_lt"]), width=4 * SS)
-    d.text((bx - 70 * SS, by), e["text"], font=font("messiri", 44, 700), fill=rgb(C["ivory"]), anchor="rm",
-           **_kw(e["text"]))
+    d.text((bx - 70 * SS, by), e["text"], font=font("cairo", e.get("size", 44), 700),
+           fill=rgb(C["ivory"]), anchor="rm", **_kw(e["text"]))
     return _finish(img)
 
 
@@ -392,11 +392,109 @@ def sprite_badge(e):
     return _finish(img)
 
 
+# ------------------------------------------------------------------ week-2 sprites
+def sprite_seal(e):
+    """Gold certification seal -- the motion twin of the seal on this week's designs."""
+    r = e.get("r", 130)
+    img, m = canvas(2 * r, 2 * r, 36)
+    cx, cy = m + r * SS, m + r * SS
+    disc = Image.new("L", img.size, 0)
+    ImageDraw.Draw(disc).ellipse([m, m, m + 2 * r * SS, m + 2 * r * SS], fill=255)
+    drop_shadow(img, disc, alpha=0.55, blur=20, dy=12)
+    fill_mask(img, disc, None, GOLD, 40)
+    d = ImageDraw.Draw(img)
+    d.ellipse([cx - (r - 17) * SS, cy - (r - 17) * SS, cx + (r - 17) * SS, cy + (r - 17) * SS],
+              outline=rgb(C["deep"]), width=3 * SS)
+    for k in range(16):
+        a = math.radians(k * 22.5)
+        px, py = cx + (r - 8) * SS * math.cos(a), cy + (r - 8) * SS * math.sin(a)
+        d.polygon([(px, py - 5 * SS), (px + 5 * SS, py), (px, py + 5 * SS), (px - 5 * SS, py)],
+                  fill=rgb(C["gold_dk"]))
+    d.text((cx, cy - r * 0.20 * SS), e["big"], font=font("cairo", r * 0.36, 900), fill=rgb(C["deep"]),
+           anchor="mm", **_kw(e["big"]))
+    d.text((cx, cy + r * 0.30 * SS), e["small"], font=font("cairo", r * 0.19, 800), fill=rgb(C["deep"]),
+           anchor="mm", **_kw(e["small"]))
+    return _finish(img)
+
+
+def sprite_scale5(e):
+    """A five-point rating row; one option is already ticked in gold."""
+    w, h = e.get("w", 860), 152
+    img, m = rrect(w, h, 26, fill="#FFFFFF")
+    d = ImageDraw.Draw(img)
+    d.text((m + (w - 40) * SS, m + 46 * SS), e["text"], font=font("cairo", 38, 700),
+           fill=rgb(C["ink"]), anchor="rm", **_kw(e["text"]))
+    for k in range(5):
+        px, py = m + (w - 70 - k * 86) * SS, m + 108 * SS
+        if k == e.get("mark", 0):
+            disc = Image.new("L", img.size, 0)
+            ImageDraw.Draw(disc).ellipse([px - 26 * SS, py - 26 * SS, px + 26 * SS, py + 26 * SS], fill=255)
+            fill_mask(img, disc, None, GOLD_SOFT, 45)
+            d.text((px, py + 2 * SS), "\u2713", font=font("latin", 26), fill=rgb(C["deep"]), anchor="mm")
+        else:
+            d.ellipse([px - 26 * SS, py - 26 * SS, px + 26 * SS, py + 26 * SS], outline=rgb("#E0D7C2"),
+                      width=4 * SS)
+    return _finish(img)
+
+
+def sprite_bar(e):
+    """Labelled meter. Pair it with the `wipe` animation and the gold track fills RTL."""
+    w, h = e.get("w", 820), 120
+    img, m = rrect(w, h, 26, fill=(255, 255, 255, 30), outline=C["gold"], ow=2, shadow=False)
+    d = ImageDraw.Draw(img)
+    d.text((m + (w - 36) * SS, m + 40 * SS), e["text"], font=font("cairo", 36, 700),
+           fill=rgb(C["ivory"]), anchor="rm", **_kw(e["text"]))
+    tx0, tx1, ty = m + 36 * SS, m + (w - 36) * SS, m + 80 * SS
+    d.rounded_rectangle([tx0, ty, tx1, ty + 22 * SS], radius=11 * SS, fill=rgb("#06170F"))
+    track = Image.new("L", img.size, 0)
+    ImageDraw.Draw(track).rounded_rectangle([tx0, ty, tx1, ty + 22 * SS], radius=11 * SS, fill=255)
+    fill_mask(img, track, None, GOLD, 0)
+    return _finish(img)
+
+
+def sprite_quote(e):
+    """A committee question on a white card with a gold spine."""
+    f = font("cairo", e.get("size", 40), 700)
+    t = e["text"]
+    l, tt, r, b = f.getbbox(t, **_kw(t))
+    w, h = (r - l) / SS + 150, 126
+    img, m = rrect(w, h, 24, fill="#FFFFFF")
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([m + (w - 15) * SS, m + 10 * SS, m + (w - 4) * SS, m + (h - 10) * SS],
+                        radius=5 * SS, fill=rgb(C["gold"]))
+    d.text((m + 48 * SS, m + h / 2 * SS), "?", font=font("latin", 46), fill=rgb(C["sand"]), anchor="mm")
+    d.text((m + (w - 42) * SS, m + h / 2 * SS), t, font=f, fill=rgb(C["ink"]), anchor="rm", **_kw(t))
+    return _finish(img)
+
+
+def sprite_slide_card(e):
+    """A miniature defence slide: emerald title bar, text lines and a small gold chart."""
+    w, h = e.get("w", 620), 376
+    img, m = rrect(w, h, 20, gradient=[C["ivory"], "#F1EADB"], angle=90)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([m + 40 * SS, m + 38 * SS, m + (w - 40) * SS, m + 86 * SS], radius=10 * SS,
+                        fill=rgb(C["forest"]))
+    for i in range(3):
+        yy = m + (126 + i * 40) * SS
+        ww = (w - 96) * (0.62 if i % 2 == 0 else 0.42)
+        d.rounded_rectangle([m + (w - 40) * SS - ww * SS, yy, m + (w - 40) * SS, yy + 16 * SS],
+                            radius=8 * SS, fill=rgb("#DDD3C0"))
+    for i, bh in enumerate((70, 112, 152)):
+        bx = m + (56 + i * 62) * SS
+        disc = Image.new("L", img.size, 0)
+        ImageDraw.Draw(disc).rounded_rectangle(
+            [bx, m + (h - 54) * SS - bh * SS, bx + 44 * SS, m + (h - 54) * SS], radius=8 * SS, fill=255)
+        fill_mask(img, disc, None, GOLD_SOFT, 90)
+    return _finish(img)
+
+
 SPRITES = {
     "text": sprite_text, "pill": sprite_pill, "whatsapp": sprite_whatsapp, "emblem": sprite_emblem,
     "doc": sprite_doc, "stamp": sprite_stamp, "note": sprite_note, "check": sprite_check_row,
     "tick": sprite_tick, "step": sprite_step, "star": sprite_star, "line": sprite_line,
     "photo": sprite_photo, "arch": sprite_arch, "badge": sprite_badge,
+    "seal": sprite_seal, "scale5": sprite_scale5, "bar": sprite_bar, "quote": sprite_quote,
+    "slide": sprite_slide_card,
 }
 
 
@@ -439,16 +537,20 @@ def glow_sprite(color, r, alpha):
 
 
 # ------------------------------------------------------------------ animation
-def place(frame, spr, cx, cy, alpha=1.0, scale=1.0):
+def place(frame, spr, cx, cy, alpha=1.0, scale=1.0, reveal=1.0):
     if alpha <= 0.01:
         return
     s = spr
     if abs(scale - 1.0) > 0.005:
         s = spr.resize((max(1, int(spr.width * scale)), max(1, int(spr.height * scale))), Image.BILINEAR)
+    x, y = int(cx - s.width / 2), int(cy - s.height / 2)
+    if reveal < 0.999:
+        keep = max(1, int(s.width * reveal))
+        x += s.width - keep                      # RTL: the right edge stays put
+        s = s.crop((s.width - keep, 0, s.width, s.height))
     if alpha < 0.999:
         s = s.copy()
         s.putalpha(s.getchannel("A").point(lambda v: int(v * alpha)))
-    x, y = int(cx - s.width / 2), int(cy - s.height / 2)
     frame.alpha_composite(s, (max(x, 0), max(y, 0)), (max(-x, 0), max(-y, 0)))
 
 
@@ -484,6 +586,18 @@ def animate(e, t):
         return 0, 0, clamp(p * 2), sc
     if anim == "spin":   # slow rotation feel via gentle scale breathing
         return 0, 0, clamp(p * 2), 1 + 0.03 * math.sin((t - t0) * 2.2)
+    if anim == "drop":   # falls in from above and settles with a bounce
+        q = ease_out_back(p, 1.5)
+        return 0, -(1 - q) * 460, clamp(p * 3), 1.0
+    if anim == "zoom":   # grows from small without pop's overshoot
+        q = ease_out_cubic(p)
+        return 0, 0, clamp(p * 2), 0.28 + 0.72 * q
+    if anim == "wipe":   # revealed right-to-left, the way Arabic is read
+        return 0, 0, 1.0, 1.0, ease_out_cubic(p)
+    if anim == "float":  # eases up, then breathes in place
+        q = ease_out_cubic(p)
+        bob = 0.0 if p < 1 else 9 * math.sin((t - t0 - dur) * 1.7)
+        return 0, (1 - q) * 46 + bob, q, 1.0
     return 0, 0, 1, 1
 
 
@@ -515,8 +629,10 @@ class Reel:
             a = animate(e, t)
             if a is None:
                 continue
-            dx, dy, al, scale = a
-            place(f, spr, x + dx, y + dy, al, scale)
+            if len(a) == 4:
+                a = a + (1.0,)
+            dx, dy, al, scale, rev = a
+            place(f, spr, x + dx, y + dy, al, scale, rev)
         if sc["shake"] is not None:
             ts = sc["shake"]
             if ts <= t < ts + 0.3:
@@ -604,7 +720,7 @@ def render(spec_path, out_path):
         spec = json.load(fh)
     reel = Reel(spec)
     wav = out_path.replace(".mp4", ".wav")
-    music(wav, reel.total, seed=spec.get("music_seed", 1))
+    music(wav, reel.total, bpm=spec.get("bpm", 92), seed=spec.get("music_seed", 1))
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{RW}x{RH}",
            "-r", str(FPS), "-i", "-", "-i", wav, "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
            "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", out_path]

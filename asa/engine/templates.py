@@ -688,3 +688,289 @@ TEMPLATES.update({
     "analyst_split": analyst_split,
     "before_after_person": before_after_person,
 })
+
+
+# ======================================================== batch-02 templates (week 2)
+# Seven fresh compositions. None reuses a week-1 layout: in each one the hero is a drawn
+# instrument -- a rated questionnaire, a research-gap funnel, a rank staircase, a lit
+# stage, a course player, a citation dial, a translated spread -- so every design has a
+# single focal point that still reads at thumbnail size on a phone.
+
+def seal(c, cx, cy, r, big, small, light=False):
+    """Gold certification seal: foil disc, inner rule, a ring of studs, two Cairo lines."""
+    sh = dict(offset=(0, 12), blur=20, alpha=100, color="#6B5C3A" if light else "#000000")
+    c.shape("ellipse", [cx - r, cy - r, cx + r, cy + r], gradient=GOLD, angle=40, shadow=sh)
+    c.shape("ellipse", [cx - r + 13, cy - r + 13, cx + r - 13, cy + r - 13], outline=C["deep"], width=3)
+    for k in range(16):
+        a = math.radians(k * 22.5)
+        c.diamond(cx + (r - 6.5) * math.cos(a), cy + (r - 6.5) * math.sin(a), 4, fill=C["gold_dk"])
+    c.text((cx, cy - r * 0.20), big, font("cairo", r * 0.40, 900), fill=C["deep"], anchor="mm")
+    c.text((cx, cy + r * 0.30), small, font("cairo", r * 0.23, 800), fill=C["deep"], anchor="mm")
+
+
+def head_block(c, p, xr=W - 64, y0=178, size=88, dark=False, maxw=W - 128, subw=410):
+    """Kicker + headline stack + sub-line, right-aligned. Returns the y below the block.
+
+    `subw` is the width the sub-line must stay inside -- the gap between the right margin
+    and whatever hero object or cut-out sits below it -- so the sub-line can never slide
+    under a card or across a face."""
+    kick = C["gold_lt"] if dark else C["red"]
+    body = C["mint"] if dark else C["muted"]
+    cols = [C["ivory"], "gold"] if dark else [C["forest"], "gold_dk"]
+    c.text((xr, y0), p["kicker"], font("cairo", 31, 700), fill=kick, anchor="ra")
+    y = stack(c, xr, y0 + 44, p["title"], font("cairo", size, 900), cols, gap=1.1, maxw=maxw)
+    fs = 32
+    while fs > 21 and measure(p["subtitle"], font("cairo", fs, 700))[0] > subw:
+        fs -= 1
+    c.text((xr, y + 14), p["subtitle"], font("cairo", fs, 700), fill=body, anchor="ra")
+    return y + 70
+
+
+# ------------------------------------------------------------------ B1 rated study instrument
+def tools_card(p):
+    c = Canvas(C["ivory"])
+    c.gradient_bg([C["ivory"], C["cream"], C["sand"]], angle=100)
+    c.girih(alpha=28, cell=160, color=C["gold"])
+    c.lockup(W - 66, 96, size=94)
+    head_block(c, p, subw=410)
+
+    x0, y0, x1, y1 = 70, 470, 540, 1050
+    c.shape("round", [x0, y0, x1, y1], fill="#FFFFFF", radius=28,
+            shadow=dict(offset=(0, 18), blur=30, alpha=90, color="#6B5C3A"))
+    c.shape("round", [x0 + 24, y0 + 22, x1 - 24, y0 + 102], gradient=[C["forest"], C["emerald"]],
+            angle=0, radius=18)
+    c.text(((x0 + x1) / 2, y0 + 62), p["card_title"], font("cairo", 28, 800), fill=C["ivory"], anchor="mm")
+    for i, q in enumerate(p["questions"]):
+        qy = y0 + 158 + i * 140
+        c.text((x1 - 40, qy), q, font("cairo", 25, 700), fill=C["ink"], anchor="rm")
+        for k in range(5):
+            dx = x1 - 80 - k * 88
+            if k == p["marked"][i]:
+                c.shape("ellipse", [dx - 22, qy + 38, dx + 22, qy + 82], gradient=GOLD_SOFT, angle=45,
+                        shadow=dict(offset=(0, 6), blur=10, alpha=70, color="#6B5C3A"))
+                c.text((dx, qy + 60), "✓", font("latin", 21), fill=C["deep"], anchor="mm")
+            else:
+                c.shape("ellipse", [dx - 22, qy + 38, dx + 22, qy + 82], outline=C["sand"], width=3)
+    seal(c, 500, 1062, 76, p["seal1"], p["seal2"], light=True)
+    c.photo(p["photo"], cx=830, bottom=1150, height=590)
+    c.shape("rect", [0, 1150, W, 1156], gradient=GOLD, angle=0)
+    c.footer(y=1262, dark=False, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ B2 research-gap funnel
+def gap_funnel(p):
+    c = Canvas(C["night"])
+    c.gradient_bg([C["night"], C["deep"], C["emerald"]], angle=100)
+    c.girih(alpha=24, cell=170)
+    c.glow(540, 700, 420, C["jade"], 95)
+    c.lockup(W - 66, 96, size=94, dark=True)
+    c.text((540, 180), p["kicker"], font("cairo", 31, 700), fill=C["gold_lt"], anchor="ma")
+    gold_text(c, (540, 226), p["title"][0], font("cairo", 74, 900), anchor="ma")
+    c.text((540, 318), p["title"][1], font("cairo", 42, 800), fill=C["ivory"], anchor="ma")
+
+    widths = [960, 800, 640, 470, 360]
+    top, bh, gap = 440, 112, 20
+    n = len(p["levels"])
+    for i, t in enumerate(p["levels"]):
+        wt, wb = widths[i], widths[i + 1]
+        yy = top + i * (bh + gap)
+        pts = [(540 - wt / 2, yy), (540 + wt / 2, yy), (540 + wb / 2, yy + bh), (540 - wb / 2, yy + bh)]
+        if i == n - 1:
+            c.shape("poly", pts, gradient=GOLD, angle=0,
+                    shadow=dict(offset=(0, 12), blur=22, alpha=120, color="#000000"))
+            c.text((540, yy + bh / 2), t, font("cairo", 40, 900), fill=C["deep"], anchor="mm")
+        else:
+            c.shape("poly", pts, fill=(255, 255, 255, 24))
+            c.line(pts + [pts[0]], C["gold"], 2)
+            c.text((540, yy + bh / 2), t, font("cairo", 35, 800), fill=C["ivory"], anchor="mm")
+            c.tri(540, yy + bh + gap / 2, 12, color=C["gold"], rot=90)
+    c.star8(540, 1040, 42, gradient=GOLD_SOFT)
+    c.star8(540, 1040, 15, fill=C["deep"])
+    c.text((540, 1106), p["star"], font("cairo", 37, 900), fill=C["gold_lt"], anchor="mm")
+    c.shape("rect", [0, 1150, W, 1156], gradient=GOLD, angle=0)
+    c.footer(y=1262, dark=True, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ B3 academic rank staircase
+def rank_stairs(p):
+    c = Canvas(C["emerald"])
+    c.gradient_bg([C["forest"], C["emerald"], C["deep"]], angle=120)
+    c.girih(alpha=24, cell=165)
+    c.glow(300, 830, 380, C["jade"], 105)
+    c.lockup(W - 66, 96, size=94, dark=True)
+    head_block(c, p, size=90, dark=True, subw=410)
+
+    base = 1120
+    # RTL: the climb starts at the right-hand column and rises leftwards
+    cols = [(410, 575, 980), (235, 400, 866), (60, 225, 752)]
+    for (cx0, cx1, ctop), label in zip(cols, p["ranks"]):
+        c.shape("round", [cx0, ctop, cx1, base], gradient=GOLD_SOFT, angle=90, radius=16,
+                shadow=dict(offset=(0, 12), blur=20, alpha=110, color="#04140C"))
+        c.shape("round", [cx0 + 8, ctop + 8, cx1 - 8, ctop + 70], fill=C["deep"], radius=10)
+        c.text(((cx0 + cx1) / 2, ctop + 39), label, font("cairo", 22, 800), fill=C["gold_lt"], anchor="mm")
+    c.star8(142, 690, 54, gradient=GOLD_SOFT)
+    c.star8(142, 690, 19, fill=C["deep"])
+    c.photo(p["photo"], cx=820, bottom=1150, height=590)
+    c.shape("rect", [0, 1150, W, 1156], gradient=GOLD, angle=0)
+    c.footer(y=1262, dark=True, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ B4 defence-day stage
+def spotlight_stage(p):
+    c = Canvas(C["night"])
+    c.gradient_bg([C["night"], "#05150E", C["deep"]], angle=90)
+    c.girih(alpha=15, cell=190)
+    c.shape("poly", [(430, 0), (650, 0), (980, 1150), (100, 1150)], fill=(238, 217, 160, 24))
+    c.shape("poly", [(472, 0), (608, 0), (830, 1150), (250, 1150)], fill=(238, 217, 160, 20))
+    c.glow(540, 86, 180, C["gold_lt"], 55)
+    c.lockup(W - 66, 96, size=94, dark=True)
+    gold_text(c, (540, 196), p["title"], font("cairo", 72, 900), anchor="ma")
+    c.text((540, 294), p["subtitle"], font("cairo", 35, 700), fill=C["ivory"], anchor="ma")
+
+    for off in (24, 12, 0):
+        bx0, by0 = 744 + off, 498 + off
+        c.shape("round", [bx0, by0, bx0 + 248, by0 + 166], fill=C["ivory"] if off == 0 else "#B9B1A0",
+                radius=14, shadow=dict(offset=(0, 10), blur=16, alpha=100, color="#000000"))
+    c.shape("round", [790, 526, 968, 548], fill=C["forest"], radius=8)
+    for i in range(3):
+        c.shape("round", [790 + i * 8, 572 + i * 26, 968, 584 + i * 26], fill="#DDD3C0", radius=6)
+    c.text((868, 700), p["deck_label"], font("cairo", 25, 800), fill=C["gold_lt"], anchor="mm")
+
+    c.photo(p["photo"], cx=468, bottom=1150, height=780)
+    c.shape("poly", [(344, 938), (596, 938), (640, 1150), (300, 1150)],
+            gradient=[C["emerald"], C["deep"]], angle=90,
+            shadow=dict(offset=(0, 14), blur=24, alpha=130, color="#000000"))
+    c.shape("poly", [(328, 900), (612, 900), (600, 944), (340, 944)], gradient=GOLD, angle=90)
+    c.logo(470, 1038, 82)
+    seal(c, 890, 1000, 92, p["seal1"], p["seal2"])
+    c.shape("rect", [0, 1150, W, 1156], gradient=GOLD, angle=0)
+    c.footer(y=1262, dark=True, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ B5 online course player
+def course_window(p):
+    c = Canvas(C["ivory"])
+    c.gradient_bg([C["ivory"], C["cream"]], angle=90)
+    c.girih(alpha=26, cell=155, color=C["gold"])
+    c.lockup(W - 66, 96, size=94)
+    head_block(c, p, size=86, subw=380)
+
+    wx0, wy0, wx1, wy1 = 70, 486, 600, 950
+    c.shape("round", [wx0, wy0, wx1, wy1], fill="#FFFFFF", radius=24,
+            shadow=dict(offset=(0, 18), blur=30, alpha=85, color="#6B5C3A"))
+    c.shape("round", [wx0, wy0, wx1, wy0 + 62], fill="#E7E0D0", radius=24)
+    c.shape("rect", [wx0, wy0 + 38, wx1, wy0 + 62], fill="#E7E0D0")
+    for i, col in enumerate((C["red"], C["gold"], C["jade"])):
+        c.shape("ellipse", [wx0 + 20 + i * 26, wy0 + 23, wx0 + 34 + i * 26, wy0 + 37], fill=col)
+    c.shape("round", [wx0 + 116, wy0 + 13, wx1 - 20, wy0 + 49], fill="#FFFFFF", radius=18)
+    c.text((wx1 - 38, wy0 + 32), p["url"], font("cairo", 18, 700), fill=C["muted"], anchor="rm")
+
+    vx0, vy0, vx1, vy1 = wx0 + 24, wy0 + 86, wx1 - 24, wy1 - 24
+    c.shape("round", [vx0, vy0, vx1, vy1], gradient=[C["emerald"], C["deep"]], angle=90, radius=16)
+    pcx, pcy = (vx0 + vx1) / 2, (vy0 + vy1) / 2
+    c.ring(pcx, pcy, 112, 3, stops=GOLD_SOFT, angle=45)
+    c.shape("ellipse", [pcx - 78, pcy - 78, pcx + 78, pcy + 78], gradient=GOLD_SOFT, angle=45,
+            shadow=dict(offset=(0, 12), blur=22, alpha=130, color="#000000"))
+    c.shape("poly", [(pcx - 24, pcy - 40), (pcx - 24, pcy + 40), (pcx + 44, pcy)], fill=C["deep"])
+
+    f = font("cairo", 24, 800)
+    for i, t in enumerate(p["courses"]):
+        row, col = i // 2, i % 2
+        bw = measure(t, f)[0] + 46
+        xr = wx1 - col * 268
+        yy = 982 + row * 70
+        c.shape("round", [xr - bw, yy, xr, yy + 58], gradient=GOLD_SOFT, angle=0, radius=29,
+                shadow=dict(offset=(0, 7), blur=11, alpha=60))
+        c.text((xr - bw / 2, yy + 29), t, f, fill=C["deep"], anchor="mm")
+    c.photo(p["photo"], cx=850, bottom=1150, height=580)
+    c.shape("rect", [0, 1150, W, 1156], gradient=GOLD, angle=0)
+    c.footer(y=1262, dark=False, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ B6 citation dial
+def citation_dial(p):
+    c = Canvas(C["emerald"])
+    c.gradient_bg([C["forest"], C["emerald"], C["deep"]], angle=120)
+    c.girih(alpha=22, cell=170)
+    c.glow(540, 700, 400, C["jade"], 95)
+    c.lockup(W - 66, 96, size=94, dark=True)
+    c.text((540, 180), p["kicker"], font("cairo", 31, 700), fill=C["gold_lt"], anchor="ma")
+    gold_text(c, (540, 226), p["title"], font("cairo", 70, 900), anchor="ma")
+    c.text((540, 322), p["subtitle"], font("cairo", 33, 700), fill=C["ivory"], anchor="ma")
+
+    cx, cy = 540, 830
+    c.arc_band(cx, cy, 336, 322, 180, 360, gradient=GOLD, angle=0)
+    c.arc_band(cx, cy, 318, 212, 180, 240, fill=C["red"])
+    c.arc_band(cx, cy, 318, 212, 240, 300, gradient=GOLD_SOFT, angle=45)
+    c.arc_band(cx, cy, 318, 212, 300, 360, fill=C["jade"])
+    for a, t, col in ((210, p["zones"][0], "#FFFFFF"), (270, p["zones"][1], C["deep"]),
+                      (330, p["zones"][2], "#FFFFFF")):
+        lx = cx + 266 * math.cos(math.radians(a))
+        ly = cy + 266 * math.sin(math.radians(a))
+        c.text((lx, ly), t, font("cairo", 25, 800), fill=col, anchor="mm")
+    na, pa = math.radians(345), math.radians(345) + math.pi / 2
+    c.shape("poly", [(cx + 24 * math.cos(pa), cy + 24 * math.sin(pa)),
+                     (cx - 24 * math.cos(pa), cy - 24 * math.sin(pa)),
+                     (cx + 246 * math.cos(na), cy + 246 * math.sin(na))],
+            gradient=GOLD, angle=0, shadow=dict(offset=(0, 8), blur=14, alpha=110, color="#000000"))
+    c.shape("ellipse", [cx - 46, cy - 46, cx + 46, cy + 46], gradient=GOLD_SOFT, angle=45)
+    c.shape("ellipse", [cx - 29, cy - 29, cx + 29, cy + 29], fill=C["deep"])
+
+    f = font("cairo", 29, 800)
+    bw = measure(p["pill"], f)[0] + 100
+    c.shape("round", [540 - bw / 2, 906, 540 + bw / 2, 972], gradient=GOLD, angle=0, radius=33,
+            shadow=dict(offset=(0, 10), blur=18, alpha=110, color="#000000"))
+    c.text((540 - bw / 2 + 34, 939), "✓", font("latin", 24), fill=C["deep"], anchor="mm")
+    c.text((540 + 26, 939), p["pill"], f, fill=C["deep"], anchor="mm")
+    for i, t in enumerate(p["notes"]):
+        c.text((540, 1026 + i * 54), t, font("cairo", 28, 700), fill=C["mint"], anchor="mm")
+    c.shape("rect", [0, 1150, W, 1156], gradient=GOLD, angle=0)
+    c.footer(y=1262, dark=True, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ B7 certified translation spread
+def translation_spread(p):
+    c = Canvas(C["ivory"])
+    c.gradient_bg([C["ivory"], C["cream"], C["sand"]], angle=100)
+    c.girih(alpha=26, cell=160, color=C["gold"])
+    c.lockup(W - 66, 96, size=94)
+    head_block(c, p, y0=158, size=86, subw=560)
+
+    rp, lp = (560, 540, 1020, 1046), (60, 540, 520, 1046)
+    for box, head, hcol, rtl in ((rp, p["page_ar"], C["emerald"], True),
+                                 (lp, p["page_en"], C["forest"], False)):
+        x0, y0, x1, y1 = box
+        c.shape("round", box, fill="#FFFFFF", radius=14,
+                shadow=dict(offset=(0, 16), blur=26, alpha=85, color="#6B5C3A"))
+        c.shape("round", [x0 + 20, y0 + 20, x1 - 20, y0 + 78], fill=hcol, radius=10)
+        c.text(((x0 + x1) / 2, y0 + 49), head, font("cairo", 27, 800), fill=C["ivory"], anchor="mm")
+        for i in range(10):
+            yy = y0 + 118 + i * 38
+            ww = (x1 - x0 - 40) * (0.95 if i % 4 else 0.6)
+            bx = [x1 - 20 - ww, yy, x1 - 20, yy + 13] if rtl else [x0 + 20, yy, x0 + 20 + ww, yy + 13]
+            c.shape("round", bx, fill="#E3DCCF", radius=6)
+    c.shape("rect", [520, 540, 560, 1046], gradient=GOLD_SOFT, angle=90)
+    c.shape("ellipse", [484, 737, 596, 849], gradient=GOLD, angle=45,
+            shadow=dict(offset=(0, 10), blur=16, alpha=100, color="#6B5C3A"))
+    c.shape("poly", [(566, 759), (566, 827), (508, 793)], fill=C["deep"])
+    seal(c, 540, 1062, 86, p["seal1"], p["seal2"], light=True)
+    c.shape("rect", [0, 1150, W, 1156], gradient=GOLD, angle=0)
+    c.footer(y=1262, dark=False, cta=p["cta"])
+    return c
+
+
+TEMPLATES.update({
+    "tools_card": tools_card,
+    "gap_funnel": gap_funnel,
+    "rank_stairs": rank_stairs,
+    "spotlight_stage": spotlight_stage,
+    "course_window": course_window,
+    "citation_dial": citation_dial,
+    "translation_spread": translation_spread,
+})

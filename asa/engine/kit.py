@@ -539,3 +539,22 @@ def _photo_into(self, name, cx=None, bottom=None, height=None, box=None, mask=No
 
 
 Canvas.photo = _photo_into
+
+
+def _arc_band(self, cx, cy, r_out, r_in, a0, a1, fill=None, gradient=None, angle=90,
+              shadow=None, opacity=255):
+    """Ring segment between two radii, a0->a1 in degrees (0 = east, 90 = south)."""
+    mask = Image.new("L", self.im.size, 0)
+    d = ImageDraw.Draw(mask)
+    d.pieslice([s(cx - r_out), s(cy - r_out), s(cx + r_out), s(cy + r_out)], a0, a1, fill=opacity)
+    if r_in > 0:
+        d.pieslice([s(cx - r_in), s(cy - r_in), s(cx + r_in), s(cy + r_in)], a0 - 1, a1 + 1, fill=0)
+    if shadow:
+        self.shadow_from(mask, **shadow)
+    if gradient:
+        self.paste_masked(self.grad_for(mask, gradient, angle), mask)
+    elif fill is not None:
+        self.paste_masked(Image.new("RGBA", self.im.size, rgb(fill)), mask)
+
+
+Canvas.arc_band = _arc_band
