@@ -1,0 +1,472 @@
+{
+ "title": "الطريق للتخرّج — لقطة واحدة",
+ "service": "إعداد رسائل الماجستير وأطاريح الدكتوراه",
+ "format": "one unbroken shot: the camera flies up a tall world from the stuck night to graduation, holding at each stage and whipping between them, with four parallax depths, speed-scaled motion blur and a light sweep on arrival.",
+ "mood": "resolve",
+ "bpm": 100,
+ "music_seed": 41,
+ "world_h": 9400,
+ "near": true,
+ "grain": 3.0,
+ "vignette": 0.42,
+ "crf": 22,
+ "cover_station": 6,
+ "lead": 0.5,
+ "tail": 0.6,
+ "caption": "🎓 رسالتك واقفة من شهور؟ مش لأنك مش قادر.. لأن ما حدا مشى الطريق معك.\n\nالرسالة مش فصول ببعضها، هي طريق إله محطات بالترتيب: العنوان والخطة، الإطار والمراجع، الأدوات والبيانات، التحليل، والنشر. وأي محطة بتعديها غلط بترجّعك للي قبلها.\n\n📚 في أكاديمية العلماء العرب منمشي الطريق كله معك:\n1️⃣ عنوان مبتكر وخطة بحث (Proposal) مقبولة\n2️⃣ الإطار النظري والدراسات السابقة بمراجع عربية وأجنبية محكّمة\n3️⃣ أدوات الدراسة وتحكيمها، وجمع البيانات حتى تكتمل العيّنة\n4️⃣ التحليل الإحصائي وربط النتائج بالفرضيات وتفسيرها\n5️⃣ النشر في Scopus Q1 / Q2 / Q3 / Q4 ومجلات Arcif\n6️⃣ التدقيق والتنسيق والتحضير ليوم المناقشة\n\n📈 أكثر من 5000 عمل بحثي تم الإشراف عليه، وأكثر من 100 باحث متخصص\n🚀 وآخر محطة اسمها التخرّج.. واستشارتك الأولى مجانية\n\n📞 للتواصل والاستفسار:\n📱 رقم الهاتف: 00962778597330\n💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778597330\n📧 البريد الإلكتروني: asaforconsultingandtraining@gmail.com\n\n#أكاديمية_العلماء_العرب #رسائل_ماجستير #أطروحة_دكتوراه #خطة_البحث #التحليل_الإحصائي #النشر_العلمي #الدراسات_العليا",
+ "stations": [
+  {
+   "y": 8400,
+   "hold": 1.9,
+   "travel": 0.78,
+   "elements": [
+    {
+     "type": "text",
+     "text": "رسالتك واقفة؟",
+     "font": "cairo",
+     "size": 104,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -330,
+     "t": 0.15,
+     "dur": 0.55,
+     "anim": "zoom",
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "من شهور",
+     "font": "cairo",
+     "size": 58,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -190,
+     "t": 0.6,
+     "dur": 0.45,
+     "anim": "up",
+     "color": "#EED9A0"
+    },
+    {
+     "type": "doc",
+     "w": 400,
+     "h": 500,
+     "marks": 0,
+     "x": 540,
+     "dy": 190,
+     "t": 0.4,
+     "dur": 0.6,
+     "anim": "zoom"
+    },
+    {
+     "type": "stamp",
+     "text": "مرفوض",
+     "size": 64,
+     "rot": -12,
+     "color": "#B23A3A",
+     "x": 700,
+     "dy": 120,
+     "t": 1.1,
+     "dur": 0.5,
+     "anim": "slam"
+    }
+   ]
+  },
+  {
+   "y": 7050,
+   "hold": 1.5,
+   "travel": 0.78,
+   "elements": [
+    {
+     "type": "text",
+     "text": "١ · العنوان والخطة",
+     "font": "cairo",
+     "size": 52,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -300,
+     "t": 0.05,
+     "dur": 0.3,
+     "anim": "fade",
+     "color": "#EED9A0"
+    },
+    {
+     "type": "text",
+     "text": "نبدأ من الصح",
+     "font": "cairo",
+     "size": 96,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -190,
+     "t": 0.12,
+     "dur": 0.5,
+     "anim": "zoom",
+     "gradient": "gold"
+    },
+    {
+     "type": "chapter",
+     "tag": "العنوان",
+     "text": "مبتكر وغير مكرر في تخصصك",
+     "w": 860,
+     "x": 540,
+     "dy": 30,
+     "t": 0.45,
+     "dur": 0.5,
+     "anim": "wipe"
+    },
+    {
+     "type": "chapter",
+     "tag": "الخطة",
+     "text": "المشكلة والأهداف والمنهج",
+     "w": 860,
+     "x": 540,
+     "dy": 190,
+     "t": 0.75,
+     "dur": 0.5,
+     "anim": "wipe"
+    }
+   ]
+  },
+  {
+   "y": 5800,
+   "hold": 1.5,
+   "travel": 0.78,
+   "elements": [
+    {
+     "type": "text",
+     "text": "٢ · الإطار والمراجع",
+     "font": "cairo",
+     "size": 52,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -300,
+     "t": 0.05,
+     "dur": 0.3,
+     "anim": "fade",
+     "color": "#EED9A0"
+    },
+    {
+     "type": "text",
+     "text": "على دراسات حقيقية",
+     "font": "cairo",
+     "size": 88,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -190,
+     "t": 0.12,
+     "dur": 0.5,
+     "anim": "zoom",
+     "gradient": "gold"
+    },
+    {
+     "type": "check",
+     "text": "الدراسات السابقة والتعقيب عليها",
+     "size": 42,
+     "w": 860,
+     "x": 540,
+     "dy": 20,
+     "t": 0.45,
+     "dur": 0.45,
+     "anim": "right"
+    },
+    {
+     "type": "check",
+     "text": "مراجع عربية وأجنبية محكّمة",
+     "size": 42,
+     "w": 860,
+     "x": 540,
+     "dy": 160,
+     "t": 0.7,
+     "dur": 0.45,
+     "anim": "right"
+    }
+   ]
+  },
+  {
+   "y": 4550,
+   "hold": 1.5,
+   "travel": 0.78,
+   "elements": [
+    {
+     "type": "text",
+     "text": "٣ · الأدوات والبيانات",
+     "font": "cairo",
+     "size": 52,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -300,
+     "t": 0.05,
+     "dur": 0.3,
+     "anim": "fade",
+     "color": "#EED9A0"
+    },
+    {
+     "type": "counter",
+     "value": 400,
+     "prefix": "",
+     "suffix": " استجابة",
+     "size": 140,
+     "x": 540,
+     "dy": -150,
+     "t": 0.15,
+     "dur": 1.0,
+     "step": 5
+    },
+    {
+     "type": "text",
+     "text": "استبانة محكّمة وعيّنة مكتملة",
+     "font": "cairo",
+     "size": 50,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": 60,
+     "t": 0.8,
+     "dur": 0.45,
+     "anim": "up",
+     "color": "#FBF8F1"
+    },
+    {
+     "type": "bar",
+     "text": "Excel / SPSS",
+     "w": 820,
+     "x": 540,
+     "dy": 230,
+     "t": 1.0,
+     "dur": 0.5,
+     "anim": "wipe"
+    }
+   ]
+  },
+  {
+   "y": 3300,
+   "hold": 1.5,
+   "travel": 0.78,
+   "elements": [
+    {
+     "type": "text",
+     "text": "٤ · التحليل الإحصائي",
+     "font": "cairo",
+     "size": 52,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -300,
+     "t": 0.05,
+     "dur": 0.3,
+     "anim": "fade",
+     "color": "#EED9A0"
+    },
+    {
+     "type": "text",
+     "text": "أرقامك تحكي",
+     "font": "cairo",
+     "size": 96,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -190,
+     "t": 0.12,
+     "dur": 0.5,
+     "anim": "zoom",
+     "gradient": "gold"
+    },
+    {
+     "type": "bar",
+     "text": "الصدق والثبات",
+     "w": 840,
+     "x": 540,
+     "dy": 10,
+     "t": 0.4,
+     "dur": 0.45,
+     "anim": "wipe"
+    },
+    {
+     "type": "bar",
+     "text": "اختبار الفرضيات",
+     "w": 840,
+     "x": 540,
+     "dy": 150,
+     "t": 0.65,
+     "dur": 0.45,
+     "anim": "wipe"
+    },
+    {
+     "type": "scale5",
+     "text": "النتيجة",
+     "mark": 4,
+     "w": 840,
+     "x": 540,
+     "dy": 320,
+     "t": 0.95,
+     "dur": 0.5,
+     "anim": "up"
+    }
+   ]
+  },
+  {
+   "y": 2050,
+   "hold": 1.5,
+   "travel": 0.78,
+   "elements": [
+    {
+     "type": "text",
+     "text": "٥ · النشر العلمي",
+     "font": "cairo",
+     "size": 52,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -300,
+     "t": 0.05,
+     "dur": 0.3,
+     "anim": "fade",
+     "color": "#EED9A0"
+    },
+    {
+     "type": "text",
+     "text": "Scopus",
+     "font": "cairo",
+     "size": 120,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -180,
+     "t": 0.12,
+     "dur": 0.5,
+     "anim": "zoom",
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "Q1 · Q2 · Q3 · Q4 ومجلات Arcif",
+     "font": "cairo",
+     "size": 48,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -40,
+     "t": 0.5,
+     "dur": 0.45,
+     "anim": "up",
+     "color": "#EED9A0"
+    },
+    {
+     "type": "seal",
+     "big": "مقبول",
+     "small": "للنشر",
+     "r": 120,
+     "x": 540,
+     "dy": 250,
+     "t": 0.85,
+     "dur": 0.55,
+     "anim": "slam"
+    }
+   ]
+  },
+  {
+   "y": 780,
+   "hold": 3.6,
+   "travel": 0.0,
+   "elements": [
+    {
+     "type": "emblem",
+     "width": 140,
+     "x": 540,
+     "dy": -560,
+     "t": 0.05,
+     "dur": 0.4,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "أكاديمية العلماء العرب",
+     "font": "cairo",
+     "size": 56,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -440,
+     "t": 0.25,
+     "dur": 0.45,
+     "anim": "up",
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "طريقك نحو التميّز الأكاديمي",
+     "font": "cairo",
+     "size": 44,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -350,
+     "t": 0.45,
+     "dur": 0.45,
+     "anim": "up",
+     "color": "#EED9A0"
+    },
+    {
+     "type": "whatsapp",
+     "scale": 1.05,
+     "x": 540,
+     "dy": -210,
+     "t": 0.7,
+     "dur": 0.45,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "استشارتك الأولى مجانية",
+     "font": "cairo",
+     "size": 50,
+     "wght": 900,
+     "dark_bg": true,
+     "x": 540,
+     "dy": -80,
+     "t": 1.0,
+     "dur": 0.45,
+     "anim": "up",
+     "color": "#FBF8F1"
+    },
+    {
+     "type": "arch",
+     "w": 720,
+     "h": 980,
+     "x": 540,
+     "dy": 560,
+     "t": 0.2,
+     "dur": 0.6,
+     "anim": "fade"
+    },
+    {
+     "type": "photo",
+     "name": "twograds",
+     "height": 980,
+     "x": 540,
+     "dy": 560,
+     "t": 0.5,
+     "dur": 0.7,
+     "anim": "up"
+    },
+    {
+     "type": "badge",
+     "big": "+5000",
+     "small": "عمل بحثي",
+     "r": 96,
+     "x": 880,
+     "dy": 140,
+     "t": 1.5,
+     "dur": 0.5,
+     "anim": "pop"
+    }
+   ]
+  }
+ ]
+}
