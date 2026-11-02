@@ -1,0 +1,684 @@
+{
+ "title": "إعلان: الأكاديمية — الأروقة",
+ "service": "كل الخدمات — إعلان تعريفي",
+ "format": "walking the arcade: one arched bay fills the frame per cut with the camera pushing through it, until the last opens onto the graduate.",
+ "mood": "craft",
+ "bpm": 96,
+ "music_seed": 23,
+ "fadein": 0.03,
+ "cover_scene": 6,
+ "cover_t": 2.0,
+ "caption": "🏛️ كل خدماتنا تحت سقف واحد.. وكل قوس منها خطوة في رسالتك.\n\nالباحث اللي بيدوّر على كل خدمة عند حدا مختلف بيدفع مرتين: مرة بالوقت، ومرة لما تطلع الفصول مش متناسقة مع بعضها.\n\n📚 في أكاديمية العلماء العرب كل شي في مكان واحد:\n1️⃣ الرسائل والأطاريح من العنوان حتى المناقشة\n2️⃣ الإطار النظري والدراسات السابقة بمراجع عربية وأجنبية\n3️⃣ أدوات الدراسة وتحكيمها وجمع البيانات وتفريغها\n4️⃣ التحليل الإحصائي وربط النتائج بالفرضيات وتفسيرها\n5️⃣ النشر العلمي في Scopus Q1 / Q2 / Q3 / Q4 و Arcif\n6️⃣ التدقيق اللغوي وفحص Turnitin والترجمة المعتمدة والعروض التقديمية\n7️⃣ دورات تدريبية أونلاين لطلبة الدراسات العليا\n\n📈 أكثر من 5000 عمل بحثي تم الإشراف عليه، وأكثر من 100 باحث متخصص\n🎓 وآخر قوس اسمه التخرّج.. واستشارتك الأولى مجانية\n\n📞 للتواصل والاستفسار:\n📱 رقم الهاتف: 00962778597330\n💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778597330\n📧 البريد الإلكتروني: asaforconsultingandtraining@gmail.com\n\n#أكاديمية_العلماء_العرب #رسائل_ماجستير #أطروحة_دكتوراه #التحليل_الإحصائي #النشر_العلمي #الدراسات_العليا #البحث_العلمي",
+ "scenes": [
+  {
+   "bg": "flat",
+   "tint": [
+    "#071C13",
+    "#0B2E1E"
+   ],
+   "dur": 3.2,
+   "glow": "#C8A02E",
+   "camera": {
+    "from": 1.35,
+    "to": 1.0,
+    "t0": 0.0,
+    "t1": 2.4
+   },
+   "elements": [
+    {
+     "type": "arch",
+     "w": 680,
+     "h": 940,
+     "x": 540,
+     "bottom": 1880,
+     "t": 0.1,
+     "dur": 0.7,
+     "anim": "fade"
+    },
+    {
+     "type": "text",
+     "text": "كل خدماتنا",
+     "font": "cairo",
+     "size": 92,
+     "wght": 900,
+     "x": 540,
+     "y": 420,
+     "t": 0.25,
+     "dur": 0.5,
+     "anim": "zoom",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "تحت سقف واحد",
+     "font": "cairo",
+     "size": 76,
+     "wght": 900,
+     "x": 540,
+     "y": 560,
+     "t": 0.7,
+     "dur": 0.4,
+     "anim": "up",
+     "dark_bg": true,
+     "color": "#EED9A0"
+    },
+    {
+     "type": "emblem",
+     "width": 118,
+     "x": 540,
+     "y": 1120,
+     "t": 1.2,
+     "dur": 0.5,
+     "anim": "pop"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#0B2E1E",
+    "#164A2F"
+   ],
+   "dur": 2.1,
+   "cut": true,
+   "glow": "#C8A02E",
+   "camera": {
+    "from": 1.22,
+    "to": 1.0,
+    "t0": 0.0,
+    "t1": 1.5
+   },
+   "elements": [
+    {
+     "type": "arch",
+     "w": 760,
+     "h": 1020,
+     "x": 540,
+     "bottom": 1900,
+     "t": 0.02,
+     "dur": 0.3,
+     "anim": "fade"
+    },
+    {
+     "type": "star",
+     "r": 30,
+     "x": 540,
+     "y": 430,
+     "t": 0.08,
+     "dur": 0.3,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "1 / 5",
+     "font": "cairo",
+     "size": 40,
+     "wght": 900,
+     "x": 540,
+     "y": 330,
+     "t": 0.05,
+     "dur": 0.25,
+     "anim": "fade",
+     "dark_bg": true,
+     "color": "#C8A02E"
+    },
+    {
+     "type": "text",
+     "text": "الرسائل والأطاريح",
+     "font": "cairo",
+     "size": 80,
+     "wght": 900,
+     "x": 540,
+     "y": 540,
+     "t": 0.18,
+     "dur": 0.4,
+     "anim": "zoom",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "من العنوان حتى المناقشة",
+     "font": "cairo",
+     "size": 46,
+     "wght": 900,
+     "x": 540,
+     "y": 700,
+     "t": 0.5,
+     "dur": 0.35,
+     "anim": "up",
+     "dark_bg": true,
+     "color": "#FBF8F1"
+    },
+    {
+     "type": "line",
+     "w": 320,
+     "x": 540,
+     "y": 820,
+     "t": 0.7,
+     "dur": 0.3,
+     "anim": "pop"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#071C13",
+    "#0F5236"
+   ],
+   "dur": 2.1,
+   "cut": true,
+   "glow": "#C8A02E",
+   "camera": {
+    "from": 1.22,
+    "to": 1.0,
+    "t0": 0.0,
+    "t1": 1.5
+   },
+   "elements": [
+    {
+     "type": "arch",
+     "w": 760,
+     "h": 1020,
+     "x": 540,
+     "bottom": 1900,
+     "t": 0.02,
+     "dur": 0.3,
+     "anim": "fade"
+    },
+    {
+     "type": "star",
+     "r": 30,
+     "x": 540,
+     "y": 430,
+     "t": 0.08,
+     "dur": 0.3,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "2 / 5",
+     "font": "cairo",
+     "size": 40,
+     "wght": 900,
+     "x": 540,
+     "y": 330,
+     "t": 0.05,
+     "dur": 0.25,
+     "anim": "fade",
+     "dark_bg": true,
+     "color": "#C8A02E"
+    },
+    {
+     "type": "text",
+     "text": "الإطار والمراجع",
+     "font": "cairo",
+     "size": 80,
+     "wght": 900,
+     "x": 540,
+     "y": 540,
+     "t": 0.18,
+     "dur": 0.4,
+     "anim": "zoom",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "دراسات سابقة ومراجع محكّمة",
+     "font": "cairo",
+     "size": 46,
+     "wght": 900,
+     "x": 540,
+     "y": 700,
+     "t": 0.5,
+     "dur": 0.35,
+     "anim": "up",
+     "dark_bg": true,
+     "color": "#FBF8F1"
+    },
+    {
+     "type": "line",
+     "w": 320,
+     "x": 540,
+     "y": 820,
+     "t": 0.7,
+     "dur": 0.3,
+     "anim": "pop"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#0B2E1E",
+    "#164A2F"
+   ],
+   "dur": 2.1,
+   "cut": true,
+   "glow": "#C8A02E",
+   "camera": {
+    "from": 1.22,
+    "to": 1.0,
+    "t0": 0.0,
+    "t1": 1.5
+   },
+   "elements": [
+    {
+     "type": "arch",
+     "w": 760,
+     "h": 1020,
+     "x": 540,
+     "bottom": 1900,
+     "t": 0.02,
+     "dur": 0.3,
+     "anim": "fade"
+    },
+    {
+     "type": "star",
+     "r": 30,
+     "x": 540,
+     "y": 430,
+     "t": 0.08,
+     "dur": 0.3,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "3 / 5",
+     "font": "cairo",
+     "size": 40,
+     "wght": 900,
+     "x": 540,
+     "y": 330,
+     "t": 0.05,
+     "dur": 0.25,
+     "anim": "fade",
+     "dark_bg": true,
+     "color": "#C8A02E"
+    },
+    {
+     "type": "text",
+     "text": "الأدوات وجمع البيانات",
+     "font": "cairo",
+     "size": 80,
+     "wght": 900,
+     "x": 540,
+     "y": 540,
+     "t": 0.18,
+     "dur": 0.4,
+     "anim": "zoom",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "استبانة محكّمة وعيّنة مكتملة",
+     "font": "cairo",
+     "size": 46,
+     "wght": 900,
+     "x": 540,
+     "y": 700,
+     "t": 0.5,
+     "dur": 0.35,
+     "anim": "up",
+     "dark_bg": true,
+     "color": "#FBF8F1"
+    },
+    {
+     "type": "line",
+     "w": 320,
+     "x": 540,
+     "y": 820,
+     "t": 0.7,
+     "dur": 0.3,
+     "anim": "pop"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#071C13",
+    "#0F5236"
+   ],
+   "dur": 2.1,
+   "cut": true,
+   "glow": "#C8A02E",
+   "camera": {
+    "from": 1.22,
+    "to": 1.0,
+    "t0": 0.0,
+    "t1": 1.5
+   },
+   "elements": [
+    {
+     "type": "arch",
+     "w": 760,
+     "h": 1020,
+     "x": 540,
+     "bottom": 1900,
+     "t": 0.02,
+     "dur": 0.3,
+     "anim": "fade"
+    },
+    {
+     "type": "star",
+     "r": 30,
+     "x": 540,
+     "y": 430,
+     "t": 0.08,
+     "dur": 0.3,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "4 / 5",
+     "font": "cairo",
+     "size": 40,
+     "wght": 900,
+     "x": 540,
+     "y": 330,
+     "t": 0.05,
+     "dur": 0.25,
+     "anim": "fade",
+     "dark_bg": true,
+     "color": "#C8A02E"
+    },
+    {
+     "type": "text",
+     "text": "التحليل الإحصائي",
+     "font": "cairo",
+     "size": 80,
+     "wght": 900,
+     "x": 540,
+     "y": 540,
+     "t": 0.18,
+     "dur": 0.4,
+     "anim": "zoom",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "نتائج مربوطة بالفرضيات",
+     "font": "cairo",
+     "size": 46,
+     "wght": 900,
+     "x": 540,
+     "y": 700,
+     "t": 0.5,
+     "dur": 0.35,
+     "anim": "up",
+     "dark_bg": true,
+     "color": "#FBF8F1"
+    },
+    {
+     "type": "line",
+     "w": 320,
+     "x": 540,
+     "y": 820,
+     "t": 0.7,
+     "dur": 0.3,
+     "anim": "pop"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#0B2E1E",
+    "#164A2F"
+   ],
+   "dur": 2.1,
+   "cut": true,
+   "glow": "#C8A02E",
+   "camera": {
+    "from": 1.22,
+    "to": 1.0,
+    "t0": 0.0,
+    "t1": 1.5
+   },
+   "elements": [
+    {
+     "type": "arch",
+     "w": 760,
+     "h": 1020,
+     "x": 540,
+     "bottom": 1900,
+     "t": 0.02,
+     "dur": 0.3,
+     "anim": "fade"
+    },
+    {
+     "type": "star",
+     "r": 30,
+     "x": 540,
+     "y": 430,
+     "t": 0.08,
+     "dur": 0.3,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "5 / 5",
+     "font": "cairo",
+     "size": 40,
+     "wght": 900,
+     "x": 540,
+     "y": 330,
+     "t": 0.05,
+     "dur": 0.25,
+     "anim": "fade",
+     "dark_bg": true,
+     "color": "#C8A02E"
+    },
+    {
+     "type": "text",
+     "text": "النشر العلمي",
+     "font": "cairo",
+     "size": 80,
+     "wght": 900,
+     "x": 540,
+     "y": 540,
+     "t": 0.18,
+     "dur": 0.4,
+     "anim": "zoom",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "مجلات Scopus ومجلات Arcif",
+     "font": "cairo",
+     "size": 46,
+     "wght": 900,
+     "x": 540,
+     "y": 700,
+     "t": 0.5,
+     "dur": 0.35,
+     "anim": "up",
+     "dark_bg": true,
+     "color": "#FBF8F1"
+    },
+    {
+     "type": "line",
+     "w": 320,
+     "x": 540,
+     "y": 820,
+     "t": 0.7,
+     "dur": 0.3,
+     "anim": "pop"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#0B2E1E",
+    "#0F5236"
+   ],
+   "dur": 2.6,
+   "cut": true,
+   "glow": "#C8A02E",
+   "elements": [
+    {
+     "type": "arch",
+     "w": 760,
+     "h": 1040,
+     "x": 540,
+     "bottom": 1930,
+     "t": 0.02,
+     "dur": 0.4,
+     "anim": "fade"
+    },
+    {
+     "type": "text",
+     "text": "وآخر قوس",
+     "font": "cairo",
+     "size": 72,
+     "wght": 900,
+     "x": 540,
+     "y": 400,
+     "t": 0.08,
+     "dur": 0.4,
+     "anim": "up",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "اسمه التخرّج",
+     "font": "cairo",
+     "size": 92,
+     "wght": 900,
+     "x": 540,
+     "y": 530,
+     "t": 0.45,
+     "dur": 0.45,
+     "anim": "zoom",
+     "dark_bg": true,
+     "color": "#EED9A0"
+    },
+    {
+     "type": "photo",
+     "name": "grad-man",
+     "height": 1000,
+     "x": 540,
+     "bottom": 1925,
+     "t": 0.6,
+     "dur": 0.6,
+     "anim": "up"
+    },
+    {
+     "type": "badge",
+     "big": "+5000",
+     "small": "عمل بحثي",
+     "r": 92,
+     "x": 858,
+     "y": 1230,
+     "t": 1.4,
+     "dur": 0.5,
+     "anim": "pop"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#071C13",
+    "#0F5236"
+   ],
+   "dur": 4.2,
+   "glow": "#C8A02E",
+   "elements": [
+    {
+     "type": "emblem",
+     "width": 150,
+     "x": 540,
+     "y": 300,
+     "t": 0.05,
+     "dur": 0.4,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "أكاديمية العلماء العرب",
+     "font": "cairo",
+     "size": 62,
+     "wght": 900,
+     "x": 540,
+     "y": 440,
+     "t": 0.3,
+     "dur": 0.4,
+     "anim": "up",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "للاستشارات والتدريب",
+     "font": "cairo",
+     "size": 48,
+     "wght": 900,
+     "x": 540,
+     "y": 556,
+     "t": 0.5,
+     "dur": 0.35,
+     "anim": "up",
+     "dark_bg": true,
+     "color": "#EED9A0"
+    },
+    {
+     "type": "whatsapp",
+     "scale": 1.05,
+     "x": 540,
+     "y": 730,
+     "t": 0.85,
+     "dur": 0.45,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "استشارتك الأولى مجانية",
+     "font": "cairo",
+     "size": 58,
+     "wght": 900,
+     "x": 540,
+     "y": 900,
+     "t": 1.2,
+     "dur": 0.35,
+     "anim": "up",
+     "dark_bg": true,
+     "color": "#FBF8F1"
+    },
+    {
+     "type": "text",
+     "text": "أكثر من 100 باحث متخصص",
+     "font": "cairo",
+     "size": 44,
+     "wght": 900,
+     "x": 540,
+     "y": 1030,
+     "t": 1.5,
+     "dur": 0.4,
+     "anim": "fade",
+     "dark_bg": true,
+     "color": "#EED9A0"
+    },
+    {
+     "type": "arch",
+     "w": 700,
+     "h": 760,
+     "x": 540,
+     "bottom": 1930,
+     "t": 0.4,
+     "dur": 0.6,
+     "anim": "fade"
+    }
+   ]
+  }
+ ]
+}

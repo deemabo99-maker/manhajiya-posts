@@ -1,0 +1,751 @@
+{
+ "title": "إعلان: المنهجية — الطريق",
+ "service": "كل الخدمات — إعلان تعريفي",
+ "format": "the route travelled: five stations arrive one per cut, each ticked off as it passes and the remaining count ticking down, then the payoff.",
+ "music": {
+  "mood": "drive",
+  "bpm": 118
+ },
+ "bpm": 118,
+ "music_seed": 21,
+ "fadein": 0.03,
+ "cover": {
+  "scene": 3,
+  "t": 1.6
+ },
+ "cover_scene": 3,
+ "cover_t": 1.6,
+ "caption": "🎓 رسالتك فيها خمس محطات.. وإنت واقف عند وحدة منهم.\n\nالعنوان والخطة، الإطار والمراجع، الأدوات وجمع البيانات، التحليل الإحصائي، وبالآخر النشر والتسليم. كل محطة إلها شروطها، وأي خطوة غلط فيها بترجّعك شهر لورا.\n\n✅ في المنهجية منمشي معك المحطات وحدة وحدة:\n1️⃣ عنوان مبتكر غير مكرر وخطة بحث مقبولة من المشرف\n2️⃣ الإطار النظري والدراسات السابقة بمراجع عربية وأجنبية\n3️⃣ أدوات الدراسة وتحكيمها، وبيانات بورصة عمّان المالية يدوياً\n4️⃣ التحليل الإحصائي وربط النتائج بالفرضيات وتفسيرها\n5️⃣ النشر في Scopus Q1 / Q2 / Q3 / Q4 و Arcif، والتدقيق والتنسيق وفحص الاقتباس\n\n🌍 أونلاين لطلاب الأردن والسعودية والعراق والكويت والإمارات وقطر وعُمان والبحرين ومصر وليبيا والجزائر\n🚀 قوللي وين واقف.. ومنكمّل من هناك. واستشارتك الأولى مجانية\n\n📞 للتواصل والاستفسار:\n📱 رقم الهاتف: 00962778707204\n💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778707204\n\n#المنهجية #رسائل_ماجستير #أطروحة_دكتوراه #التحليل_الإحصائي #خطة_البحث #النشر_العلمي #الدراسات_العليا",
+ "scenes": [
+  {
+   "bg": "flat",
+   "tint": [
+    "#24092F",
+    "#4B1A5E"
+   ],
+   "dur": 3.0,
+   "elements": [
+    {
+     "type": "text",
+     "text": "رسالتك",
+     "font": "kufi",
+     "size": 128,
+     "wght": 900,
+     "x": 540,
+     "y": 470,
+     "t": 0.05,
+     "dur": 0.5,
+     "anim": "zoom",
+     "shadow": true,
+     "gradient": "ring"
+    },
+    {
+     "type": "text",
+     "text": "فيها ٥ محطات",
+     "font": "kufi",
+     "size": 78,
+     "wght": 900,
+     "x": 540,
+     "y": 640,
+     "t": 0.5,
+     "dur": 0.4,
+     "anim": "up",
+     "shadow": true,
+     "color": "#E9DCF4"
+    },
+    {
+     "type": "text",
+     "text": "وإنت واقف عند وحدة",
+     "font": "kufi",
+     "size": 60,
+     "wght": 900,
+     "x": 540,
+     "y": 760,
+     "t": 1.0,
+     "dur": 0.4,
+     "anim": "up",
+     "shadow": true,
+     "color": "#FFC21A"
+    },
+    {
+     "type": "ring",
+     "r": 150,
+     "width": 16,
+     "alpha": 70,
+     "x": 540,
+     "y": 1060,
+     "t": 1.4,
+     "dur": 0.5,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "١",
+     "font": "kufi",
+     "size": 150,
+     "wght": 900,
+     "x": 540,
+     "y": 985,
+     "t": 1.55,
+     "dur": 0.4,
+     "anim": "pop",
+     "shadow": true,
+     "gradient": "ring"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#4B1A5E",
+    "#9627C4"
+   ],
+   "dur": 2.0,
+   "cut": true,
+   "elements": [
+    {
+     "type": "text",
+     "text": "المحطة الأولى",
+     "font": "kufi",
+     "size": 44,
+     "wght": 900,
+     "x": 540,
+     "y": 330,
+     "t": 0.03,
+     "dur": 0.25,
+     "anim": "fade",
+     "shadow": true,
+     "color": "#D3BEE6"
+    },
+    {
+     "type": "text",
+     "text": "العنوان والخطة",
+     "font": "kufi",
+     "size": 86,
+     "wght": 900,
+     "x": 540,
+     "y": 430,
+     "t": 0.1,
+     "dur": 0.35,
+     "anim": "right",
+     "shadow": true,
+     "gradient": "ring"
+    },
+    {
+     "type": "text",
+     "text": "عنوان مبتكر وخطة مقبولة",
+     "font": "kufi",
+     "size": 46,
+     "wght": 900,
+     "x": 540,
+     "y": 570,
+     "t": 0.35,
+     "dur": 0.3,
+     "anim": "right",
+     "shadow": true,
+     "color": "#F0E6F8"
+    },
+    {
+     "type": "pill",
+     "text": "✓ العنوان والخطة",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": "#C2309E",
+     "outline": null,
+     "x": 540,
+     "y": 700,
+     "t": 0.5,
+     "dur": 0.28,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "باقي 4",
+     "font": "kufi",
+     "size": 64,
+     "wght": 900,
+     "x": 540,
+     "y": 1180,
+     "t": 1.15,
+     "dur": 0.35,
+     "anim": "pop",
+     "shadow": true,
+     "color": "#FFC21A"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#24092F",
+    "#4B1A5E"
+   ],
+   "dur": 2.0,
+   "cut": true,
+   "elements": [
+    {
+     "type": "text",
+     "text": "المحطة الثانية",
+     "font": "kufi",
+     "size": 44,
+     "wght": 900,
+     "x": 540,
+     "y": 330,
+     "t": 0.03,
+     "dur": 0.25,
+     "anim": "fade",
+     "shadow": true,
+     "color": "#D3BEE6"
+    },
+    {
+     "type": "text",
+     "text": "الإطار والمراجع",
+     "font": "kufi",
+     "size": 86,
+     "wght": 900,
+     "x": 540,
+     "y": 430,
+     "t": 0.1,
+     "dur": 0.35,
+     "anim": "right",
+     "shadow": true,
+     "gradient": "ring"
+    },
+    {
+     "type": "text",
+     "text": "دراسات سابقة ومراجع",
+     "font": "kufi",
+     "size": 46,
+     "wght": 900,
+     "x": 540,
+     "y": 570,
+     "t": 0.35,
+     "dur": 0.3,
+     "anim": "right",
+     "shadow": true,
+     "color": "#F0E6F8"
+    },
+    {
+     "type": "pill",
+     "text": "✓ العنوان والخطة",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": null,
+     "outline": "#B07FD0",
+     "x": 540,
+     "y": 700,
+     "t": 0.5,
+     "dur": 0.28,
+     "anim": "fade"
+    },
+    {
+     "type": "pill",
+     "text": "✓ الإطار والمراجع",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": "#C2309E",
+     "outline": null,
+     "x": 540,
+     "y": 786,
+     "t": 0.56,
+     "dur": 0.28,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "باقي 3",
+     "font": "kufi",
+     "size": 64,
+     "wght": 900,
+     "x": 540,
+     "y": 1180,
+     "t": 1.15,
+     "dur": 0.35,
+     "anim": "pop",
+     "shadow": true,
+     "color": "#FFC21A"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#4B1A5E",
+    "#9627C4"
+   ],
+   "dur": 2.0,
+   "cut": true,
+   "elements": [
+    {
+     "type": "text",
+     "text": "المحطة الثالثة",
+     "font": "kufi",
+     "size": 44,
+     "wght": 900,
+     "x": 540,
+     "y": 330,
+     "t": 0.03,
+     "dur": 0.25,
+     "anim": "fade",
+     "shadow": true,
+     "color": "#D3BEE6"
+    },
+    {
+     "type": "text",
+     "text": "الأدوات والبيانات",
+     "font": "kufi",
+     "size": 86,
+     "wght": 900,
+     "x": 540,
+     "y": 430,
+     "t": 0.1,
+     "dur": 0.35,
+     "anim": "right",
+     "shadow": true,
+     "gradient": "ring"
+    },
+    {
+     "type": "text",
+     "text": "استبانات وبورصة عمّان",
+     "font": "kufi",
+     "size": 46,
+     "wght": 900,
+     "x": 540,
+     "y": 570,
+     "t": 0.35,
+     "dur": 0.3,
+     "anim": "right",
+     "shadow": true,
+     "color": "#F0E6F8"
+    },
+    {
+     "type": "pill",
+     "text": "✓ العنوان والخطة",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": null,
+     "outline": "#B07FD0",
+     "x": 540,
+     "y": 700,
+     "t": 0.5,
+     "dur": 0.28,
+     "anim": "fade"
+    },
+    {
+     "type": "pill",
+     "text": "✓ الإطار والمراجع",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": null,
+     "outline": "#B07FD0",
+     "x": 540,
+     "y": 786,
+     "t": 0.56,
+     "dur": 0.28,
+     "anim": "fade"
+    },
+    {
+     "type": "pill",
+     "text": "✓ الأدوات والبيانات",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": "#C2309E",
+     "outline": null,
+     "x": 540,
+     "y": 872,
+     "t": 0.62,
+     "dur": 0.28,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "باقي 2",
+     "font": "kufi",
+     "size": 64,
+     "wght": 900,
+     "x": 540,
+     "y": 1180,
+     "t": 1.15,
+     "dur": 0.35,
+     "anim": "pop",
+     "shadow": true,
+     "color": "#FFC21A"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#24092F",
+    "#4B1A5E"
+   ],
+   "dur": 2.0,
+   "cut": true,
+   "elements": [
+    {
+     "type": "text",
+     "text": "المحطة الرابعة",
+     "font": "kufi",
+     "size": 44,
+     "wght": 900,
+     "x": 540,
+     "y": 330,
+     "t": 0.03,
+     "dur": 0.25,
+     "anim": "fade",
+     "shadow": true,
+     "color": "#D3BEE6"
+    },
+    {
+     "type": "text",
+     "text": "التحليل الإحصائي",
+     "font": "kufi",
+     "size": 86,
+     "wght": 900,
+     "x": 540,
+     "y": 430,
+     "t": 0.1,
+     "dur": 0.35,
+     "anim": "right",
+     "shadow": true,
+     "gradient": "ring"
+    },
+    {
+     "type": "text",
+     "text": "نتائج مربوطة بالفرضيات",
+     "font": "kufi",
+     "size": 46,
+     "wght": 900,
+     "x": 540,
+     "y": 570,
+     "t": 0.35,
+     "dur": 0.3,
+     "anim": "right",
+     "shadow": true,
+     "color": "#F0E6F8"
+    },
+    {
+     "type": "pill",
+     "text": "✓ العنوان والخطة",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": null,
+     "outline": "#B07FD0",
+     "x": 540,
+     "y": 700,
+     "t": 0.5,
+     "dur": 0.28,
+     "anim": "fade"
+    },
+    {
+     "type": "pill",
+     "text": "✓ الإطار والمراجع",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": null,
+     "outline": "#B07FD0",
+     "x": 540,
+     "y": 786,
+     "t": 0.56,
+     "dur": 0.28,
+     "anim": "fade"
+    },
+    {
+     "type": "pill",
+     "text": "✓ الأدوات والبيانات",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": null,
+     "outline": "#B07FD0",
+     "x": 540,
+     "y": 872,
+     "t": 0.62,
+     "dur": 0.28,
+     "anim": "fade"
+    },
+    {
+     "type": "pill",
+     "text": "✓ التحليل الإحصائي",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": "#C2309E",
+     "outline": null,
+     "x": 540,
+     "y": 958,
+     "t": 0.6799999999999999,
+     "dur": 0.28,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "باقي 1",
+     "font": "kufi",
+     "size": 64,
+     "wght": 900,
+     "x": 540,
+     "y": 1180,
+     "t": 1.15,
+     "dur": 0.35,
+     "anim": "pop",
+     "shadow": true,
+     "color": "#FFC21A"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#4B1A5E",
+    "#9627C4"
+   ],
+   "dur": 2.0,
+   "cut": true,
+   "elements": [
+    {
+     "type": "text",
+     "text": "المحطة الخامسة",
+     "font": "kufi",
+     "size": 44,
+     "wght": 900,
+     "x": 540,
+     "y": 330,
+     "t": 0.03,
+     "dur": 0.25,
+     "anim": "fade",
+     "shadow": true,
+     "color": "#D3BEE6"
+    },
+    {
+     "type": "text",
+     "text": "النشر والتسليم",
+     "font": "kufi",
+     "size": 86,
+     "wght": 900,
+     "x": 540,
+     "y": 430,
+     "t": 0.1,
+     "dur": 0.35,
+     "anim": "right",
+     "shadow": true,
+     "gradient": "ring"
+    },
+    {
+     "type": "text",
+     "text": "Scopus وتدقيق ومناقشة",
+     "font": "kufi",
+     "size": 46,
+     "wght": 900,
+     "x": 540,
+     "y": 570,
+     "t": 0.35,
+     "dur": 0.3,
+     "anim": "right",
+     "shadow": true,
+     "color": "#F0E6F8"
+    },
+    {
+     "type": "pill",
+     "text": "✓ العنوان والخطة",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": null,
+     "outline": "#B07FD0",
+     "x": 540,
+     "y": 700,
+     "t": 0.5,
+     "dur": 0.28,
+     "anim": "fade"
+    },
+    {
+     "type": "pill",
+     "text": "✓ الإطار والمراجع",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": null,
+     "outline": "#B07FD0",
+     "x": 540,
+     "y": 786,
+     "t": 0.56,
+     "dur": 0.28,
+     "anim": "fade"
+    },
+    {
+     "type": "pill",
+     "text": "✓ الأدوات والبيانات",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": null,
+     "outline": "#B07FD0",
+     "x": 540,
+     "y": 872,
+     "t": 0.62,
+     "dur": 0.28,
+     "anim": "fade"
+    },
+    {
+     "type": "pill",
+     "text": "✓ التحليل الإحصائي",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": null,
+     "outline": "#B07FD0",
+     "x": 540,
+     "y": 958,
+     "t": 0.6799999999999999,
+     "dur": 0.28,
+     "anim": "fade"
+    },
+    {
+     "type": "pill",
+     "text": "✓ النشر والتسليم",
+     "size": 34,
+     "fg": "#FFFFFF",
+     "bg": "#C2309E",
+     "outline": null,
+     "x": 540,
+     "y": 1044,
+     "t": 0.74,
+     "dur": 0.28,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "خلصت",
+     "font": "kufi",
+     "size": 64,
+     "wght": 900,
+     "x": 540,
+     "y": 1180,
+     "t": 1.15,
+     "dur": 0.35,
+     "anim": "pop",
+     "shadow": true,
+     "color": "#7BE495"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#F5F2F7",
+    "#E6DEEE"
+   ],
+   "dur": 1.9,
+   "cut": true,
+   "elements": [
+    {
+     "type": "text",
+     "text": "وصلت",
+     "font": "kufi",
+     "size": 170,
+     "wght": 900,
+     "x": 540,
+     "y": 620,
+     "t": 0.05,
+     "dur": 0.45,
+     "anim": "zoom",
+     "shadow": false,
+     "color": "#9627C4"
+    },
+    {
+     "type": "text",
+     "text": "ومعك فريق كل الطريق",
+     "font": "almarai-xb",
+     "size": 62,
+     "wght": 900,
+     "x": 540,
+     "y": 840,
+     "t": 0.5,
+     "dur": 0.35,
+     "anim": "up",
+     "shadow": false,
+     "color": "#1E1A22"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#4B1A5E",
+    "#9627C4"
+   ],
+   "dur": 4.2,
+   "elements": [
+    {
+     "type": "logo",
+     "width": 150,
+     "x": 540,
+     "y": 330,
+     "t": 0.05,
+     "dur": 0.4,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "المنهجية",
+     "font": "kufi",
+     "size": 92,
+     "wght": 900,
+     "x": 540,
+     "y": 520,
+     "t": 0.3,
+     "dur": 0.4,
+     "anim": "up",
+     "shadow": true,
+     "gradient": "ring"
+    },
+    {
+     "type": "text",
+     "text": "للخدمات البحثية والعلمية",
+     "font": "kufi",
+     "size": 50,
+     "wght": 900,
+     "x": 540,
+     "y": 640,
+     "t": 0.5,
+     "dur": 0.35,
+     "anim": "up",
+     "shadow": true,
+     "color": "#E8DCF2"
+    },
+    {
+     "type": "whatsapp",
+     "scale": 1.05,
+     "x": 540,
+     "y": 840,
+     "t": 0.85,
+     "dur": 0.45,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "استشارتك الأولى مجانية",
+     "font": "kufi",
+     "size": 58,
+     "wght": 900,
+     "x": 540,
+     "y": 1010,
+     "t": 1.2,
+     "dur": 0.35,
+     "anim": "up",
+     "shadow": true,
+     "color": "#FFC21A"
+    },
+    {
+     "type": "text",
+     "text": "ماجستير · دكتوراه · بكالوريوس",
+     "font": "kufi",
+     "size": 44,
+     "wght": 900,
+     "x": 540,
+     "y": 1150,
+     "t": 1.5,
+     "dur": 0.4,
+     "anim": "fade",
+     "shadow": true,
+     "color": "#D8C7E8"
+    }
+   ]
+  }
+ ]
+}

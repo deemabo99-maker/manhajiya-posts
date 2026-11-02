@@ -1,29 +1,44 @@
 """
-Write the kinetic-type ad reel for المنهجية (ads-02).
+Write the ad reel for المنهجية (ads-02) — the route, travelled.
 
     python3 posts/ads-02/build.py
-    python3 engine/ads.py posts/ads-02/manhajiya-kinetic-ad.json
+    python3 engine/ads.py posts/ads-02/manhajiya-route-ad.json
 
-A deliberate break from the brand's ornate house style: flat colour fields,
-hard cuts on the beat, one oversized line per cut, no decoration. Everything
-that must survive sits inside y 0-1350 so the 4:5 cut keeps it — see
-brand/ADS.md.
+Same idea as this brand's services poster: المنهجية is the method, the way
+through. The reel travels that way. Each stage slides in from the right and is
+stamped done, and the counter of stages left ticks down — the viewer watches a
+thesis get finished.
+
+The academy's ad is built on a different idea (a book being bound). These two
+must never be the same script in two palettes; the owner has already caught
+that once.
+
+All text sits inside y 0-1350 so the 4:5 cut keeps it — see brand/ADS.md.
 """
 import json
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-PURPLE, PLUM, NIGHT = "#9627C4", "#4B1A5E", "#24092F"
-MAGENTA, YELLOW, PAPER = "#C2309E", "#FFC21A", "#F5F2F7"
+NIGHT, PLUM, PURPLE, MAGENTA = "#24092F", "#4B1A5E", "#9627C4", "#C2309E"
+YELLOW, PAPER = "#FFC21A", "#F5F2F7"
+
+STAGES = [
+    ("العنوان والخطة", "عنوان مبتكر وخطة مقبولة"),
+    ("الإطار والمراجع", "دراسات سابقة ومراجع"),
+    ("الأدوات والبيانات", "استبانات وبورصة عمّان"),
+    ("التحليل الإحصائي", "نتائج مربوطة بالفرضيات"),
+    ("النشر والتسليم", "Scopus وتدقيق ومناقشة"),
+]
 
 CONTACT = ("\n\n📞 للتواصل والاستفسار:"
            "\n📱 رقم الهاتف: 00962778707204"
            "\n💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778707204")
 
 
-def word(text, size, y, t, color="#FFFFFF", grad=None, anim="pop", dur=0.42, shadow=True):
-    e = dict(type="text", text=text, font="kufi", size=size, wght=900,
+def txt(text, size, y, t, color="#FFFFFF", grad=None, anim="up", dur=0.45,
+        fnt="kufi", shadow=True):
+    e = dict(type="text", text=text, font=fnt, size=size, wght=900,
              x=540, y=y, t=t, dur=dur, anim=anim, shadow=shadow)
     if grad:
         e["gradient"] = grad
@@ -32,87 +47,85 @@ def word(text, size, y, t, color="#FFFFFF", grad=None, anim="pop", dur=0.42, sha
     return e
 
 
-def beat(bg, tint, dur, els, cut=True):
-    sc = dict(bg=bg, dur=dur, elements=els)
-    if tint:
-        sc["tint"] = tint
-    if cut:
-        sc["cut"] = True
-    return sc
-
-
 def main():
-    # one claim per cut; the eye reads a single line before the next lands
-    scenes = [
-        beat("flat", [NIGHT, PLUM], 1.5, [
-            word("رسالتك", 150, 820, 0.05, grad="ring", anim="zoom", dur=0.5),
-            word("ما بتخلص؟", 96, 1010, 0.45, color="#FFFFFF", anim="up", dur=0.35),
-        ], cut=False),
-        beat("flat", [PURPLE, MAGENTA], 1.25, [
-            word("عنوان", 92, 560, 0.04, anim="pop", dur=0.3),
-            word("مرفوض", 170, 760, 0.18, color=YELLOW, anim="slam", dur=0.42),
-        ]),
-        beat("flat", [NIGHT, PLUM], 1.25, [
-            word("خطة", 92, 560, 0.04, anim="pop", dur=0.3),
-            word("رجعت", 170, 760, 0.18, color=YELLOW, anim="slam", dur=0.42),
-        ]),
-        beat("flat", [PURPLE, MAGENTA], 1.25, [
-            word("تحليل", 92, 560, 0.04, anim="pop", dur=0.3),
-            word("ما ظبط", 170, 760, 0.18, color=YELLOW, anim="slam", dur=0.42),
-        ]),
-        beat("flat", [PAPER, "#E6DEEE"], 1.9, [
-            word("وقّف", 190, 700, 0.05, color=PURPLE, anim="zoom", dur=0.45, shadow=False),
-            word("في طريقة أسهل", 78, 920, 0.5, color="#1E1A22", anim="up", dur=0.35, shadow=False),
-        ]),
-        beat("flat", [PLUM, PURPLE], 5.6, [
-            word("منمشيها معك", 86, 400, 0.05, grad="ring", anim="up", dur=0.4),
-            dict(type="card", icon="1", title="العنوان والخطة", desc="مبتكرة ومقبولة من المشرف",
-                 w=900, x=540, y=610, t=0.5, dur=0.4, anim="right"),
-            dict(type="card", icon="2", title="الإطار والدراسات السابقة", desc="مراجع عربية وأجنبية",
-                 w=900, x=540, y=800, t=1.1, dur=0.4, anim="right"),
-            dict(type="card", icon="3", title="الأدوات وجمع البيانات", desc="استبانات وبورصة عمّان",
-                 w=900, x=540, y=990, t=1.7, dur=0.4, anim="right"),
-            dict(type="card", icon="4", title="التحليل الإحصائي", desc="نتائج مربوطة بالفرضيات",
-                 w=900, x=540, y=1180, t=2.3, dur=0.4, anim="right"),
-        ], cut=False),
-        beat("flat", [NIGHT, PLUM], 4.2, [
-            dict(type="logo", width=150, x=540, y=330, t=0.05, dur=0.4, anim="pop"),
-            word("المنهجية", 92, 520, 0.3, grad="ring", anim="up", dur=0.4),
-            word("للخدمات البحثية والعلمية", 52, 640, 0.5, color="#E8DCF2", anim="up", dur=0.35),
-            dict(type="whatsapp", scale=1.05, x=540, y=840, t=0.85, dur=0.45, anim="pop"),
-            word("استشارتك الأولى مجانية", 60, 1010, 1.2, color=YELLOW, anim="up", dur=0.35),
-            word("ماجستير · دكتوراه · بكالوريوس", 46, 1150, 1.5, color="#D8C7E8",
-                 anim="fade", dur=0.4),
-        ], cut=False),
-    ]
+    scenes = []
+
+    # 1 — the road ahead, and how far along you are
+    scenes.append(dict(bg="flat", tint=[NIGHT, PLUM], dur=3.0, elements=[
+        txt("رسالتك", 128, 470, 0.05, grad="ring", anim="zoom", dur=0.5),
+        txt("فيها ٥ محطات", 78, 640, 0.5, color="#E9DCF4", dur=0.4),
+        txt("وإنت واقف عند وحدة", 60, 760, 1.0, color=YELLOW, dur=0.4),
+        dict(type="ring", r=150, width=16, alpha=70, x=540, y=1060, t=1.4,
+             dur=0.5, anim="pop"),
+        txt("١", 150, 985, 1.55, grad="ring", anim="pop", dur=0.4),
+    ]))
+
+    # 2-6 — travel the route: each stage arrives and is marked done
+    for i, (title, sub) in enumerate(STAGES):
+        left = len(STAGES) - i - 1
+        tint = [PLUM, PURPLE] if i % 2 == 0 else [NIGHT, PLUM]
+        els = [
+            txt(f"المحطة {['الأولى','الثانية','الثالثة','الرابعة','الخامسة'][i]}",
+                44, 330, 0.03, color="#D3BEE6", anim="fade", dur=0.25),
+            txt(title, 86, 430, 0.1, grad="ring", anim="right", dur=0.35),
+            txt(sub, 46, 570, 0.35, color="#F0E6F8", anim="right", dur=0.3),
+        ]
+        # the stages already behind you, ticked
+        for k in range(i + 1):
+            els.append(dict(type="pill", text="✓ " + STAGES[k][0], size=34,
+                            fg="#FFFFFF", bg=MAGENTA if k == i else None,
+                            outline=None if k == i else "#B07FD0",
+                            x=540, y=700 + k * 86, t=0.5 + k * 0.06,
+                            dur=0.28, anim="pop" if k == i else "fade"))
+        els.append(txt(f"باقي {left}" if left else "خلصت",
+                       64, 1180, 1.15, color=YELLOW if left else "#7BE495",
+                       anim="pop", dur=0.35))
+        scenes.append(dict(bg="flat", tint=tint, dur=2.0, cut=True, elements=els))
+
+    # 7 — the payoff
+    scenes.append(dict(bg="flat", tint=[PAPER, "#E6DEEE"], dur=1.9, cut=True, elements=[
+        txt("وصلت", 170, 620, 0.05, color=PURPLE, anim="zoom", dur=0.45, shadow=False),
+        txt("ومعك فريق كل الطريق", 62, 840, 0.5, color="#1E1A22", dur=0.35,
+            fnt="almarai-xb", shadow=False),
+    ]))
+
+    # 8 — who we are
+    scenes.append(dict(bg="flat", tint=[PLUM, PURPLE], dur=4.2, elements=[
+        dict(type="logo", width=150, x=540, y=330, t=0.05, dur=0.4, anim="pop"),
+        txt("المنهجية", 92, 520, 0.3, grad="ring", dur=0.4),
+        txt("للخدمات البحثية والعلمية", 50, 640, 0.5, color="#E8DCF2", dur=0.35),
+        dict(type="whatsapp", scale=1.05, x=540, y=840, t=0.85, dur=0.45, anim="pop"),
+        txt("استشارتك الأولى مجانية", 58, 1010, 1.2, color=YELLOW, dur=0.35),
+        txt("ماجستير · دكتوراه · بكالوريوس", 44, 1150, 1.5, color="#D8C7E8",
+            anim="fade", dur=0.4),
+    ]))
 
     caption = (
-        "🎓 رسالتك ما بتخلص؟ عنوان مرفوض، وخطة رجعت بالملاحظات، وتحليل ما ظبط..\n\n"
-        "أكثر الباحثين ما بيتأخروا لأنهم مش قادرين، بيتأخروا لأن ما حدا دلّهم على الخطوة الصح "
-        "بوقتها، فيعيدوا نفس الفصل ثلاث مرات.\n\n"
-        "✅ في المنهجية منمشيها معك من أول خطوة:\n"
-        "1️⃣ عنوان مبتكر وخطة بحث مقبولة من المشرف\n"
+        "🎓 رسالتك فيها خمس محطات.. وإنت واقف عند وحدة منهم.\n\n"
+        "العنوان والخطة، الإطار والمراجع، الأدوات وجمع البيانات، التحليل الإحصائي، "
+        "وبالآخر النشر والتسليم. كل محطة إلها شروطها، وأي خطوة غلط فيها بترجّعك شهر لورا.\n\n"
+        "✅ في المنهجية منمشي معك المحطات وحدة وحدة:\n"
+        "1️⃣ عنوان مبتكر غير مكرر وخطة بحث مقبولة من المشرف\n"
         "2️⃣ الإطار النظري والدراسات السابقة بمراجع عربية وأجنبية\n"
-        "3️⃣ أدوات الدراسة وتحكيمها وجمع البيانات، واستخراج بيانات بورصة عمّان المالية\n"
+        "3️⃣ أدوات الدراسة وتحكيمها، وبيانات بورصة عمّان المالية يدوياً\n"
         "4️⃣ التحليل الإحصائي وربط النتائج بالفرضيات وتفسيرها\n"
-        "5️⃣ النشر العلمي في Scopus Q1 / Q2 / Q3 / Q4 و Arcif\n"
-        "6️⃣ التدقيق اللغوي والتنسيق وفحص Turnitin والتحضير للمناقشة\n\n"
-        "🌍 أونلاين لطلاب الأردن والسعودية والعراق والكويت والإمارات وقطر وعُمان والبحرين "
-        "ومصر وليبيا والجزائر\n"
-        "🚀 ابدأ اليوم.. واستشارتك الأولى مجانية" + CONTACT +
+        "5️⃣ النشر في Scopus Q1 / Q2 / Q3 / Q4 و Arcif، والتدقيق والتنسيق وفحص الاقتباس\n\n"
+        "🌍 أونلاين لطلاب الأردن والسعودية والعراق والكويت والإمارات وقطر وعُمان "
+        "والبحرين ومصر وليبيا والجزائر\n"
+        "🚀 قوللي وين واقف.. ومنكمّل من هناك. واستشارتك الأولى مجانية" + CONTACT +
         "\n\n#المنهجية #رسائل_ماجستير #أطروحة_دكتوراه #التحليل_الإحصائي #خطة_البحث "
         "#النشر_العلمي #الدراسات_العليا")
 
     spec = dict(
-        title="إعلان: المنهجية — كينيتك",
+        title="إعلان: المنهجية — الطريق",
         service="كل الخدمات — إعلان تعريفي",
-        format="kinetic type: flat colour fields, hard cuts on the beat, one oversized line "
-               "per cut, no ornament. A deliberate break from the brand's patterned style.",
-        music=dict(mood="drive", bpm=124), bpm=124, music_seed=12, fadein=0.03,
-        cover=dict(scene=5, t=3.2), cover_scene=5, cover_t=3.2,
+        format="the route travelled: five stations arrive one per cut, each ticked off "
+               "as it passes and the remaining count ticking down, then the payoff.",
+        music=dict(mood="drive", bpm=118), bpm=118, music_seed=21, fadein=0.03,
+        cover=dict(scene=3, t=1.6), cover_scene=3, cover_t=1.6,
         caption=caption, scenes=scenes)
 
-    p = os.path.join(HERE, "manhajiya-kinetic-ad.json")
+    p = os.path.join(HERE, "manhajiya-route-ad.json")
     json.dump(spec, open(p, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print(f"wrote {p}  {sum(s['dur'] for s in scenes):.1f}s  {len(scenes)} scenes")
 
