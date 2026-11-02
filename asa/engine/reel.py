@@ -1097,7 +1097,7 @@ def render(spec_path, out_path):
     if spec.get("vo"):
         mix_voice(wav, spec["vo"], reel.total, duck=spec.get("duck", 0.22))
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{RW}x{RH}",
-           "-r", str(FPS), "-i", "-", "-i", wav, "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
+           "-r", str(FPS), "-i", "-", "-i", wav, "-c:v", "libx264", "-preset", "veryfast", "-crf", str(spec.get("crf", 20)),
            "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", out_path]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     nframes = int(reel.total * FPS)
