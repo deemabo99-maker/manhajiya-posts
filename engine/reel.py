@@ -310,7 +310,12 @@ def build_sprite(e):
 
 
 # ------------------------------------------------------------------ backgrounds
-def background(kind, seed=0):
+def background(kind, seed=0, tint=None):
+    """A kinetic-type scene wants a flat field, not the brand's patterned gradient:
+    pass bg "flat" and `tint` (one colour, or two for a soft duotone sweep)."""
+    if kind == "flat":
+        cols = tint if isinstance(tint, list) else [tint or C["purple"], tint or C["purple"]]
+        return linear_gradient((RW, RH), cols, 115)
     if kind == "dark":
         bg = linear_gradient((RW, RH), [C["night"], "#3A1250", C["plum"]], 115)
     elif kind == "purple":
@@ -686,6 +691,12 @@ def animate(e, t):
     if anim == "pop":
         q = ease_out_back(p)
         return 0, 0, clamp(p * 2), 0.55 + 0.45 * q
+    if anim == "slam":   # lands hard from oversized — the kinetic-type accent
+        q = ease_out_cubic(clamp(p * 1.6))
+        return 0, 0, clamp(p * 3), 2.4 - 1.4 * q
+    if anim == "zoom":   # grows in without pop's overshoot
+        q = ease_out_cubic(p)
+        return 0, 0, clamp(p * 2), 0.28 + 0.72 * q
     if anim == "fade":
         return 0, 0, p, 1.0
     if anim == "slam":
@@ -718,7 +729,7 @@ class Reel:
         self.scenes = []
         start = 0.0
         for i, sc in enumerate(spec["scenes"]):
-            bg = background(sc.get("bg", "dark"), i)
+            bg = background(sc.get("bg", "dark"), i, sc.get("tint"))
             glow = glow_sprite(sc.get("glow", C["purple"]), 380, 150 if sc.get("bg") != "light" else 60)
             els = []
             for e in sc["elements"]:

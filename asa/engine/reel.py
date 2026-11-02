@@ -677,7 +677,12 @@ SPRITES = {
 
 
 # ------------------------------------------------------------------ backgrounds
-def background(kind):
+def background(kind, tint=None):
+    """A kinetic-type scene wants a flat field, not the brand's patterned gradient:
+    pass bg "flat" and `tint` (one colour, or two for a soft duotone sweep)."""
+    if kind == "flat":
+        cols = tint if isinstance(tint, list) else [tint or C["emerald"], tint or C["emerald"]]
+        return linear_gradient((RW, RH), cols, 115)
     if kind == "ivory":
         bg = linear_gradient((RW, RH), [C["ivory"], C["cream"], C["sand"]], 90)
         col, alpha = C["gold"], 30
@@ -781,11 +786,12 @@ def animate(e, t):
 
 class Reel:
     def __init__(self, spec):
+        self.spec = spec
         self.scenes = []
         self.fadein = spec.get("fadein", 0.25)
         start = 0.0
         for sc in spec["scenes"]:
-            bg = background(sc.get("bg", "deep"))
+            bg = background(sc.get("bg", "deep"), sc.get("tint"))
             light = sc.get("bg") == "ivory"
             glow = glow_sprite(sc.get("glow", C["jade"]), 380, 60 if light else 110)
             els = []
@@ -858,7 +864,8 @@ class Reel:
             if sc["start"] <= gt < sc["start"] + sc["dur"] or i == len(self.scenes) - 1:
                 f = self.scene_frame(sc, gt - sc["start"])
                 end = sc["start"] + sc["dur"]
-                if i + 1 < len(self.scenes) and gt > end - XFADE:
+                if (i + 1 < len(self.scenes) and gt > end - XFADE
+                        and not self.spec["scenes"][i + 1].get("cut")):
                     nxt = self.scene_frame(self.scenes[i + 1], 0.0)
                     f = Image.blend(f, nxt, clamp((gt - (end - XFADE)) / XFADE))
                 fi = self.fadein
