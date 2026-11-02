@@ -249,9 +249,11 @@ def render(spec_path, out_path):
     spec = json.load(open(spec_path, encoding="utf-8"))
     shot = OneShot(spec)
     wav = out_path.replace(".mp4", ".wav")
-    hits = [k[0] for k in shot.cam.keys[::2]]
-    R.music(wav, shot.total, bpm=spec.get("bpm", 96), seed=spec.get("music_seed", 1),
-            hits=hits, mood=spec.get("mood", "resolve"))
+    # the score is composed from the camera path, on the same beat grid
+    import score
+    score.compose(wav, shot.cam.keys, shot.total, bpm=spec.get("bpm", 120),
+                  mood=spec.get("mood", "resolve"), seed=spec.get("music_seed", 1),
+                  lead=spec.get("lead", 0.5))
     if spec.get("vo"):
         R.mix_voice(wav, spec["vo"], shot.total, duck=spec.get("duck", 0.22))
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",

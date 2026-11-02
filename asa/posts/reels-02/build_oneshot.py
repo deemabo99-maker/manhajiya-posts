@@ -34,10 +34,11 @@ def station(y, hold, travel, *els):
 
 
 def main():
-    H, TR = 1.5, 0.78
+    BEAT = 0.5                      # 120 bpm
+    H, TR = 3 * BEAT, 1 * BEAT      # hold 1.5 s, whip 0.5 s: one bar per station
     stations = [
         # 1 — the stuck night. the camera starts here.
-        station(8400, 1.9, TR,
+        station(8400, 7 * BEAT, TR,     # the hook gets two bars
                 T("رسالتك واقفة؟", dy=-330, size=104, t=0.15, grad="gold", anim="zoom", dur=0.55),
                 T("من شهور", dy=-190, size=58, t=0.6, color=GOLD_LT),
                 dict(type="doc", w=400, h=500, marks=0, x=540, dy=190, t=0.4, dur=0.6, anim="zoom"),
@@ -88,7 +89,7 @@ def main():
                      t=0.85, dur=0.55, anim="slam")),
 
         # 7 — graduation. the camera ends here and holds.
-        station(780, 3.6, 0.0,
+        station(780, 8 * BEAT, 0.0,     # the ending holds two bars
                 dict(type="emblem", width=140, x=540, dy=-560, t=0.05, dur=0.4, anim="pop"),
                 T("أكاديمية العلماء العرب", dy=-440, size=56, t=0.25, grad="gold"),
                 T("طريقك نحو التميّز الأكاديمي", dy=-350, size=44, t=0.45, color=GOLD_LT),
@@ -123,8 +124,8 @@ def main():
         format="one unbroken shot: the camera flies up a tall world from the stuck night to "
                "graduation, holding at each stage and whipping between them, with four "
                "parallax depths, speed-scaled motion blur and a light sweep on arrival.",
-        mood="resolve", bpm=100, music_seed=41, world_h=9400, near=True,
-        grain=3.0, vignette=0.42, crf=22, cover_station=6, lead=0.5, tail=0.6,
+        mood="resolve", bpm=120, music_seed=41, world_h=9400, near=True,
+        grain=3.0, vignette=0.42, crf=22, cover_station=6, lead=0.5, tail=0.5,
         caption=caption, stations=stations)
 
     p = os.path.join(HERE, "oneshot-1.json")
