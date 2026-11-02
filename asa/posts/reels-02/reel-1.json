@@ -1,0 +1,394 @@
+{
+ "title": "الرسائل والأطاريح — بالصورة",
+ "service": "إعداد رسائل الماجستير وأطاريح الدكتوراه",
+ "format": "photography-led: a picture fills the frame and carries the meaning, the type is four words on top, and every scene drifts under grain and a vignette.",
+ "mood": "resolve",
+ "bpm": 94,
+ "music_seed": 31,
+ "fadein": 0.04,
+ "grain": 5.5,
+ "vignette": 0.42,
+ "cover_scene": 5,
+ "cover_t": 2.2,
+ "caption": "🎓 رسالتك واقفة من شهور؟ ملاحظات بترجع، وتحليل ما ظبط، ووقت بيمشي.\n\nأكثر الباحثين ما بيتأخروا لأنهم مش قادرين — بيتأخروا لأنهم بلشوا من مكان غلط، فكل مرحلة بترجّعهم للي قبلها.\n\n📚 في أكاديمية العلماء العرب منرافقك في كل مرحلة بالترتيب:\n✅ العنوان وخطة البحث (Proposal)\n✅ الإطار النظري والدراسات السابقة بمراجع عربية وأجنبية\n✅ أدوات الدراسة وتحكيمها وجمع البيانات وتفريغها\n✅ التحليل الإحصائي وربط النتائج بالفرضيات وتفسيرها\n✅ التدقيق اللغوي والتنسيق والتحضير ليوم المناقشة\n✅ النشر العلمي في Scopus Q1 / Q2 / Q3 / Q4 ومجلات Arcif\n\n📈 أكثر من 5000 عمل بحثي تم الإشراف عليه، وأكثر من 100 باحث متخصص\n🚀 ابدأ من الصح.. واستشارتك الأولى مجانية\n\n📞 للتواصل والاستفسار:\n📱 رقم الهاتف: 00962778597330\n💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778597330\n📧 البريد الإلكتروني: asaforconsultingandtraining@gmail.com\n\n#أكاديمية_العلماء_العرب #رسائل_ماجستير #أطروحة_دكتوراه #خطة_البحث #التحليل_الإحصائي #الدراسات_العليا #البحث_العلمي",
+ "scenes": [
+  {
+   "bg": "flat",
+   "tint": [
+    "#071C13",
+    "#071C13"
+   ],
+   "dur": 3.0,
+   "motion": {
+    "kind": "push",
+    "amount": 0.1
+   },
+   "elements": [
+    {
+     "type": "fullbleed",
+     "name": "laptop.jpg",
+     "tint": "#0F5236",
+     "tint_a": 0.2,
+     "scrim": 0.8,
+     "scrim_top": 0.3,
+     "saturate": 1.0,
+     "behind": "#0B2E1E",
+     "x": 540,
+     "y": 960,
+     "t": 0.0,
+     "dur": 0.25,
+     "anim": "fade"
+    },
+    {
+     "type": "text",
+     "text": "رسالتك واقفة؟",
+     "font": "cairo",
+     "size": 104,
+     "wght": 900,
+     "x": 540,
+     "y": 430,
+     "t": 0.25,
+     "dur": 0.55,
+     "anim": "zoom",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "من شهور",
+     "font": "cairo",
+     "size": 580,
+     "wght": 900,
+     "x": 540,
+     "y": 60,
+     "t": 0.8,
+     "dur": 0.4,
+     "anim": "up",
+     "dark_bg": true,
+     "color": "#EED9A0"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#071C13",
+    "#071C13"
+   ],
+   "dur": 2.3,
+   "motion": {
+    "kind": "float",
+    "amount": 0.09,
+    "angle": 0.6
+   },
+   "elements": [
+    {
+     "type": "fullbleed",
+     "name": "stressed.png",
+     "tint": "#0B2E1E",
+     "tint_a": 0.3,
+     "scrim": 0.62,
+     "scrim_top": 0.34,
+     "saturate": 1.0,
+     "behind": "#0B2E1E",
+     "x": 540,
+     "y": 960,
+     "t": 0.0,
+     "dur": 0.25,
+     "anim": "fade"
+    },
+    {
+     "type": "text",
+     "text": "ملاحظات بترجع",
+     "font": "cairo",
+     "size": 86,
+     "wght": 900,
+     "x": 540,
+     "y": 400,
+     "t": 0.1,
+     "dur": 0.4,
+     "anim": "up",
+     "dark_bg": true,
+     "color": "#FBF8F1"
+    }
+   ],
+   "cut": true
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#071C13",
+    "#071C13"
+   ],
+   "dur": 2.3,
+   "motion": {
+    "kind": "pan",
+    "amount": 0.12,
+    "angle": 0.0
+   },
+   "elements": [
+    {
+     "type": "fullbleed",
+     "name": "analyst.jpg",
+     "tint": "#0F5236",
+     "tint_a": 0.22,
+     "scrim": 0.6,
+     "scrim_top": 0.32,
+     "saturate": 0.85,
+     "behind": "#0B2E1E",
+     "x": 540,
+     "y": 960,
+     "t": 0.0,
+     "dur": 0.25,
+     "anim": "fade"
+    },
+    {
+     "type": "text",
+     "text": "وتحليل ما ظبط",
+     "font": "cairo",
+     "size": 86,
+     "wght": 900,
+     "x": 540,
+     "y": 400,
+     "t": 0.1,
+     "dur": 0.4,
+     "anim": "up",
+     "dark_bg": true,
+     "color": "#FBF8F1"
+    }
+   ],
+   "cut": true
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#071C13",
+    "#071C13"
+   ],
+   "dur": 2.9,
+   "motion": {
+    "kind": "pull",
+    "amount": 0.14
+   },
+   "elements": [
+    {
+     "type": "fullbleed",
+     "name": "journal.png",
+     "tint": "#0B2E1E",
+     "tint_a": 0.34,
+     "scrim": 0.74,
+     "scrim_top": 0.3,
+     "saturate": 1.0,
+     "behind": "#0B2E1E",
+     "x": 540,
+     "y": 960,
+     "t": 0.0,
+     "dur": 0.25,
+     "anim": "fade"
+    },
+    {
+     "type": "text",
+     "text": "ابدأ من الصح",
+     "font": "cairo",
+     "size": 112,
+     "wght": 900,
+     "x": 540,
+     "y": 430,
+     "t": 0.1,
+     "dur": 0.5,
+     "anim": "zoom",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "text",
+     "text": "ومعك فريق يعرف الطريق",
+     "font": "cairo",
+     "size": 600,
+     "wght": 900,
+     "x": 540,
+     "y": 54,
+     "t": 0.7,
+     "dur": 0.4,
+     "anim": "up",
+     "dark_bg": true,
+     "color": "#EED9A0"
+    }
+   ],
+   "cut": true
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#0B2E1E",
+    "#0F5236"
+   ],
+   "dur": 5.2,
+   "cut": true,
+   "motion": {
+    "kind": "push",
+    "amount": 0.05
+   },
+   "elements": [
+    {
+     "type": "text",
+     "text": "منرافقك في",
+     "font": "cairo",
+     "size": 360,
+     "wght": 900,
+     "x": 540,
+     "y": 54,
+     "t": 0.05,
+     "dur": 0.35,
+     "anim": "up",
+     "dark_bg": true,
+     "color": "#EED9A0"
+    },
+    {
+     "type": "text",
+     "text": "كل مرحلة",
+     "font": "cairo",
+     "size": 460,
+     "wght": 900,
+     "x": 540,
+     "y": 92,
+     "t": 0.2,
+     "dur": 0.45,
+     "anim": "zoom",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "check",
+     "text": "العنوان وخطة البحث",
+     "size": 44,
+     "w": 820,
+     "x": 540,
+     "y": 650,
+     "t": 0.6,
+     "dur": 0.4,
+     "anim": "right"
+    },
+    {
+     "type": "check",
+     "text": "الإطار النظري والمراجع",
+     "size": 44,
+     "w": 820,
+     "x": 540,
+     "y": 790,
+     "t": 1.1,
+     "dur": 0.4,
+     "anim": "right"
+    },
+    {
+     "type": "check",
+     "text": "الأدوات وجمع البيانات",
+     "size": 44,
+     "w": 820,
+     "x": 540,
+     "y": 930,
+     "t": 1.6,
+     "dur": 0.4,
+     "anim": "right"
+    },
+    {
+     "type": "check",
+     "text": "التحليل الإحصائي والنتائج",
+     "size": 44,
+     "w": 820,
+     "x": 540,
+     "y": 1070,
+     "t": 2.1,
+     "dur": 0.4,
+     "anim": "right"
+    },
+    {
+     "type": "check",
+     "text": "التدقيق والمناقشة",
+     "size": 44,
+     "w": 820,
+     "x": 540,
+     "y": 1210,
+     "t": 2.6,
+     "dur": 0.4,
+     "anim": "right"
+    }
+   ]
+  },
+  {
+   "bg": "flat",
+   "tint": [
+    "#071C13",
+    "#071C13"
+   ],
+   "dur": 4.4,
+   "motion": {
+    "kind": "pull",
+    "amount": 0.12
+   },
+   "elements": [
+    {
+     "type": "fullbleed",
+     "name": "twograds.png",
+     "tint": "#0B2E1E",
+     "tint_a": 0.26,
+     "scrim": 0.52,
+     "scrim_top": 0.46,
+     "saturate": 1.0,
+     "behind": "#0B2E1E",
+     "x": 540,
+     "y": 960,
+     "t": 0.0,
+     "dur": 0.25,
+     "anim": "fade"
+    },
+    {
+     "type": "emblem",
+     "width": 132,
+     "x": 540,
+     "y": 250,
+     "t": 0.1,
+     "dur": 0.4,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "أكاديمية العلماء العرب",
+     "font": "cairo",
+     "size": 390,
+     "wght": 900,
+     "x": 540,
+     "y": 54,
+     "t": 0.3,
+     "dur": 0.4,
+     "anim": "up",
+     "dark_bg": true,
+     "gradient": "gold"
+    },
+    {
+     "type": "whatsapp",
+     "scale": 1.05,
+     "x": 540,
+     "y": 560,
+     "t": 0.7,
+     "dur": 0.45,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "استشارتك الأولى مجانية",
+     "font": "cairo",
+     "size": 720,
+     "wght": 900,
+     "x": 540,
+     "y": 52,
+     "t": 1.1,
+     "dur": 0.35,
+     "anim": "up",
+     "dark_bg": true,
+     "color": "#FBF8F1"
+    }
+   ]
+  }
+ ]
+}

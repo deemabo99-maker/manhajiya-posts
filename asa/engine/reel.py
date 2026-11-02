@@ -22,9 +22,10 @@ import sys
 import wave
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import filmic  # noqa: E402
 import kit  # noqa: E402
 from kit import C, GOLD, GOLD_SOFT, font, linear_gradient, rgb  # noqa: E402
 
@@ -505,6 +506,26 @@ def sprite_slide_card(e):
 
 
 # ------------------------------------------------------------------ ad-01 sprites (Nov 2026)
+def sprite_fullbleed(e):
+    """A photograph filling the whole frame, with a wash over it so type stays legible.
+    Use this instead of a cut-out when the picture should BE the scene, not sit on it."""
+    src = os.path.join(kit.PEOPLE, e["name"])
+    img = Image.open(src).convert("RGBA")
+    if img.mode == "RGBA" and e.get("flatten", True):
+        bed = Image.new("RGBA", img.size, rgb(e.get("behind", C["deep"])))
+        img = Image.alpha_composite(bed, img)
+    img = filmic.cover(img, (RW, RH))
+    if e.get("saturate", 1.0) != 1.0:
+        img = ImageEnhance.Color(img).enhance(e["saturate"])
+    if e.get("tint"):
+        wash = Image.new("RGBA", img.size, rgb(e["tint"])[:3] + (int(255 * e.get("tint_a", 0.3)),))
+        img = Image.alpha_composite(img, wash)
+    img = Image.alpha_composite(img, filmic.scrim(img.size, e.get("scrim_top", 0.15),
+                                                  e.get("scrim", 0.8),
+                                                  rgb(e.get("scrim_color", C["night"]))[:3]))
+    return img
+
+
 def sprite_bookwall(e):
     """A full library wall of thesis spines on emerald shelves; one hero spine in the middle
     carries a gold-foil title, so a camera can start tight on it and pull back to the wall."""
@@ -672,6 +693,7 @@ SPRITES = {
     "photo": sprite_photo, "arch": sprite_arch, "badge": sprite_badge,
     "seal": sprite_seal, "scale5": sprite_scale5, "bar": sprite_bar, "quote": sprite_quote,
     "slide": sprite_slide_card,
+    "fullbleed": sprite_fullbleed,
     "bookwall": sprite_bookwall, "chapter": sprite_chapter, "hardcover": sprite_hardcover, "veil": sprite_veil,
 }
 
@@ -859,14 +881,22 @@ class Reel:
                 f = Image.fromarray(np.roll(np.roll(np.asarray(f), ox, axis=1), oy, axis=0), "RGBA")
         return f
 
+    def finished(self, sc, t):
+        """The scene, plus the moving finish that keeps it from reading as a slideshow.
+        Every scene drifts unless its spec turns motion off with "motion": null."""
+        spec_sc = self.spec["scenes"][self.scenes.index(sc)] if sc in self.scenes else {}
+        motion = spec_sc.get("motion", self.spec.get("motion", {"kind": "push", "amount": 0.07}))
+        return filmic.finish(self.scene_frame(sc, t), t, sc["dur"], motion,
+                             self.spec.get("grain", 5.0), self.spec.get("vignette", 0.38))
+
     def frame(self, gt):
         for i, sc in enumerate(self.scenes):
             if sc["start"] <= gt < sc["start"] + sc["dur"] or i == len(self.scenes) - 1:
-                f = self.scene_frame(sc, gt - sc["start"])
+                f = self.finished(sc, gt - sc["start"])
                 end = sc["start"] + sc["dur"]
                 if (i + 1 < len(self.scenes) and gt > end - XFADE
                         and not self.spec["scenes"][i + 1].get("cut")):
-                    nxt = self.scene_frame(self.scenes[i + 1], 0.0)
+                    nxt = self.finished(self.scenes[i + 1], 0.0)
                     f = Image.blend(f, nxt, clamp((gt - (end - XFADE)) / XFADE))
                 fi = self.fadein
                 if gt < fi:
