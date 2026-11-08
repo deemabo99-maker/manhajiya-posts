@@ -1,0 +1,88 @@
+{
+  "batch": "batch-03",
+  "timezone": "Asia/Amman",
+  "note": "منشور واحد كل يوم الساعة 10:00، وريلز الساعة 19:00 في يومين منها",
+  "items": [
+    {
+      "file": "01.png",
+      "story": "story-01.png",
+      "kind": "design",
+      "service": "صياغة مشكلة البحث وأسئلة الدراسة",
+      "date": "2026-11-10",
+      "day": "الثلاثاء",
+      "time": "10:00"
+    },
+    {
+      "file": "02.png",
+      "story": "story-02.png",
+      "kind": "design",
+      "service": "اختيار منهج الدراسة وتصميمها",
+      "date": "2026-11-11",
+      "day": "الأربعاء",
+      "time": "10:00"
+    },
+    {
+      "file": "03.png",
+      "story": "story-03.png",
+      "kind": "design",
+      "service": "مجتمع الدراسة والعينة وجمع البيانات",
+      "date": "2026-11-12",
+      "day": "الخميس",
+      "time": "10:00"
+    },
+    {
+      "file": "04.png",
+      "story": "story-04.png",
+      "kind": "design",
+      "service": "مناقشة النتائج والتوصيات",
+      "date": "2026-11-13",
+      "day": "الجمعة",
+      "time": "10:00"
+    },
+    {
+      "file": "05.png",
+      "story": "story-05.png",
+      "kind": "design",
+      "service": "اختيار المجلة والردّ على المحكّمين",
+      "date": "2026-11-14",
+      "day": "السبت",
+      "time": "10:00"
+    },
+    {
+      "file": "06.png",
+      "story": "story-06.png",
+      "kind": "design",
+      "service": "الجدول الزمني للرسالة ومتابعة الإنجاز",
+      "date": "2026-11-15",
+      "day": "الأحد",
+      "time": "10:00"
+    },
+    {
+      "file": "07.png",
+      "story": "story-07.png",
+      "kind": "design",
+      "service": "كيف تبدأ معنا والاستشارة الأولى مجانية",
+      "date": "2026-11-16",
+      "day": "الاثنين",
+      "time": "10:00"
+    },
+    {
+      "file": "reel-1.mp4",
+      "cover": "reel-1-cover.png",
+      "kind": "reel",
+      "service": "من فكرة إلى سؤال يُبحث",
+      "date": "2026-11-10",
+      "day": "الثلاثاء",
+      "time": "19:00"
+    },
+    {
+      "file": "reel-2.mp4",
+      "cover": "reel-2-cover.png",
+      "kind": "reel",
+      "service": "ثلاث خطوات وتبدأ",
+      "date": "2026-11-14",
+      "day": "السبت",
+      "time": "19:00"
+    }
+  ]
+}

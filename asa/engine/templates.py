@@ -8,7 +8,9 @@ Each template takes a content dict and returns a finished Canvas.
 """
 import math
 
-from kit import (C, GOLD, GOLD_SOFT, GREEN, W, H, Canvas, font, measure, rgb)
+from PIL import Image, ImageDraw
+
+from kit import (C, GOLD, GOLD_SOFT, GREEN, W, H, Canvas, font, linear_gradient, measure, rgb)
 
 
 def gold_text(c, xy, txt, f, anchor="ra", shadow=True, dark=False):
@@ -973,4 +975,473 @@ TEMPLATES.update({
     "course_window": course_window,
     "citation_dial": citation_dial,
     "translation_spread": translation_spread,
+})
+
+
+# ======================================================== batch-03 templates (week 3)
+# Seven compositions drawn from scratch again. Week 2's heroes were flat objects laid on
+# the canvas; this week every hero is a *physical* thing with its own edge -- a lens over a
+# page, a fan of tilted cards, a field of respondents, an unrolled scroll, a tilted referee
+# report with a stamp slapped across it, a wall calendar, a perforated voucher. None of the
+# layouts from week 1 or week 2 is reused, and the new `layer()` / `paste_rot()` pair lets a
+# piece be built flat, rotated and dropped on the canvas with a shadow that follows its real
+# outline -- which is what makes the tilted and notched pieces possible at all.
+
+SS2 = 2          # kit draws at 2x; free-floating layers are built at the same scale
+AR_DIGITS = ("١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩")
+
+
+def _rtl(t):
+    return {"direction": "rtl", "language": "ar"} if any("؀" <= ch <= "ۿ" for ch in t) else {}
+
+
+def layer(w, h, pad=48):
+    """A free-floating 2x RGBA layer: draw on it, then drop it with paste_rot()."""
+    im = Image.new("RGBA", (int((w + 2 * pad) * SS2), int((h + 2 * pad) * SS2)), (0, 0, 0, 0))
+    return im, ImageDraw.Draw(im), int(pad * SS2)
+
+
+def paste_rot(c, im, cx, cy, rot=0.0, shadow=None):
+    """Composite a layer centred on (cx, cy), optionally rotated, with a shadow cast by its
+    own alpha -- so a tilted card or a notched ticket throws the right shadow."""
+    if rot:
+        im = im.rotate(rot, resample=Image.BICUBIC, expand=True)
+    ox, oy = int(cx * SS2 - im.width / 2), int(cy * SS2 - im.height / 2)
+    if shadow:
+        m = Image.new("L", c.im.size, 0)
+        m.paste(im.getchannel("A"), (ox, oy))
+        c.shadow_from(m, **shadow)
+    base = Image.new("RGBA", c.im.size, (0, 0, 0, 0))
+    base.paste(im, (ox, oy), im)
+    c.im = Image.alpha_composite(c.im, base)
+
+
+def lt(d, xy, t, f, fill, anchor="mm"):
+    """RTL-aware text on a layer."""
+    d.text(xy, t, font=f, fill=rgb(fill), anchor=anchor, **_rtl(t))
+
+
+def grad_rr(im, box, radius, stops, angle=0):
+    """Gradient-filled rounded rectangle inside a layer."""
+    m = Image.new("L", im.size, 0)
+    ImageDraw.Draw(m).rounded_rectangle(box, radius=radius, fill=255)
+    bb = m.getbbox()
+    g = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    g.paste(linear_gradient((max(bb[2] - bb[0], 1), max(bb[3] - bb[1], 1)), stops, angle), bb[:2])
+    im.paste(g, (0, 0), m)
+
+
+def head_center(c, p, y0=168, size=72, dark=True, maxw=940):
+    """Centred kicker / headline / sub-line -- the mirror of head_block, for the designs whose
+    hero is symmetrical and would look lopsided under a right-aligned head."""
+    c.text((540, y0), p["kicker"], font("cairo", 30, 700), fill=C["gold_lt"] if dark else C["red"],
+           anchor="ma")
+    y = y0 + 46
+    for i, t in enumerate(p["title"]):
+        fs = size
+        while fs > 34 and measure(t, font("cairo", fs, 900))[0] > maxw:
+            fs -= 2
+        f = font("cairo", fs, 900)
+        if i == 0:
+            gold_text(c, (540, y), t, f, anchor="ma", dark=not dark)
+        else:
+            c.text((540, y), t, f, fill=C["ivory"] if dark else C["forest"], anchor="ma")
+        y += fs * 1.42
+    fs = 30
+    while fs > 21 and measure(p["subtitle"], font("cairo", fs, 700))[0] > maxw:
+        fs -= 1
+    c.text((540, y + 10), p["subtitle"], font("cairo", fs, 700),
+           fill=C["mint"] if dark else C["muted"], anchor="ma")
+    return y + fs + 40
+
+
+def gold_rule(c):
+    c.shape("rect", [0, 1150, W, 1156], gradient=GOLD, angle=0)
+
+
+# ------------------------------------------------------------------ C1 lens over the draft
+def lens_focus(p):
+    """A gold reading lens lying on a page of vague prose: everything under glass is sharp."""
+    c = Canvas(C["ivory"])
+    c.gradient_bg([C["ivory"], C["cream"], C["sand"]], angle=100)
+    c.girih(alpha=26, cell=158, color=C["gold"])
+    c.lockup(W - 66, 96, size=94)
+    head_block(c, p, y0=150, size=76, subw=424)
+
+    px0, py0, px1, py1 = 92, 476, 650, 1098
+    c.shape("round", [px0, py0, px1, py1], fill="#FFFFFF", radius=20,
+            shadow=dict(offset=(0, 16), blur=28, alpha=85, color="#6B5C3A"))
+    c.shape("round", [px0 + 34, py0 + 32, px1 - 34, py0 + 84], fill=C["sand"], radius=10)
+    for i in range(12):
+        yy = py0 + 124 + i * 42
+        ww = (px1 - px0 - 68) * (0.94 if i % 3 else 0.56)
+        c.shape("round", [px1 - 34 - ww, yy, px1 - 34, yy + 13], fill="#E6DECE", radius=6)
+
+    # the red flag on the vague draft
+    f = font("cairo", 24, 800)
+    tw = measure(p["vague"], f)[0] + 56
+    c.shape("round", [px1 - 30 - tw, py0 + 96, px1 - 30, py0 + 152], fill=C["red_lt"],
+            outline=C["red"], width=2.4, radius=28)
+    c.text((px1 - 58, py0 + 124), p["vague"], f, fill=C["red"], anchor="rm")
+
+    lx, ly, lr = 430, 838, 202
+    # handle, laid under the glass
+    hl, d, m = layer(188, 50)
+    grad_rr(hl, [m, m, m + 188 * SS2, m + 50 * SS2], 25 * SS2, ["#6E500F", "#C8A02E", "#8C6A1F"], 20)
+    paste_rot(c, hl, lx + 232, ly + 232, -45,
+              shadow=dict(offset=(0, 10), blur=18, alpha=80, color="#6B5C3A"))
+    # the glass: an emerald disc carrying the one sharp sentence
+    c.shape("ellipse", [lx - lr, ly - lr, lx + lr, ly + lr], gradient=[C["emerald"], C["deep"]],
+            angle=100, shadow=dict(offset=(0, 14), blur=26, alpha=95, color="#6B5C3A"))
+    c.text((lx, ly - 112), p["lens_label"], font("cairo", 25, 800), fill=C["gold_lt"], anchor="mm")
+    c.divider(lx, ly - 76, 220)
+    yy = ly - 34
+    for line in p["lens_text"]:
+        fs = 34
+        while fs > 22 and measure(line, font("cairo", fs, 900))[0] > 300:
+            fs -= 1
+        c.text((lx, yy), line, font("cairo", fs, 900), fill=C["ivory"], anchor="mm")
+        yy += fs * 1.5
+    c.star8(lx, ly + 128, 20, gradient=GOLD_SOFT)
+    # the rim, over everything
+    c.ring(lx, ly, lr + 17, 20, stops=GOLD, angle=35)
+    c.ring(lx, ly, lr + 1, 3, stops=GOLD_SOFT, angle=35)
+
+    c.photo(p["photo"], cx=884, bottom=1150, height=598)
+    gold_rule(c)
+    c.footer(y=1262, dark=False, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ C2 fanned method cards
+def method_fan(p):
+    """Three tilted cards held like a hand: the study's question is what picks one."""
+    c = Canvas(C["emerald"])
+    c.gradient_bg([C["forest"], C["emerald"], C["deep"]], angle=120)
+    c.girih(alpha=24, cell=165)
+    c.glow(400, 820, 410, C["jade"], 100)
+    c.lockup(W - 66, 96, size=94, dark=True)
+    head_block(c, p, y0=150, size=76, dark=True, subw=416)
+
+    specs = [(160, 858, 14, 228, 322), (392, 808, 0, 258, 356), (624, 862, -14, 228, 322)]
+    order = [0, 2, 1]                      # middle card lands last, so it sits on top
+    for k in order:
+        cx, cy, rot, cw, ch = specs[k]
+        card = p["cards"][k]
+        im, d, m = layer(cw, ch)
+        grad_rr(im, [m, m, m + cw * SS2, m + ch * SS2], 22 * SS2, ["#FFFFFF", "#F1E9D9"], 90)
+        grad_rr(im, [m + 16 * SS2, m + 16 * SS2, m + (cw - 16) * SS2, m + 80 * SS2], 14 * SS2,
+                GOLD_SOFT, 0)
+        lt(d, (m + cw / 2 * SS2, m + 48 * SS2), card["name"], font("cairo", 27, 900), C["deep"])
+        for i, ln in enumerate(card["lines"]):
+            yy = m + (126 + i * 56) * SS2
+            dx = m + (cw - 38) * SS2
+            d.polygon([(dx, yy - 9 * SS2), (dx + 9 * SS2, yy), (dx, yy + 9 * SS2),
+                       (dx - 9 * SS2, yy)], fill=rgb(C["gold"]))
+            lt(d, (dx - 24 * SS2, yy), ln, font("cairo", 21, 700), C["ink"], anchor="rm")
+        if k == 1:                       # only the front card carries the tools strip
+            d.rounded_rectangle([m + 26 * SS2, m + (ch - 56) * SS2, m + (cw - 26) * SS2,
+                                 m + (ch - 24) * SS2], radius=16 * SS2, fill=rgb("#EDE4D0"))
+            lt(d, (m + cw / 2 * SS2, m + (ch - 40) * SS2), card["tool"], font("cairo", 19, 800),
+               C["muted"])
+        paste_rot(c, im, cx, cy, rot,
+                  shadow=dict(offset=(0, 14), blur=24, alpha=115, color="#04140C"))
+
+    f = font("cairo", 30, 900)
+    bw = measure(p["pick"], f)[0] + 96
+    c.shape("round", [392 - bw / 2, 1062, 392 + bw / 2, 1128], gradient=GOLD, angle=0, radius=33,
+            shadow=dict(offset=(0, 10), blur=18, alpha=120, color="#000000"))
+    c.text((392, 1095), p["pick"], f, fill=C["deep"], anchor="mm")
+    c.photo(p["photo"], cx=934, bottom=1150, height=520)
+    gold_rule(c)
+    c.footer(y=1262, dark=True, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ C3 the sample, respondent by respondent
+def inflow_grid(p):
+    """A field of respondents: the ones that count are gold, the rest are empty outlines."""
+    c = Canvas(C["night"])
+    c.gradient_bg([C["night"], C["deep"], C["emerald"]], angle=100)
+    c.girih(alpha=22, cell=175)
+    c.glow(540, 760, 430, C["jade"], 95)
+    c.lockup(W - 66, 96, size=94, dark=True)
+    head_center(c, p, y0=158, size=68)
+
+    cols, rows, step = 9, 5, 94
+    gx0 = 540 - (cols - 1) * step / 2
+    gy0 = 540
+    out = set(p["excluded"])
+    for j in range(rows):
+        for i in range(cols):
+            n = j * cols + i
+            x, y = gx0 + i * step, gy0 + j * step
+            if n in out:
+                c.shape("ellipse", [x - 15, y - 29, x + 15, y + 1], outline="#4E6A5B", width=3)
+                c.shape("round", [x - 25, y + 8, x + 25, y + 38], outline="#4E6A5B", width=3,
+                        radius=14)
+            else:
+                c.shape("ellipse", [x - 15, y - 29, x + 15, y + 1], gradient=GOLD_SOFT, angle=45)
+                c.shape("round", [x - 25, y + 8, x + 25, y + 38], gradient=GOLD_SOFT, angle=45,
+                        radius=14)
+
+    fl = font("cairo", 24, 700)
+    pairs = [(p["legend"][0], True), (p["legend"][1], False)]
+    widths = [measure(t, fl)[0] + 68 for t, _ in pairs]
+    xr = 540 + (sum(widths) + 46) / 2
+    for txt, gold in pairs:
+        lx, y = xr - 24, 1014
+        if gold:
+            c.shape("ellipse", [lx - 13, y - 25, lx + 13, y + 1], gradient=GOLD_SOFT, angle=45)
+            c.shape("round", [lx - 22, y + 7, lx + 22, y + 33], gradient=GOLD_SOFT, angle=45,
+                    radius=12)
+        else:
+            c.shape("ellipse", [lx - 13, y - 25, lx + 13, y + 1], outline="#4E6A5B", width=3)
+            c.shape("round", [lx - 22, y + 7, lx + 22, y + 33], outline="#4E6A5B", width=3,
+                    radius=12)
+        c.text((lx - 34, y + 6), txt, fl, fill=C["ivory"] if gold else C["mint"], anchor="rm")
+        xr -= widths[0 if gold else 1] + 46
+
+    f = font("cairo", 29, 900)
+    bw = measure(p["pill"], f)[0] + 96
+    c.shape("round", [540 - bw / 2, 1064, 540 + bw / 2, 1126], gradient=GOLD, angle=0, radius=31,
+            shadow=dict(offset=(0, 10), blur=18, alpha=120, color="#000000"))
+    c.text((540, 1095), p["pill"], f, fill=C["deep"], anchor="mm")
+    gold_rule(c)
+    c.footer(y=1262, dark=True, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ C4 the unrolled scroll
+def scroll_findings(p):
+    """An unrolled scroll with two gold rollers: what the results actually say, and what to do."""
+    c = Canvas(C["ivory"])
+    c.gradient_bg([C["ivory"], C["cream"], C["sand"]], angle=100)
+    c.girih(alpha=24, cell=160, color=C["gold"])
+    c.lockup(W - 66, 96, size=94)
+    head_block(c, p, y0=150, size=76, subw=420)
+
+    sx0, sx1, top, bot = 88, 676, 486, 1104
+    c.shape("rect", [sx0, top + 28, sx1, bot - 28], gradient=["#FFFDF6", "#F4EBD7"], angle=0,
+            shadow=dict(offset=(0, 14), blur=26, alpha=80, color="#6B5C3A"))
+    c.shape("rect", [sx0, top + 28, sx0 + 5, bot - 28], fill="#E2D6BB")
+    c.shape("rect", [sx1 - 5, top + 28, sx1, bot - 28], fill="#E2D6BB")
+
+    c.text((sx1 - 46, top + 104), p["scroll_title"], font("cairo", 34, 900), fill=C["forest"],
+           anchor="rm")
+    c.divider((sx0 + sx1) / 2, top + 152, 420)
+    for i, item in enumerate(p["items"]):
+        yy = top + 232 + i * 128
+        c.shape("ellipse", [sx1 - 96, yy - 32, sx1 - 32, yy + 32], gradient=GOLD_SOFT, angle=45,
+                shadow=dict(offset=(0, 6), blur=10, alpha=60, color="#6B5C3A"))
+        c.text((sx1 - 64, yy + 2), AR_DIGITS[i], font("cairo", 32, 900), fill=C["deep"], anchor="mm")
+        c.text((sx1 - 118, yy - 18), item["t"], font("cairo", 29, 900), fill=C["forest"], anchor="rm")
+        fs = 23
+        while fs > 16 and measure(item["d"], font("cairo", fs, 700))[0] > sx1 - sx0 - 150:
+            fs -= 1
+        c.text((sx1 - 118, yy + 24), item["d"], font("cairo", fs, 700), fill=C["muted"], anchor="rm")
+
+    for yy in (top + 28, bot - 28):
+        c.shape("round", [sx0 - 22, yy - 34, sx1 + 22, yy + 34], gradient=GOLD, angle=90, radius=34,
+                shadow=dict(offset=(0, 8), blur=14, alpha=70, color="#6B5C3A"))
+        c.shape("round", [sx0 - 8, yy - 15, sx1 + 8, yy + 15], gradient=GOLD_SOFT, angle=90,
+                radius=15)
+        c.star8(sx0 - 22, yy, 16, gradient=GOLD_SOFT)
+        c.star8(sx1 + 22, yy, 16, gradient=GOLD_SOFT)
+
+    wx, wy = sx0 + 88, bot - 28
+    c.shape("ellipse", [wx - 56, wy - 56, wx + 56, wy + 56], gradient=["#C0463F", "#8E2B2B"],
+            angle=45, shadow=dict(offset=(0, 8), blur=14, alpha=90, color="#6B5C3A"))
+    c.star8(wx, wy, 34, gradient=GOLD_SOFT)
+    c.text((wx, wy + 1), p["seal"], font("cairo", 18, 900), fill=C["deep"], anchor="mm")
+
+    c.photo(p["photo"], cx=892, bottom=1150, height=612)
+    gold_rule(c)
+    c.footer(y=1262, dark=False, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ C5 referee report + stamp
+def review_letter(p):
+    """The referees' report, tilted on the desk, with the acceptance stamp slapped across it."""
+    c = Canvas(C["emerald"])
+    c.gradient_bg([C["forest"], C["emerald"], C["deep"]], angle=120)
+    c.girih(alpha=22, cell=168)
+    c.glow(470, 760, 410, C["jade"], 100)
+    c.lockup(W - 66, 96, size=94, dark=True)
+    head_center(c, p, y0=156, size=66)
+
+    lw, lh = 586, 620
+    im, d, m = layer(lw, lh)
+    grad_rr(im, [m, m, m + lw * SS2, m + lh * SS2], 16 * SS2, ["#FFFFFF", "#F5F0E4"], 90)
+    grad_rr(im, [m + 34 * SS2, m + 34 * SS2, m + (lw - 34) * SS2, m + 98 * SS2], 11 * SS2,
+            [C["emerald"], C["forest"]], 0)
+    lt(d, (m + lw / 2 * SS2, m + 66 * SS2), p["letter_title"], font("cairo", 27, 800), C["ivory"])
+    for i, note in enumerate(p["notes"]):
+        yy = m + (150 + i * 128) * SS2
+        d.rounded_rectangle([m + (lw - 46) * SS2, yy - 6 * SS2, m + (lw - 36) * SS2, yy + 72 * SS2],
+                            radius=5 * SS2, fill=rgb(C["red"]))
+        lt(d, (m + (lw - 64) * SS2, yy + 20 * SS2), note, font("cairo", 25, 800), C["ink"],
+           anchor="rm")
+        for k in range(2):
+            ww = (lw - 150) * (0.88 if k == 0 else 0.52)
+            ly = yy + (52 + k * 24) * SS2
+            d.rounded_rectangle([m + (lw - 64) * SS2 - ww * SS2, ly, m + (lw - 64) * SS2,
+                                 ly + 11 * SS2], radius=5 * SS2, fill=rgb("#E3DCCF"))
+    d.line([(m + 60 * SS2, m + (lh - 62) * SS2), (m + 250 * SS2, m + (lh - 62) * SS2)],
+           fill=rgb("#C8BFA8"), width=3 * SS2)
+    lt(d, (m + 60 * SS2, m + (lh - 36) * SS2), p["sign"], font("cairo", 19, 700), C["muted"],
+       anchor="lm")
+    paste_rot(c, im, 430, 768, -4.5,
+              shadow=dict(offset=(0, 18), blur=30, alpha=130, color="#04140C"))
+
+    sw, sh = 312, 112
+    st, sd, sm = layer(sw, sh)
+    sd.rounded_rectangle([sm, sm, sm + sw * SS2, sm + sh * SS2], radius=16 * SS2,
+                         outline=rgb(C["gold"]), width=7 * SS2)
+    sd.rounded_rectangle([sm + 13 * SS2, sm + 13 * SS2, sm + (sw - 13) * SS2, sm + (sh - 13) * SS2],
+                         radius=9 * SS2, outline=rgb(C["gold"]), width=3 * SS2)
+    lt(sd, (sm + sw / 2 * SS2, sm + sh / 2 * SS2), p["stamp"], font("cairo", 34, 900), C["gold"])
+    paste_rot(c, st, 676, 1008, 11,
+              shadow=dict(offset=(0, 8), blur=14, alpha=90, color="#04140C"))
+
+    f = font("cairo", 26, 900)
+    xr = W - 66
+    for ch in p["chips"]:
+        bw = measure(ch, f)[0] + 52
+        c.shape("round", [xr - bw, 1082, xr, 1140], gradient=GOLD_SOFT, angle=0, radius=29,
+                shadow=dict(offset=(0, 7), blur=12, alpha=90, color="#000000"))
+        c.text((xr - bw / 2, 1111), ch, f, fill=C["deep"], anchor="mm")
+        xr -= bw + 14
+    gold_rule(c)
+    c.footer(y=1262, dark=True, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ C6 the wall calendar
+def calendar_plan(p):
+    """A month on the wall with the agreed milestones ringed in gold -- a plan you can see."""
+    c = Canvas(C["night"])
+    c.gradient_bg([C["night"], C["deep"], C["emerald"]], angle=110)
+    c.girih(alpha=22, cell=172)
+    c.glow(360, 760, 400, C["jade"], 95)
+    c.lockup(W - 66, 96, size=94, dark=True)
+    head_block(c, p, y0=150, size=76, dark=True, subw=408)
+
+    x0, y0, x1 = 76, 492, 702
+    rowh, head, wk = 62, 80, 50
+    y1 = y0 + head + wk + 5 * rowh + 18
+    c.shape("round", [x0, y0, x1, y1], fill="#FFFFFF", radius=22,
+            shadow=dict(offset=(0, 18), blur=30, alpha=130, color="#04140C"))
+    c.shape("round", [x0, y0, x1, y0 + head], gradient=[C["forest"], C["emerald"]], angle=0,
+            radius=22)
+    c.shape("rect", [x0, y0 + head - 24, x1, y0 + head], fill=C["forest"])
+    c.text((x0 + (x1 - x0) / 2, y0 + head / 2), p["month"], font("cairo", 30, 900),
+           fill=C["ivory"], anchor="mm")
+
+    cw = (x1 - x0 - 36) / 7
+    cx0 = x1 - 18 - cw / 2                       # RTL: the week starts on the right
+    for i, nm in enumerate(p["weekdays"]):
+        c.text((cx0 - i * cw, y0 + head + wk / 2), nm, font("cairo", 20, 800), fill=C["muted"],
+               anchor="mm")
+    marks = {m["day"]: m for m in p["milestones"]}
+    day = 1 - p["start_col"]
+    for r in range(5):
+        for i in range(7):
+            n = day + r * 7 + i
+            if n < 1 or n > p["days"]:
+                continue
+            x = cx0 - i * cw
+            y = y0 + head + wk + r * rowh + rowh / 2
+            if n in marks:
+                c.shape("ellipse", [x - 25, y - 25, x + 25, y + 25], gradient=GOLD_SOFT, angle=45,
+                        shadow=dict(offset=(0, 5), blur=9, alpha=70, color="#6B5C3A"))
+                c.text((x, y + 1), str(n), font("cairo", 24, 900), fill=C["deep"], anchor="mm")
+            else:
+                c.text((x, y + 1), str(n), font("cairo", 22, 700), fill="#9AA79F", anchor="mm")
+
+    f = font("cairo", 21, 800)
+    for k, ms in enumerate(p["milestones"]):
+        col, row = k % 2, k // 2
+        bx1 = x1 - col * ((x1 - x0) / 2 + 6)
+        bx0 = bx1 - ((x1 - x0) / 2 - 6)
+        by = y1 + 22 + row * 74
+        c.shape("round", [bx0, by, bx1, by + 62], fill=(255, 255, 255, 26), outline=C["gold"],
+                width=2, radius=16)
+        c.shape("ellipse", [bx1 - 54, by + 14, bx1 - 20, by + 48], gradient=GOLD_SOFT, angle=45)
+        c.text((bx1 - 37, by + 32), str(ms["day"]), font("cairo", 19, 900), fill=C["deep"],
+               anchor="mm")
+        fs = 21
+        while fs > 14 and measure(ms["t"], font("cairo", fs, 800))[0] > bx1 - bx0 - 84:
+            fs -= 1
+        c.text((bx1 - 66, by + 32), ms["t"], font("cairo", fs, 800), fill=C["ivory"], anchor="rm")
+
+    c.photo(p["photo"], cx=896, bottom=1150, height=528)
+    gold_rule(c)
+    c.footer(y=1262, dark=True, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ C7 the free-consultation voucher
+def pass_ticket(p):
+    """A perforated voucher -- torn-ticket notches and all -- carrying the three first steps."""
+    c = Canvas(C["ivory"])
+    c.gradient_bg([C["ivory"], C["cream"], C["sand"]], angle=100)
+    c.girih(alpha=26, cell=156, color=C["gold"])
+    c.lockup(W - 66, 96, size=94)
+    head_block(c, p, y0=150, size=76, subw=424)
+
+    tw, th, perf = 626, 624, 196
+    im, d, m = layer(tw, th)
+    grad_rr(im, [m, m, m + tw * SS2, m + th * SS2], 26 * SS2, ["#FFFFFF", "#FBF6EA"], 90)
+    grad_rr(im, [m, m, m + tw * SS2, m + perf * SS2], 26 * SS2, [C["forest"], C["emerald"]], 110)
+    d.rectangle([m, m + (perf - 30) * SS2, m + tw * SS2, m + perf * SS2], fill=rgb(C["emerald"]))
+    lt(d, (m + tw / 2 * SS2, m + 68 * SS2), p["stub1"], font("cairo", 28, 800), C["gold_lt"])
+    lt(d, (m + tw / 2 * SS2, m + 132 * SS2), p["stub2"], font("cairo", 56, 900), C["ivory"])
+
+    for i, st in enumerate(p["steps"]):
+        yy = m + (286 + i * 112) * SS2
+        cxd = m + (tw - 74) * SS2
+        disc = Image.new("L", im.size, 0)
+        ImageDraw.Draw(disc).ellipse([cxd - 38 * SS2, yy - 38 * SS2, cxd + 38 * SS2, yy + 38 * SS2],
+                                     fill=255)
+        g = Image.new("RGBA", im.size, (0, 0, 0, 0))
+        bb = disc.getbbox()
+        g.paste(linear_gradient((bb[2] - bb[0], bb[3] - bb[1]), GOLD_SOFT, 45), bb[:2])
+        im.paste(g, (0, 0), disc)
+        lt(d, (cxd, yy + 2 * SS2), AR_DIGITS[i], font("cairo", 34, 900), C["deep"])
+        lt(d, (cxd - 62 * SS2, yy - 20 * SS2), st["t"], font("cairo", 29, 900), C["forest"],
+           anchor="rm")
+        lt(d, (cxd - 62 * SS2, yy + 26 * SS2), st["d"], font("cairo", 22, 700), C["muted"],
+           anchor="rm")
+
+    for k in range(13):
+        bx = m + (56 + k * 40) * SS2
+        d.rounded_rectangle([bx, m + (th - 58) * SS2, bx + (9 if k % 3 else 17) * SS2,
+                             m + (th - 24) * SS2], radius=4 * SS2, fill=rgb("#DCD1B6"))
+    # the perforation, and the two notches torn out of the edges
+    for k in range(16):
+        dx = m + (38 + k * 36) * SS2
+        d.rounded_rectangle([dx, m + (perf + 22) * SS2, dx + 20 * SS2, m + (perf + 26) * SS2],
+                            radius=2 * SS2, fill=rgb("#D9CFB6"))
+    for ex in (m, m + tw * SS2):
+        d.ellipse([ex - 27 * SS2, m + (perf - 3) * SS2, ex + 27 * SS2, m + (perf + 51) * SS2],
+                  fill=(0, 0, 0, 0))
+    paste_rot(c, im, 390, 788, 0,
+              shadow=dict(offset=(0, 18), blur=30, alpha=95, color="#6B5C3A"))
+
+    c.photo(p["photo"], cx=892, bottom=1150, height=584)
+    gold_rule(c)
+    c.footer(y=1262, dark=False, cta=p["cta"])
+    return c
+
+
+TEMPLATES.update({
+    "lens_focus": lens_focus,
+    "method_fan": method_fan,
+    "inflow_grid": inflow_grid,
+    "scroll_findings": scroll_findings,
+    "review_letter": review_letter,
+    "calendar_plan": calendar_plan,
+    "pass_ticket": pass_ticket,
 })
