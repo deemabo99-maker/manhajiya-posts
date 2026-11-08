@@ -8,6 +8,11 @@ element is pre-rendered once as a sprite and then animated (slide / pop / fade)
 while frames are piped straight into ffmpeg. Text stays inside the Reels safe
 zone (y 260-1450) so Instagram/Facebook overlays never cover it.
 
+Batch-03 added the questionnaire `likert` row, the reviewer's pen `mark`, flying
+reference cards (`fly`), a world-space `dolly` camera for scale reveals (zoom in
+or out by any factor, sprites built hi-res with `res`), the `iris` mask reveal,
+a button `press`, a generic `out` exit and new sfx (tick, pen, flick, tap, swell).
+
 Batch-02 added self-drawing ("dynamic") elements — path, chart, typewriter,
 scatter, burst — plus box/stamp sprites, the slam/drop/wipe animations, a
 scene camera (push-in + shake on impact), hard cuts, per-reel music moods
@@ -304,6 +309,8 @@ def build_sprite(e):
         return sprite_table_header(e["cols"])
     if k == "trow":
         return sprite_table_row(e["cells"], idx=e.get("idx", 0))
+    if k == "refcard":
+        return sprite_minicard(e["text"], 250, 110, e.get("band"), e.get("scale", 1.0))
     if k == "ring":
         return sprite_ring(e["r"], e.get("width", 14), e.get("alpha", 255))
     raise ValueError(k)
@@ -656,7 +663,196 @@ class DynBurst:
         _overlay_draw(frame, (cx - R * 1.9, cy - R * 1.9, cx + R * 1.9, cy + R * 1.9), fn)
 
 
-DYNAMIC = {"path": DynPath, "chart": DynChart, "typewriter": DynTypewriter, "scatter": DynScatter, "burst": DynBurst}
+
+# ------------------------------------------------------------------ dynamic elements (batch-03)
+# A questionnaire that fills itself in (likert rows whose answer dots get
+# picked), a reviewer's red pen that draws annotations on (mark), cards that
+# fly from a scattered pile into their slots (fly), plus — in Reel below — a
+# world-space "dolly" camera for scale reveals, the iris mask reveal, the
+# button press and the generic `out` exit.
+
+def _fit_font(text, fname, size, maxw, wght=None):
+    while size > 16:
+        f = font(fname, size, wght)
+        l, t, r, b = f.getbbox(text, **_kw(text))
+        if (r - l) / SS <= maxw:
+            return f, size
+        size -= 1
+    return font(fname, size, wght), size
+
+
+class DynLikert:
+    """`likert`: one questionnaire item — statement on the right, five answer dots on the left.
+    The row slides in at `t`; each [time, index] in `picks` moves the chosen answer there
+    (several picks = an undecided respondent jumping between answers)."""
+
+    def __init__(self, e):
+        self.e = e
+        w, h = e.get("w", 860), e.get("h", 104)
+        self.w, self.h = w, h
+        self.gap = e.get("gap", 74)
+        self.r = e.get("r", 21)
+        ink = e.get("color", C["ink"])
+        img = Image.new("RGBA", (w * SS, h * SS), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        if e.get("rule", True):
+            d.line([(0, (h - 2) * SS), (w * SS, (h - 2) * SS)], fill=rgb(e.get("rule_color", "#E7DDF0")), width=2 * SS)
+        maxw = w - 5 * self.gap - 70
+        f, _ = _fit_font(e["text"], e.get("font", "almarai-bold"), e.get("size", 30), maxw)
+        d.text(((w - 14) * SS, h / 2 * SS), e["text"], font=f, fill=rgb(ink), anchor="rm", **_kw(e["text"]))
+        for i in range(5):
+            cx, cy = self.dot_x(i) * SS, h / 2 * SS
+            r = self.r * SS
+            d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=rgb(e.get("ring", "#CBB8D9")), width=3 * SS)
+        self.base = _finish(img)
+
+    def dot_x(self, i):
+        # i = 0 is "strongly agree" (closest to the statement, RTL), 4 the far left
+        return 30 + self.r + (4 - i) * self.gap
+
+    def draw(self, frame, t):
+        e = self.e
+        t0 = e.get("t", 0)
+        if t < t0:
+            return
+        p = ease_out_cubic(clamp((t - t0) / 0.45))
+        x0 = e["x"] - self.w / 2 + (1 - p) * 140
+        y0 = e["y"] - self.h / 2
+        place(frame, self.base, x0 + self.w / 2, e["y"], clamp(p * 1.6))
+        picks = [pk for pk in e.get("picks", []) if pk[0] <= t]
+        if not picks:
+            return
+        tp, idx = picks[-1]
+        q = clamp((t - tp) / 0.28)
+        cx, cy = x0 + self.dot_x(idx), e["y"]
+        col = rgb(e.get("fill", C["purple"]))
+
+        def fn(d, ox, oy, k):
+            r = self.r * ease_out_back(q, 2.4) * 0.98
+            d.ellipse([(cx - r - ox) * k, (cy - r - oy) * k, (cx + r - ox) * k, (cy + r - oy) * k], fill=col)
+            ri = self.r * 0.36
+            d.ellipse([(cx - ri - ox) * k, (cy - ri - oy) * k, (cx + ri - ox) * k, (cy + ri - oy) * k], fill="#FFFFFF")
+            rq = clamp((t - tp) / 0.5)
+            if rq < 1:  # ripple
+                rr = self.r * (1 + 1.3 * ease_out_cubic(rq))
+                d.ellipse([(cx - rr - ox) * k, (cy - rr - oy) * k, (cx + rr - ox) * k, (cy + rr - oy) * k],
+                          outline=col[:3] + (int(200 * (1 - rq)),), width=int(4 * k))
+
+        _overlay_draw(frame, (cx - 60, cy - 60, cx + 60, cy + 60), fn)
+
+
+class DynMark:
+    """`mark`: a reviewer's pen stroke drawn on — kind circle / underline / strike / tick / arrow,
+    with a hand-made wobble so it reads as ink, not geometry."""
+
+    def __init__(self, e):
+        self.e = e
+        rng = np.random.default_rng(e.get("seed", 1))
+        k = e.get("kind", "circle")
+        if k == "circle":
+            cx, cy, rx, ry = e["x"], e["y"], e["rx"], e["ry"]
+            n = 70
+            a0 = math.radians(-60)
+            pts = []
+            for i in range(n + 1):
+                u = i / n
+                a = a0 - u * 2 * math.pi * 1.08  # a little past a full turn, like a real pen loop
+                wob = 1 + 0.035 * math.sin(u * 9 + 1) + 0.02 * u
+                pts.append((cx + rx * wob * math.cos(a), cy + ry * wob * math.sin(a)))
+        elif k in ("underline", "strike"):
+            x0, x1, y = e["x1"], e["x0"], e["y"]  # drawn right -> left (RTL)
+            n = 30
+            pts = [(x0 + (x1 - x0) * i / n, y + 3 * math.sin(i * 0.9) + rng.uniform(-1.5, 1.5) + (i / n) * e.get("slope", 6))
+                   for i in range(n + 1)]
+        elif k == "tick":
+            x, y, s = e["x"], e["y"], e.get("s", 40)
+            pts = [(x - s * 0.55, y - s * 0.02), (x - s * 0.12, y + s * 0.42), (x + s * 0.7, y - s * 0.62)]
+        else:  # arrow: polyline pts, head added at the end
+            pts = [tuple(p) for p in e["pts"]]
+        self.pts = pts
+        xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+        pad = e.get("width", 8) + 50
+        self.box = (min(xs) - pad, min(ys) - pad, max(xs) + pad, max(ys) + pad)
+
+    def draw(self, frame, t):
+        e = self.e
+        p = clamp((t - e.get("t", 0)) / e.get("dur", 0.5))
+        if p <= 0:
+            return
+        part, head = _partial(self.pts, ease_out_cubic(p))
+        col = _rgba(e.get("color", "#E0245E"))
+        w = e.get("width", 8)
+
+        def fn(d, ox, oy, k):
+            P = [((x - ox) * k, (y - oy) * k) for x, y in part]
+            if len(P) > 1:
+                d.line(P, fill=col, width=int(w * k), joint="curve")
+            for q in (P[0], P[-1]):
+                r = w * k / 2
+                d.ellipse([q[0] - r, q[1] - r, q[0] + r, q[1] + r], fill=col)
+            if e.get("kind") == "arrow" and p >= 1 and len(P) > 1:
+                (ax, ay), (bx, by) = P[-2], P[-1]
+                ang = math.atan2(by - ay, bx - ax)
+                L = 30 * k
+                for s_ in (2.6, -2.6):
+                    d.line([(bx, by), (bx + L * math.cos(ang + s_), by + L * math.sin(ang + s_))], fill=col, width=int(w * k))
+
+        _overlay_draw(frame, self.box, fn)
+
+
+def sprite_minicard(text, w=250, h=110, band=None, k=1.0):
+    """Small reference card: coloured top band, a title and two grey text lines (k scales it all)."""
+    W_, H_ = int(w * k), int(h * k)
+    img, m = _round_rect((W_, H_), 18 * k, fill="#FFFFFF", shadow=True)
+    d = ImageDraw.Draw(img)
+    band = band or C["purple"]
+    d.rounded_rectangle([m, m, m + W_ * SS, m + 18 * k * SS], radius=9 * k * SS, fill=rgb(band))
+    d.rectangle([m, m + 9 * k * SS, m + W_ * SS, m + 18 * k * SS], fill=rgb(band))
+    fn = font("latin", 22 * k) if text.isascii() else font("almarai-xb", 26 * k)
+    d.text((m + (w - 18) * k * SS, m + 46 * k * SS), text, font=fn, fill=rgb(C["ink"]), anchor="rm", **_kw(text))
+    for j, ww in enumerate([0.82, 0.58]):
+        yy = m + (72 + j * 18) * k * SS
+        d.rounded_rectangle([m + (w - 18 - (w - 36) * ww) * k * SS, yy, m + (w - 18) * k * SS, yy + 8 * k * SS],
+                            radius=4 * k * SS, fill=rgb("#E4DAEC"))
+    return _finish(img)
+
+
+class DynFly:
+    """`fly`: mini reference cards start scattered and tilted, then fly one by one into their slots."""
+
+    def __init__(self, e):
+        self.e = e
+        rng = np.random.default_rng(e.get("seed", 4))
+        self.items = []
+        for i, it in enumerate(e["items"]):
+            spr = sprite_minicard(it["text"], e.get("w", 250), e.get("h", 110), it.get("band"))
+            fx, fy = it.get("from") or (rng.uniform(80, 1000), rng.uniform(300, 1500))
+            rot = it.get("rot", rng.uniform(-24, 24))
+            rots = [spr.rotate(rot * (1 - j / 6), resample=Image.BICUBIC, expand=True) for j in range(7)]
+            self.items.append(dict(rots=rots, fx=fx, fy=fy, tx=it["to"][0], ty=it["to"][1],
+                                   go=e.get("go", 1.0) + i * e.get("stagger", 0.12)))
+
+    def draw(self, frame, t):
+        e = self.e
+        t0 = e.get("t", 0)
+        if t < t0:
+            return
+        a = clamp((t - t0) / 0.3)
+        for it in self.items:
+            q = clamp((t - it["go"]) / e.get("fly", 0.55))
+            qq = ease_out_back(q, 1.3)
+            if q <= 0:  # waiting in the pile, drifting slightly
+                x = it["fx"] + 6 * math.sin(t * 2 + it["fx"])
+                y = it["fy"] + 6 * math.cos(t * 1.7 + it["fy"])
+            else:
+                x = it["fx"] + (it["tx"] - it["fx"]) * qq
+                y = it["fy"] + (it["ty"] - it["fy"]) * qq
+            spr = it["rots"][min(int(clamp(q) * 6.99), 6)]
+            place(frame, spr, x, y, a, 1.0 + 0.12 * math.sin(math.pi * clamp(q)))
+
+
+DYNAMIC = {"path": DynPath, "chart": DynChart, "typewriter": DynTypewriter, "scatter": DynScatter, "burst": DynBurst,
+           "likert": DynLikert, "mark": DynMark, "fly": DynFly}
 
 
 # ------------------------------------------------------------------ animation
@@ -674,7 +870,85 @@ def place(frame, spr, cx, cy, alpha=1.0, scale=1.0):
     frame.alpha_composite(s, (max(x, 0), max(y, 0)), (max(-x, 0), max(-y, 0)))
 
 
+def place_world(frame, spr, cx, cy, s, alpha=1.0):
+    """Place a (hi-res) sprite scaled by s, cropping to the visible part *before* resizing,
+    so a sprite blown up 6x by the dolly camera costs no more than one screen of pixels."""
+    if alpha <= 0.01 or s <= 0:
+        return
+    W2, H2 = spr.width * s, spr.height * s
+    x0, y0 = cx - W2 / 2, cy - H2 / 2
+    vx0, vy0, vx1, vy1 = max(0.0, x0), max(0.0, y0), min(float(RW), x0 + W2), min(float(RH), y0 + H2)
+    if vx1 - vx0 < 1 or vy1 - vy0 < 1:
+        return
+    box = ((vx0 - x0) / s, (vy0 - y0) / s, (vx1 - x0) / s, (vy1 - y0) / s)
+    part = spr.resize((max(1, int(round(vx1 - vx0))), max(1, int(round(vy1 - vy0)))), Image.BILINEAR, box=box)
+    if alpha < 0.999:
+        part.putalpha(part.getchannel("A").point(lambda v: int(v * alpha)))
+    frame.alpha_composite(part, (int(vx0), int(vy0)))
+
+
+def iris(spr, p):
+    """Sprite revealed through a growing circle (p 0..1)."""
+    w, h = spr.size
+    r = ease_out_cubic(p) * math.hypot(w, h) / 2
+    m = Image.new("L", (w, h), 0)
+    ImageDraw.Draw(m).ellipse([w / 2 - r, h / 2 - r, w / 2 + r, h / 2 + r], fill=255)
+    out = spr.copy()
+    out.putalpha(Image.fromarray((np.asarray(spr.getchannel("A"), dtype=np.uint16) * np.asarray(m, dtype=np.uint16) // 255).astype("uint8")))
+    return out
+
+
+RES_KEYS = ("size", "w", "h", "radius", "width", "padx", "scale")
+
+
+def at_res(e, r):
+    """Copy of a sprite spec with its pixel sizes multiplied by r (built hi-res for the dolly)."""
+    if r == 1:
+        return e
+    e2 = dict(e)
+    if e2["type"] == "pill":
+        e2.setdefault("padx", 46)
+    if e2["type"] == "logo":
+        e2["width"] = e2.get("width", 300) * r
+    for k in RES_KEYS:
+        if k in e2 and isinstance(e2[k], (int, float)) and not isinstance(e2[k], bool):
+            e2[k] = int(round(e2[k] * r)) if k != "scale" else e2[k] * r
+    return e2
+
+
+def dolly_at(keys, t):
+    """World camera keyframes [[t, zoom, cx, cy], ...]: eased between keys, zoom in log space
+    so a 6x pull-back feels like one steady move (powers-of-ten style)."""
+    if t <= keys[0][0]:
+        return keys[0][1:]
+    for a, b in zip(keys, keys[1:]):
+        if t <= b[0]:
+            u = (t - a[0]) / max(b[0] - a[0], 1e-6)
+            u = u * u * (3 - 2 * u)
+            z = math.exp(math.log(a[1]) + (math.log(b[1]) - math.log(a[1])) * u)
+            return z, a[2] + (b[2] - a[2]) * u, a[3] + (b[3] - a[3]) * u
+    return keys[-1][1:]
+
+
 def animate(e, t):
+    """Base entrance animation, then the batch-03 modifiers: a button `press` (squash and
+    rebound at that time) and a generic `out` exit (fades and swells away)."""
+    a = _animate_in(e, t)
+    if a is None:
+        return None
+    dx, dy, al, sc = a
+    if "press" in e:
+        q = (t - e["press"]) / 0.4
+        if 0 <= q < 1:
+            sc *= (1 - 0.18 * math.sin(math.pi * q * 2)) if q < 0.5 else (1 + 0.08 * math.sin(math.pi * (q - 0.5) * 2))
+    if "out" in e and t >= e["out"]:
+        q = clamp((t - e["out"]) / e.get("out_dur", 0.25))
+        al *= 1 - q
+        sc *= 1 + 0.25 * q
+    return dx, dy, al, sc
+
+
+def _animate_in(e, t):
     """Return (dx, dy, alpha, scale) for element e at scene-local time t."""
     t0 = e.get("t", 0.0)
     dur = e.get("dur", 0.55)
@@ -711,6 +985,9 @@ def animate(e, t):
         # caret-style on/off blinking after it appears
         on = int((t - t0) * 2.4) % 2 == 0
         return 0, 0, 1.0 if on else 0.0, 1.0
+    if anim == "iris":
+        # circular mask reveal from the centre; handled in scene_frame
+        return 0, 0, 1.0, 1.0
     if anim == "wipe":
         # mask reveal from the right edge (RTL reading direction); handled in scene_frame
         return 0, 0, 1.0, 1.0
@@ -745,10 +1022,13 @@ class Reel:
                                 None, e["x"], e["y"]))
                 elif e["type"] in DYNAMIC:
                     els.append(({**e, "dyn": DYNAMIC[e["type"]](e)}, None, e.get("x", 0), e.get("y", 0)))
+                elif "dolly" in sc and not e.get("hud"):
+                    r = e.get("res", 1)
+                    els.append(({**e, "_res": r}, build_sprite(at_res(e, r)), e["x"], e["y"]))
                 else:
                     els.append((e, build_sprite(e), e["x"], e["y"]))
             dur = sc["dur"]
-            self.scenes.append(dict(start=start, dur=dur, bg=bg, glow=glow, els=els,
+            self.scenes.append(dict(start=start, dur=dur, bg=bg, glow=glow, els=els, dolly=sc.get("dolly"),
                                     camera=sc.get("camera"), shake=sc.get("shake", [])))
             start += dur
         self.total = start
@@ -764,6 +1044,22 @@ class Reel:
                     self.sfx += [(sc["start"] + tt, "click") for tt in DynTypewriter(e).times()]
                 elif e["type"] in ("path", "chart"):
                     self.sfx.append((t0 + (0.75 if e["type"] == "chart" else 0), "rise"))
+                elif e["type"] == "likert":
+                    self.sfx += [(sc["start"] + pk[0], "tick") for pk in e.get("picks", [])]
+                elif e["type"] == "mark":
+                    self.sfx.append((t0, "pen"))
+                elif e["type"] == "fly":
+                    self.sfx += [(sc["start"] + e.get("go", 1.0) + i * e.get("stagger", 0.12), "flick")
+                                 for i in range(len(e["items"]))]
+                elif e.get("anim") == "iris":
+                    self.sfx.append((t0, "whoosh"))
+                if "press" in e:
+                    self.sfx.append((sc["start"] + e["press"], "tap"))
+            if raw.get("dolly"):
+                k = raw["dolly"]
+                moves = [a[0] for a, b in zip(k, k[1:]) if a[1] != b[1]]
+                if moves:
+                    self.sfx.append((sc["start"] + moves[0], "swell"))
             for e in raw.get("sfx", []):
                 self.sfx.append((sc["start"] + e["t"], e["kind"]))
 
@@ -778,7 +1074,8 @@ class Reel:
                 hud.append((e, spr, x, y))
                 continue
             if "dyn" in e:
-                e["dyn"].draw(f, t)
+                if "out" not in e or t < e["out"]:
+                    e["dyn"].draw(f, t)
                 continue
             a = animate(e, t)
             if a is None:
@@ -787,6 +1084,15 @@ class Reel:
             if "cycle" in e:
                 k = min(int(max(t - e["t"], 0) / e["every"]), len(e["cycle"]) - 1)
                 spr = e["cycle"][k]
+            if sc.get("dolly"):
+                z, wx, wy = dolly_at(sc["dolly"], t)
+                place_world(f, spr, RW / 2 + (x + dx - wx) * z, RH / 2 + (y + dy - wy) * z,
+                            scale * z / e.get("_res", 1), al)
+                continue
+            if e.get("anim") == "iris":
+                p = clamp((t - e.get("t", 0)) / e.get("dur", 0.55))
+                place(f, iris(spr, p) if p < 1 else spr, x, y, al, scale)
+                continue
             if e.get("anim") == "wipe":
                 p = ease_out_cubic(clamp((t - e.get("t", 0)) / e.get("dur", 0.55)))
                 keep = max(1, int(spr.width * p))
@@ -869,6 +1175,10 @@ MOODS = {
     "drive": [[146.83, 174.61, 220.0], [116.54, 146.83, 174.61], [174.61, 220.0, 261.63], [130.81, 164.81, 196.0]],
     # E minor, rising: Em - C - G - D (builds towards an impact)
     "rise": [[164.81, 196.0, 246.94], [130.81, 164.81, 196.0], [196.0, 246.94, 293.66], [146.83, 185.0, 220.0]],
+    # batch-03 — B minor, focused/tense: Bm - G - D - A (a questionnaire under review)
+    "focus": [[123.47, 146.83, 185.0], [98.0, 123.47, 146.83], [146.83, 185.0, 220.0], [110.0, 138.59, 164.81]],
+    # batch-03 — G major, open/bright: G - D - Em - C (a library opening up)
+    "lift": [[196.0, 246.94, 293.66], [146.83, 185.0, 220.0], [164.81, 196.0, 246.94], [130.81, 164.81, 196.0]],
 }
 
 
@@ -903,6 +1213,33 @@ def _sfx(out, sr, kind, t0):
         ln = min(int(1.0 * sr), n - p0)
         pt = np.arange(ln) / sr
         sig = 0.22 * np.exp(-pt * 5) * (np.sin(2 * np.pi * 1318.5 * pt) + 0.5 * np.sin(2 * np.pi * 1975.5 * pt))
+    elif kind == "tick":     # soft wooden tick when a questionnaire answer is picked
+        ln = min(int(0.08 * sr), n - p0)
+        pt = np.arange(ln) / sr
+        sig = 0.25 * np.exp(-pt * 70) * np.sin(2 * np.pi * 1450 * pt) + 0.08 * np.exp(-pt * 200) * rng.standard_normal(ln)
+    elif kind == "pen":      # felt-pen scratch while a mark is drawn on
+        ln = min(int(0.45 * sr), n - p0)
+        pt = np.arange(ln) / sr
+        noise = rng.standard_normal(ln)
+        noise = noise - np.convolve(noise, np.ones(6) / 6, mode="same")  # keep the hiss, drop the rumble
+        sig = 0.16 * np.sin(np.pi * pt / 0.45) * (0.6 + 0.4 * np.sin(2 * np.pi * 11 * pt)) * noise
+    elif kind == "flick":    # paper card flicked into place
+        ln = min(int(0.12 * sr), n - p0)
+        pt = np.arange(ln) / sr
+        sig = 0.14 * np.exp(-pt * 45) * np.convolve(rng.standard_normal(ln), np.ones(4) / 4, mode="same")
+    elif kind == "tap":      # button press: low thump + click
+        ln = min(int(0.3 * sr), n - p0)
+        pt = np.arange(ln) / sr
+        sig = 0.6 * np.exp(-pt * 25) * np.sin(2 * np.pi * (70 + 60 * np.exp(-pt * 40)) * pt)
+        sig += 0.2 * np.exp(-pt * 300) * np.sin(2 * np.pi * 3000 * pt)
+    elif kind == "swell":    # airy downward sweep under a dolly pull-back
+        ln = min(int(2.2 * sr), n - p0)
+        pt = np.arange(ln) / sr
+        env = np.sin(np.pi * np.minimum(pt / 2.2, 1)) ** 1.5
+        f = 900 - 650 * (pt / 2.2)
+        tone = np.sin(2 * np.pi * np.cumsum(f) / sr)
+        air = np.convolve(rng.standard_normal(ln), np.ones(30) / 30, mode="same")
+        sig = env * (0.05 * tone + 0.6 * air)
     else:
         return
     out[p0:p0 + ln] += sig

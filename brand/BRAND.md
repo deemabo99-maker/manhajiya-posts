@@ -214,9 +214,14 @@ owner will: in the first second on a phone, does this stop the scroll? Three har
    doc, table header/row, ring, grid, cycle (batch-01); box, stamp, and the self-drawing
    path, chart, typewriter, scatter, burst (batch-02). Animations: up, right, left, pop,
    fade, pulse (batch-01); slam, drop, wipe, plus scene camera push-in, shake on impact,
-   hard cuts, music moods (calm/drive/rise) and synthesised sfx (batch-02). Formats used:
+   hard cuts, music moods (calm/drive/rise) and synthesised sfx (batch-02); likert questionnaire row,
+   reviewer pen `mark` (circle/underline/strike/tick/arrow), flying `fly` cards, `refcard`, world-space
+   `dolly` camera for scale reveals (hi-res sprites via `res`), `iris` mask reveal, button `press`,
+   generic `out` exit, moods focus/lift and sfx tick/pen/flick/tap/swell (batch-03). Formats used:
    batch-01 text cards + table; batch-02 chart drawing itself (statistics), journal cover
-   assembling → stamp climax (Scopus). Reusing only these means the reel will move like last week's — so write the
+   assembling → stamp climax (Scopus); batch-03 document filling itself in → red-pen review →
+   submit-button CTA (study tools), unexpected scale reveal / powers-of-ten pull-back → cards
+   sorted → research gap filled (references). Reusing only these means the reel will move like last week's — so write the
    new one the format actually needs (a counter, a typewriter, a wipe, a mask reveal, a
    draw-on line, a camera push, a shake on impact) rather than forcing the idea into the
    existing set.
@@ -246,3 +251,6 @@ them by hand.
 | `myth_fact` | dark, crossed-out myth card + overlapping bright fact card, 3 chips (batch-02) |
 | `chat_phone` | vivid purple, phone mock-up with a WhatsApp-style chat + 2 stickers (batch-02) |
 | `before_after` | light, marked-up "before" page vs ticked "after" page with an arrow disc (batch-02) |
+| `ticker_board` | dark, trading-terminal panel: candles + a ticked financial-items sheet, 3 chips (batch-03) |
+| `clipboard_check` | vivid purple, giant gradient tick behind a clipboard checklist + sticker (batch-03) |
+| `diagonal_split` | light/purple diagonal cut: giant Arabic word above, giant English word below, band (batch-03) |

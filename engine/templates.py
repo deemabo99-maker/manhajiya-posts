@@ -499,6 +499,198 @@ def before_after(p):
     return c
 
 
+# ------------------------------------------------------------------ batch-03
+def ticker_board(p):
+    """Dark: a trading-terminal panel (candles + a financial-items sheet being ticked) as the focal point."""
+    c = Canvas(C["night"])
+    c.gradient_bg([C["night"], "#2E0D3D", C["plum"]], angle=100)
+    c.glow(880, 640, 420, C["purple"], 120)
+    c.glow(140, 300, 260, C["pink"], 60)
+    c.dots(870, 1095, 7, 3, gap=22, color="#FFFFFF", alpha=60)
+    c.plus(470, 110, color="#FFFFFF")
+    c.plus(80, 1000, size=18, thick=6, color=C["gold"])
+
+    c.logo(150, 112, 150)
+    kf = font("almarai-xb", 26)
+    kw, _ = measure(p["kicker"], kf)
+    x1 = W - 66
+    c.shape("round", [x1 - kw - 44, 52, x1, 102], outline=C["gold"], width=2.5, radius=25)
+    c.text((x1 - 22, 78), p["kicker"], kf, fill=C["gold"], anchor="rm")
+    c.text((W - 62, 128), p["title1"], font("kufi", 78, 900), fill="#FFFFFF", anchor="ra",
+           shadow=dict(offset=(0, 8), blur=18, alpha=90, color="#000000"))
+    c.text((W - 62, 242), p["title2"], font("kufi", 76, 900), gradient=list(reversed(WARM)), angle=0, anchor="ra")
+
+    # terminal panel
+    x0, y0, x1p, y1 = 60, 400, 1020, 960
+    c.shape("round", [x0, y0, x1p, y1], fill="#1A0723", radius=34, outline="#5E2C78", width=2,
+            shadow=dict(offset=(0, 24), blur=34, alpha=120, color="#000000"))
+    c.shape("round", [x0, y0, x1p, y0 + 70], fill="#2B0E3A", radius=34)
+    c.shape("rect", [x0, y0 + 40, x1p, y0 + 70], fill="#2B0E3A")
+    for i, col in enumerate([C["pink"], C["gold"], C["green"]]):
+        cx = x0 + 44 + i * 30
+        c.shape("ellipse", [cx - 9, y0 + 26, cx + 9, y0 + 44], fill=col)
+    c.text((x1p - 34, y0 + 36), p["panel_label"], font("latin", 22), fill="#CDB6DD", anchor="rm")
+
+    # candles (left half): abstract, no values
+    gx0, gx1, gy0, gy1 = x0 + 40, 500, y0 + 110, y1 - 60
+    for k in range(1, 4):
+        yy = gy0 + k * (gy1 - gy0) / 4
+        c.shape("rect", [gx0, yy, gx1, yy + 1.5], fill="#3B1850")
+    import math as _m
+    n = 9
+    prev = 0.35
+    cw = (gx1 - gx0) / n
+    pts = []
+    for i in range(n):
+        v = 0.30 + 0.05 * i + 0.09 * _m.sin(i * 1.7)
+        o, cl = prev, v
+        hi, lo = max(o, cl) + 0.07, min(o, cl) - 0.06
+        cx = gx0 + cw * (i + 0.5)
+        Y = lambda q: gy1 - q * (gy1 - gy0)
+        up = cl >= o
+        col = C["green"] if up else C["pink"]
+        c.shape("rect", [cx - 2, Y(hi), cx + 2, Y(lo)], fill=col)
+        c.shape("round", [cx - cw * 0.3, Y(max(o, cl)), cx + cw * 0.3, Y(min(o, cl)) + 4], fill=col, radius=4)
+        pts.append((cx, Y(cl)))
+        prev = cl
+    c.line(pts, C["gold"], 4)
+    for (px, py) in pts[-1:]:
+        c.shape("ellipse", [px - 11, py - 11, px + 11, py + 11], fill=C["gold"])
+
+    # financial items sheet (right half), ticked
+    sx0, sx1 = 540, x1p - 36
+    c.shape("round", [sx0, y0 + 100, sx1, y1 - 40], fill="#FFFFFF", radius=24)
+    c.shape("round", [sx0, y0 + 100, sx1, y0 + 170], gradient=[C["violet"], C["purple"], C["magenta"]], angle=0, radius=24)
+    c.shape("rect", [sx0, y0 + 140, sx1, y0 + 170], gradient=[C["violet"], C["purple"], C["magenta"]], angle=0)
+    c.text((sx1 - 26, y0 + 136), p["sheet_title"], font("almarai-xb", 28), fill="#FFFFFF", anchor="rm")
+    rf = font("almarai-bold", 27)
+    for i, item in enumerate(p["items"]):
+        cy = y0 + 215 + i * 66
+        c.text((sx1 - 26, cy), item, rf, fill=C["ink"], anchor="rm")
+        r = 17
+        ccx = sx0 + 40
+        c.shape("ellipse", [ccx - r, cy - r, ccx + r, cy + r], gradient=WARM, angle=45)
+        c.text((ccx, cy + 1), "✓", font("latin", 19), fill="#FFFFFF", anchor="mm")
+        c.shape("round", [ccx + 30, cy - 4, ccx + 120, cy + 4], fill="#EFE6F5", radius=4)
+        if i < len(p["items"]) - 1:
+            c.shape("rect", [sx0 + 20, cy + 33, sx1 - 20, cy + 34.5], fill="#EEE7F3")
+
+    # bullets as a row of chips
+    bf = font("almarai-xb", 27)
+    y = 1010
+    widths = [measure(b, bf)[0] + 56 for b in p["chips"]]
+    gap = 14
+    total = sum(widths) + gap * (len(widths) - 1)
+    xr = W / 2 + total / 2
+    for b, wv in zip(p["chips"], widths):
+        c.shape("round", [xr - wv, y, xr, y + 56], fill=(255, 255, 255, 30), outline="#FFFFFF", width=1.5, radius=28)
+        c.text((xr - wv / 2, y + 28), b, bf, fill="#FFFFFF", anchor="mm")
+        xr -= wv + gap
+
+    c.footer(dark=True, cta=p["cta"])
+    return c
+
+
+def clipboard_check(p):
+    """Vivid purple: a giant gradient tick slashes behind a clipboard checklist (the 'before you submit' list)."""
+    c = Canvas(C["purple"])
+    c.gradient_bg([C["violet"], C["purple"], C["magenta"]], angle=120)
+    c.glow(250, 900, 420, C["pink"], 110)
+    c.dots(80, 1080, 6, 3, gap=22, color="#FFFFFF", alpha=80)
+    c.plus(990, 1050, color="#FFFFFF")
+    c.tri(70, 470, 20, color=C["gold"], rot=0)
+
+    # giant tick behind everything (the focal stroke)
+    c.shape("poly", [(40, 760), (110, 690), (300, 900), (980, 230), (1060, 310), (300, 1060)],
+            gradient=list(reversed(WARM)), angle=40, shadow=dict(offset=(0, 20), blur=30, alpha=90, color="#3A0F4F"))
+
+    c.logo(W - 150, 112, 150)
+    c.text((66, 50), p["title1"], font("kufi", 84, 900), fill="#FFFFFF", anchor="la",
+           shadow=dict(offset=(0, 8), blur=18, alpha=80, color="#2A0838"))
+    c.text((66, 168), p["title2"], font("kufi", 84, 900), fill=C["gold"], anchor="la")
+
+    # clipboard
+    bx0, by0, bx1, by1 = 330, 330, 1000, 1050
+    c.shape("round", [bx0, by0, bx1, by1], fill="#5B2A16", radius=34,
+            shadow=dict(offset=(0, 26), blur=36, alpha=120, color="#2A0838"))
+    c.shape("round", [bx0, by0, bx1, by1], gradient=["#B57A4A", "#8E5530"], angle=90, radius=34)
+    c.shape("round", [bx0 + 24, by0 + 56, bx1 - 24, by1 - 24], fill="#FFFFFF", radius=20)
+    cx = (bx0 + bx1) / 2
+    c.shape("round", [cx - 110, by0 - 26, cx + 110, by0 + 64], gradient=["#E6E1EA", "#A9A2B0"], angle=90, radius=20,
+            shadow=dict(offset=(0, 6), blur=10, alpha=80, color="#000000"))
+    c.shape("ellipse", [cx - 18, by0 - 12, cx + 18, by0 + 24], fill="#5B5363")
+    c.text((bx1 - 60, by0 + 110), p["board_title"], font("kufi", 38, 900), fill=C["ink"], anchor="rm")
+    c.shape("round", [bx0 + 60, by0 + 168, bx1 - 60, by0 + 172], fill="#EADFF1", radius=2)
+    f = font("almarai-xb", 32)
+    sf = font("almarai", 24)
+    for i, (t, sub) in enumerate(p["items"]):
+        y = by0 + 228 + i * 132
+        r = 34
+        x = bx1 - 60 - r
+        c.shape("round", [x - r, y - r, x + r, y + r], fill="#FFFFFF", outline=C["purple"], width=4, radius=12)
+        c.text((x + 2, y + 2), "✓", font("latin", 40), fill=C["purple"], anchor="mm")
+        c.text((x - r - 24, y - 18), t, f, fill=C["ink"], anchor="rm")
+        c.text((x - r - 24, y + 26), sub, sf, fill=C["muted"], anchor="rm")
+        if i < len(p["items"]) - 1:
+            c.shape("rect", [bx0 + 60, y + 66, bx1 - 60, y + 67.5], fill="#F0E8F5")
+
+    # sticker
+    stf = font("kufi", 30, 900)
+    sw, _ = measure(p["sticker"], stf)
+    c.shape("round", [60, 1100 - 42, 60 + sw + 70, 1100 + 30], fill="#FFFFFF", radius=36,
+            shadow=dict(offset=(0, 10), blur=16, alpha=90, color="#2A0838"))
+    c.text((60 + (sw + 70) / 2, 1094), p["sticker"], stf, fill=C["purple"], anchor="mm")
+
+    c.footer(y=1260, dark=True, cta=p["cta"])
+    return c
+
+
+def diagonal_split(p):
+    """Light: the canvas cut on a diagonal — an Arabic word above, its English twin below, a translation band between."""
+    c = Canvas("#FFFFFF")
+    c.gradient_bg(["#FFFFFF", C["paper"]], angle=90)
+    # purple wedge (top-right) and a warm band along the cut
+    c.shape("poly", [(0, 0), (W, 0), (W, 520), (0, 760)], gradient=[C["violet"], C["purple"], C["magenta"]], angle=20)
+    c.shape("poly", [(0, 760), (W, 520), (W, 600), (0, 840)], gradient=list(reversed(WARM)), angle=0,
+            shadow=dict(offset=(0, 14), blur=24, alpha=70, color="#5B1A78"))
+    c.dots(70, 470, 7, 3, gap=22, color="#FFFFFF", alpha=80)
+    c.dots(860, 1110, 6, 3, gap=22, color=C["purple"], alpha=90)
+    c.plus(990, 960, color=C["ink"])
+    c.plus(470, 80, color="#FFFFFF")
+
+    c.logo(150, 108, 140)
+    c.text((W - 66, 52), p["kicker"], font("almarai-xb", 34), fill=C["gold"], anchor="ra")
+    # giant Arabic word on the purple side
+    c.text((W - 60, 120), p["word_ar"], font("kufi", 190, 900), fill="#FFFFFF", anchor="ra",
+           shadow=dict(offset=(0, 12), blur=24, alpha=90, color="#2A0838"))
+    c.text((W - 66, 418), p["sub_ar"], font("almarai-xb", 38), fill="#F3E3FB", anchor="ra")
+    # band text, following the cut (kept horizontal, centred on it)
+    bf = font("kufi", 34, 900)
+    c.shape("round", [300, 618, 780, 690], fill="#FFFFFF", radius=36,
+            shadow=dict(offset=(0, 10), blur=18, alpha=80, color="#5B1A78"))
+    c.text((540, 652), p["band"], bf, fill=C["purple"], anchor="mm")
+    # swap disc on the cut
+    cx, cy, r = 905, 600, 58
+    c.shape("ellipse", [cx - r, cy - r, cx + r, cy + r], fill="#FFFFFF",
+            shadow=dict(offset=(0, 10), blur=18, alpha=90, color="#5B1A78"))
+    c.text((cx, cy + 4), "⇅", font("latin", 62), fill=C["purple"], anchor="mm")
+    # giant English word on the white side
+    c.text((66, 860), p["word_en"], font("latin", 150), gradient=[C["violet"], C["purple"], C["magenta"]], angle=0,
+           anchor="la")
+    c.text((70, 1040), p["sub_en"], font("almarai-xb", 34), fill=C["ink"], anchor="la")
+    lf = font("almarai-bold", 28)
+    y = 1100
+    widths = [measure(b, lf)[0] + 50 for b in p["chips"]]
+    xl = 66
+    for b, wv in zip(p["chips"], widths):
+        c.shape("round", [xl, y, xl + wv, y + 52], fill="#F1E6F8", radius=26)
+        c.text((xl + wv / 2, y + 26), b, lf, fill=C["purple"], anchor="mm")
+        xl += wv + 12
+
+    c.footer(y=1262, dark=False, cta=p["cta"])
+    return c
+
+
 TEMPLATES = {
     "spotlight_dark": spotlight_dark,
     "steps_light": steps_light,
@@ -508,4 +700,7 @@ TEMPLATES = {
     "myth_fact": myth_fact,
     "chat_phone": chat_phone,
     "before_after": before_after,
+    "ticker_board": ticker_board,
+    "clipboard_check": clipboard_check,
+    "diagonal_split": diagonal_split,
 }

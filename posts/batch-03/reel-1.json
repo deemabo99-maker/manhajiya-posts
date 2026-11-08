@@ -1,0 +1,686 @@
+{
+ "title": "أدوات الدراسة — الاستبانة تبني نفسها ثم يحكّمها القلم الأحمر",
+ "service": "أدوات الدراسة وتحكيمها",
+ "format": "document filling itself in line by line (a questionnaire builds itself, answer dots get picked) → reviewer's red pen marks it up → submit button pressed turns into the WhatsApp CTA (CTA lands at the end, via a button press)",
+ "music": {
+  "mood": "focus",
+  "bpm": 112
+ },
+ "fadein": 0.04,
+ "cover": {
+  "scene": 2,
+  "t": 4.6
+ },
+ "scenes": [
+  {
+   "bg": "dark",
+   "dur": 3.1,
+   "glow": "#9627C4",
+   "shake": [
+    {
+     "t": 0.52,
+     "amp": 26
+    }
+   ],
+   "elements": [
+    {
+     "type": "text",
+     "text": "استبانتك",
+     "font": "kufi",
+     "size": 118,
+     "wght": 900,
+     "x": 540,
+     "y": 520,
+     "t": 0.0,
+     "anim": "pop",
+     "dur": 0.3
+    },
+    {
+     "type": "text",
+     "text": "تقيس ماذا؟",
+     "font": "kufi",
+     "size": 150,
+     "wght": 900,
+     "gradient": "warm",
+     "x": 540,
+     "y": 715,
+     "t": 0.12,
+     "anim": "slam",
+     "dur": 0.4
+    },
+    {
+     "type": "box",
+     "w": 940,
+     "h": 150,
+     "radius": 34,
+     "fill": "#FFFFFF",
+     "x": 540,
+     "y": 1010,
+     "t": 0.0,
+     "anim": "fade",
+     "dur": 0.2
+    },
+    {
+     "type": "likert",
+     "text": "فقرة غامضة بمعنيين",
+     "w": 880,
+     "x": 540,
+     "y": 1010,
+     "t": 0.0,
+     "size": 32,
+     "rule": false,
+     "fill": "#E8457E",
+     "picks": [
+      [
+       0.35,
+       0
+      ],
+      [
+       0.7,
+       3
+      ],
+      [
+       1.0,
+       1
+      ],
+      [
+       1.3,
+       4
+      ],
+      [
+       1.6,
+       2
+      ],
+      [
+       1.9,
+       0
+      ],
+      [
+       2.15,
+       3
+      ],
+      [
+       2.4,
+       1
+      ]
+     ]
+    },
+    {
+     "type": "text",
+     "text": "فقرة غامضة = نتائج مضلِّلة",
+     "font": "almarai-xb",
+     "size": 46,
+     "color": "#FFD45C",
+     "x": 540,
+     "y": 1210,
+     "t": 1.15,
+     "anim": "up"
+    },
+    {
+     "type": "pill",
+     "text": "أدوات الدراسة وتحكيمها",
+     "size": 36,
+     "fg": "#FFD45C",
+     "outline": "#FFD45C",
+     "x": 540,
+     "y": 1400,
+     "t": 1.6,
+     "anim": "fade"
+    }
+   ]
+  },
+  {
+   "bg": "light",
+   "dur": 5.4,
+   "glow": "#C86BF0",
+   "cut": true,
+   "elements": [
+    {
+     "type": "typewriter",
+     "text": "نبني أداة دراستك فقرة فقرة",
+     "font": "kufi",
+     "size": 60,
+     "wght": 900,
+     "color": "#1E1A22",
+     "shadow": false,
+     "caret": "#9627C4",
+     "x": 540,
+     "y": 340,
+     "t": 0.05,
+     "every": 0.18
+    },
+    {
+     "type": "box",
+     "w": 940,
+     "h": 900,
+     "radius": 30,
+     "fill": "#FFFFFF",
+     "x": 540,
+     "y": 920.0,
+     "t": 0.1,
+     "anim": "drop",
+     "dur": 0.5
+    },
+    {
+     "type": "box",
+     "w": 940,
+     "h": 116,
+     "radius": 30,
+     "gradient": "ring",
+     "shadow": false,
+     "x": 540,
+     "y": 528,
+     "t": 0.45,
+     "anim": "wipe",
+     "dur": 0.45
+    },
+    {
+     "type": "text",
+     "text": "استبانة الدراسة",
+     "font": "kufi",
+     "size": 46,
+     "wght": 900,
+     "shadow": false,
+     "x": 620,
+     "y": 524,
+     "t": 0.75,
+     "anim": "fade",
+     "dur": 0.3
+    },
+    {
+     "type": "pill",
+     "text": "المحور الأول",
+     "size": 24,
+     "bg": "#FFFFFF",
+     "fg": "#9627C4",
+     "padx": 26,
+     "x": 215,
+     "y": 528,
+     "t": 0.75,
+     "anim": "pop",
+     "dur": 0.35
+    },
+    {
+     "type": "text",
+     "text": "موافق بشدة",
+     "font": "almarai-bold",
+     "size": 22,
+     "color": "#6B6272",
+     "shadow": false,
+     "x": 470,
+     "y": 630,
+     "t": 0.85,
+     "anim": "fade"
+    },
+    {
+     "type": "text",
+     "text": "غير موافق بشدة",
+     "font": "almarai-bold",
+     "size": 22,
+     "color": "#6B6272",
+     "shadow": false,
+     "x": 205,
+     "y": 630,
+     "t": 0.85,
+     "anim": "fade"
+    },
+    {
+     "type": "likert",
+     "text": "تساعدني الإدارة على تطوير أدائي",
+     "w": 830,
+     "x": 555,
+     "y": 730,
+     "t": 1.15,
+     "size": 30,
+     "picks": [
+      [
+       1.5499999999999998,
+       0
+      ]
+     ]
+    },
+    {
+     "type": "likert",
+     "text": "تتوفر الموارد اللازمة لعملي",
+     "w": 830,
+     "x": 555,
+     "y": 848,
+     "t": 1.5699999999999998,
+     "size": 30,
+     "picks": [
+      [
+       1.9699999999999998,
+       1
+      ]
+     ]
+    },
+    {
+     "type": "likert",
+     "text": "أشارك في اتخاذ القرارات",
+     "w": 830,
+     "x": 555,
+     "y": 966,
+     "t": 1.9899999999999998,
+     "size": 30,
+     "picks": [
+      [
+       2.3899999999999997,
+       0
+      ]
+     ]
+    },
+    {
+     "type": "likert",
+     "text": "يُقدَّر الجهد الذي أبذله",
+     "w": 830,
+     "x": 555,
+     "y": 1084,
+     "t": 2.41,
+     "size": 30,
+     "picks": [
+      [
+       2.81,
+       3
+      ]
+     ]
+    },
+    {
+     "type": "likert",
+     "text": "أشعر بالانتماء لمؤسستي",
+     "w": 830,
+     "x": 555,
+     "y": 1202,
+     "t": 2.83,
+     "size": 30,
+     "picks": [
+      [
+       3.23,
+       1
+      ]
+     ]
+    },
+    {
+     "type": "pill",
+     "text": "استبانات · برامج تدريبية · برامج إرشادية",
+     "size": 32,
+     "gradient": "warm",
+     "x": 540,
+     "y": 1435,
+     "t": 3.6,
+     "anim": "iris",
+     "dur": 0.5
+    }
+   ]
+  },
+  {
+   "bg": "purple",
+   "dur": 5.7,
+   "glow": "#E8457E",
+   "camera": {
+    "from": 1.0,
+    "to": 1.05,
+    "y": 900
+   },
+   "elements": [
+    {
+     "type": "text",
+     "text": "ثم نُحكّمها",
+     "font": "kufi",
+     "size": 92,
+     "wght": 900,
+     "x": 540,
+     "y": 300,
+     "t": 0.0,
+     "anim": "slam",
+     "dur": 0.35
+    },
+    {
+     "type": "text",
+     "text": "بنخبة من أعضاء هيئة التدريس في الجامعات العربية",
+     "font": "almarai-xb",
+     "size": 36,
+     "color": "#FFD45C",
+     "x": 540,
+     "y": 410,
+     "t": 0.3,
+     "anim": "up"
+    },
+    {
+     "type": "box",
+     "w": 940,
+     "h": 900,
+     "radius": 30,
+     "fill": "#FFFFFF",
+     "x": 540,
+     "y": 970.0,
+     "t": 0.0,
+     "anim": "fade",
+     "dur": 0.2
+    },
+    {
+     "type": "box",
+     "w": 940,
+     "h": 116,
+     "radius": 30,
+     "gradient": "ring",
+     "shadow": false,
+     "x": 540,
+     "y": 578,
+     "t": 0.0,
+     "anim": "fade",
+     "dur": 0.2
+    },
+    {
+     "type": "text",
+     "text": "استبانة الدراسة",
+     "font": "kufi",
+     "size": 46,
+     "wght": 900,
+     "shadow": false,
+     "x": 620,
+     "y": 574,
+     "t": 0.0,
+     "anim": "fade",
+     "dur": 0.3
+    },
+    {
+     "type": "pill",
+     "text": "المحور الأول",
+     "size": 24,
+     "bg": "#FFFFFF",
+     "fg": "#9627C4",
+     "padx": 26,
+     "x": 215,
+     "y": 578,
+     "t": 0.0,
+     "anim": "fade",
+     "dur": 0.35
+    },
+    {
+     "type": "text",
+     "text": "موافق بشدة",
+     "font": "almarai-bold",
+     "size": 22,
+     "color": "#6B6272",
+     "shadow": false,
+     "x": 470,
+     "y": 680,
+     "t": 0.1,
+     "anim": "fade"
+    },
+    {
+     "type": "text",
+     "text": "غير موافق بشدة",
+     "font": "almarai-bold",
+     "size": 22,
+     "color": "#6B6272",
+     "shadow": false,
+     "x": 205,
+     "y": 680,
+     "t": 0.1,
+     "anim": "fade"
+    },
+    {
+     "type": "likert",
+     "text": "تساعدني الإدارة على تطوير أدائي",
+     "w": 830,
+     "x": 555,
+     "y": 780,
+     "t": 0.0,
+     "size": 30
+    },
+    {
+     "type": "likert",
+     "text": "تتوفر الموارد اللازمة لعملي",
+     "w": 830,
+     "x": 555,
+     "y": 898,
+     "t": 0.0,
+     "size": 30
+    },
+    {
+     "type": "likert",
+     "text": "أشارك في اتخاذ القرارات",
+     "w": 830,
+     "x": 555,
+     "y": 1016,
+     "t": 0.0,
+     "size": 30
+    },
+    {
+     "type": "likert",
+     "text": "يُقدَّر الجهد الذي أبذله",
+     "w": 830,
+     "x": 555,
+     "y": 1134,
+     "t": 0.0,
+     "size": 30
+    },
+    {
+     "type": "likert",
+     "text": "أشعر بالانتماء لمؤسستي",
+     "w": 830,
+     "x": 555,
+     "y": 1252,
+     "t": 0.0,
+     "size": 30
+    },
+    {
+     "type": "mark",
+     "kind": "circle",
+     "x": 745,
+     "y": 898,
+     "rx": 240,
+     "ry": 52,
+     "t": 0.9,
+     "dur": 0.55,
+     "width": 7,
+     "seed": 2
+    },
+    {
+     "type": "pill",
+     "text": "صياغة أدق",
+     "size": 30,
+     "bg": "#E0245E",
+     "x": 330,
+     "y": 898,
+     "t": 1.4,
+     "anim": "pop",
+     "padx": 30
+    },
+    {
+     "type": "mark",
+     "kind": "strike",
+     "x0": 700,
+     "x1": 960,
+     "y": 1134,
+     "t": 1.9,
+     "dur": 0.4,
+     "width": 7,
+     "slope": 4
+    },
+    {
+     "type": "pill",
+     "text": "فقرة مكررة",
+     "size": 30,
+     "bg": "#E0245E",
+     "x": 330,
+     "y": 1134,
+     "t": 2.25,
+     "anim": "pop",
+     "padx": 30
+    },
+    {
+     "type": "mark",
+     "kind": "tick",
+     "x": 112,
+     "y": 780,
+     "s": 44,
+     "color": "#1FAF5A",
+     "t": 2.8,
+     "dur": 0.3,
+     "width": 9
+    },
+    {
+     "type": "mark",
+     "kind": "tick",
+     "x": 112,
+     "y": 1016,
+     "s": 44,
+     "color": "#1FAF5A",
+     "t": 3.0,
+     "dur": 0.3,
+     "width": 9
+    },
+    {
+     "type": "mark",
+     "kind": "tick",
+     "x": 112,
+     "y": 1252,
+     "s": 44,
+     "color": "#1FAF5A",
+     "t": 3.2,
+     "dur": 0.3,
+     "width": 9
+    },
+    {
+     "type": "pill",
+     "text": "أداة محكّمة.. جاهزة للتطبيق",
+     "size": 38,
+     "gradient": "warm",
+     "x": 540,
+     "y": 1445,
+     "t": 3.8,
+     "anim": "iris",
+     "dur": 0.5
+    }
+   ]
+  },
+  {
+   "bg": "dark",
+   "dur": 5.0,
+   "glow": "#9627C4",
+   "cut": true,
+   "shake": [
+    {
+     "t": 1.62,
+     "amp": 20
+    }
+   ],
+   "sfx": [
+    {
+     "t": 2.0,
+     "kind": "ding"
+    }
+   ],
+   "elements": [
+    {
+     "type": "text",
+     "text": "أداة دراستك",
+     "font": "kufi",
+     "size": 112,
+     "wght": 900,
+     "x": 540,
+     "y": 420,
+     "t": 0.05,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "نُعدّها ونُحكّمها معك",
+     "font": "almarai-xb",
+     "size": 54,
+     "color": "#FFD45C",
+     "x": 540,
+     "y": 560,
+     "t": 0.3,
+     "anim": "up"
+    },
+    {
+     "type": "pill",
+     "text": "إرسال الاستبانة",
+     "size": 56,
+     "gradient": "ring",
+     "padx": 70,
+     "x": 540,
+     "y": 860,
+     "t": 0.55,
+     "anim": "pop",
+     "press": 1.45,
+     "out": 1.85
+    },
+    {
+     "type": "mark",
+     "kind": "arrow",
+     "pts": [
+      [
+       880,
+       1080
+      ],
+      [
+       840,
+       990
+      ],
+      [
+       760,
+       930
+      ]
+     ],
+     "color": "#FFFFFF",
+     "width": 7,
+     "t": 0.95,
+     "dur": 0.4,
+     "out": 1.6
+    },
+    {
+     "type": "burst",
+     "x": 540,
+     "y": 860,
+     "r": 300,
+     "color": "#FFC21A",
+     "t": 1.6
+    },
+    {
+     "type": "whatsapp",
+     "scale": 1.15,
+     "x": 540,
+     "y": 860,
+     "t": 1.95,
+     "anim": "iris",
+     "dur": 0.45
+    },
+    {
+     "type": "text",
+     "text": "والاستشارة الأولى مجانية",
+     "font": "almarai-xb",
+     "size": 50,
+     "color": "#FFFFFF",
+     "x": 540,
+     "y": 1015,
+     "t": 2.4,
+     "anim": "up"
+    },
+    {
+     "type": "logo",
+     "width": 190,
+     "x": 540,
+     "y": 1235,
+     "t": 2.8,
+     "anim": "pop"
+    },
+    {
+     "type": "text",
+     "text": "@methodology_center",
+     "font": "latin",
+     "size": 32,
+     "color": "#F3E8FA",
+     "x": 540,
+     "y": 1420,
+     "t": 3.1,
+     "anim": "fade"
+    }
+   ]
+  }
+ ],
+ "caption": "📝 استبانتك جاهزة للتوزيع؟ توقّف لحظة قبل أن ترسلها!\n\nفقرة غامضة واحدة قد تقيس شيئاً غير الذي تريده، وأداة غير محكّمة قد تكلّفك إعادة جمع البيانات من البداية وأسئلة محرجة من لجنة المناقشة.\n\nفي المنهجية نبني أداة دراستك ونراجعها معك:\n✅ إعداد أدوات الدراسة: الاستبانات والبرامج التدريبية والإرشادية\n✅ صياغة الفقرات بوضوح وربطها بمحاور الدراسة وأهدافها\n✅ تحكيم الأدوات بنخبة من أعضاء هيئة التدريس في الجامعات العربية\n✅ توزيع الاستبانات إلكترونياً عبر نماذج جوجل (Google Forms)\n\n🎯 أرسل أداتك اليوم.. والاستشارة الأولى مجانية\n\n📞 للتواصل والاستفسار:\n📱 رقم الهاتف: 00962778707204\n💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778707204\n\n#المنهجية #أدوات_الدراسة #تحكيم_الاستبانة #استبانة #رسائل_ماجستير #دكتوراه #بحث_علمي"
+}
