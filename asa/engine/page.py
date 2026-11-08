@@ -19,6 +19,10 @@ AR_MONTH = {1: "كانون الثاني", 2: "شباط", 3: "آذار", 4: "ني
             7: "تموز", 8: "آب", 9: "أيلول", 10: "تشرين الأول", 11: "تشرين الثاني", 12: "كانون الأول"}
 
 
+AR_ORD = {1: "الأول", 2: "الثاني", 3: "الثالث", 4: "الرابع", 5: "الخامس", 6: "السادس",
+          7: "السابع", 8: "الثامن", 9: "التاسع", 10: "العاشر"}
+
+
 def run(*cmd):
     subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -103,13 +107,17 @@ def build(batch, out):
   </div>
 </article>''')
 
-    page = TEMPLATE.replace("{{TOC}}", "\n".join(toc)).replace("{{CARDS}}", "\n\n".join(cards))
+    wk = int(os.path.basename(batch.rstrip("/")).split("-")[-1])
+    week = AR_ORD.get(wk, str(wk))
+    page = (TEMPLATE.replace("{{TOC}}", "\n".join(toc))
+            .replace("{{CARDS}}", "\n\n".join(cards))
+            .replace("{{WEEK}}", week))
     with open(os.path.join(out, "page.html"), "w", encoding="utf-8") as fh:
         fh.write(page)
     print("page.html +", len(os.listdir(img)), "media files")
 
 
-TEMPLATE = r"""<title>منشورات الأكاديمية — الأسبوع الثاني</title>
+TEMPLATE = r"""<title>منشورات الأكاديمية — الأسبوع {{WEEK}}</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap">
 <style>
@@ -196,7 +204,7 @@ footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);color:v
 <div class="wrap">
 <header class="top">
   <p class="eyebrow">أكاديمية العلماء العرب للاستشارات والتدريب</p>
-  <h1>منشورات الأسبوع الثاني</h1>
+  <h1>منشورات الأسبوع {{WEEK}}</h1>
   <p class="lede">سبعة تصاميم وريلزان، كل واحد مع كابشنه الجاهز ونسخة الستوري. كل التصاميم هذا الأسبوع على قوالب جديدة بالكامل، ما في ولا تصميم مكرر عن الأسبوع الماضي.</p>
   <div class="howto">
     <strong>طريقة النشر على Meta Business Suite</strong>
