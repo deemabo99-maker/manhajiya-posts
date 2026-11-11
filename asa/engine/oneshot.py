@@ -281,8 +281,13 @@ def render(spec_path, out_path):
         R.mix_voice(wav, spec["vo"], shot.total, duck=spec.get("duck", 0.22))
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
            "-s", f"{RW}x{RH}", "-r", str(FPS), "-i", "-", "-i", wav,
+           # Meta's published Reels spec: H.264 high, closed 2 s GOP, bt709,
+           # 48 kHz AAC-LC stereo >= 128 kbps, faststart, no edit list
            "-c:v", "libx264", "-preset", "veryfast", "-crf", str(spec.get("crf", 22)),
-           "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-shortest",
+           "-profile:v", "high", "-level", "4.0", "-maxrate", "12M", "-bufsize", "20M",
+           "-g", str(2 * FPS), "-keyint_min", str(2 * FPS), "-sc_threshold", "0", "-flags", "+cgop",
+           "-pix_fmt", "yuv420p", "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
+           "-c:a", "aac", "-profile:a", "aac_low", "-ar", "48000", "-ac", "2", "-b:a", "192k", "-shortest",
            "-movflags", "+faststart", "-use_editlist", "0", out_path]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     n = int(shot.total * FPS)

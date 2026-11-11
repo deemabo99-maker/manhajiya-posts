@@ -9,7 +9,7 @@ can be checked by machine; brand/ADS.md lists the rest.
 
 Checks (sources: Meta's Reels ad specs and the unified 9:16 safe zone, 2026):
   format    9:16 at 1080x1920 or 1440x2560, H.264, yuv420p, constant 30 fps,
-            stereo AAC >= 128 kbps, under 4 GB, no edit list (elst) in the MP4
+            stereo AAC-LC 48 kHz >= 128 kbps, under 4 GB, no edit list (elst) in the MP4
   length    between 6 s and 60 s (ads work best short; Reels allow more)
   borders   no near-flat band along any edge, on frames sampled across the whole
             reel — Instagram flags that as a border / reused content and throttles
@@ -116,6 +116,8 @@ def main(video, spec_path=None):
     res(a is not None and a["codec_name"] == "aac" and int(a.get("channels", 0)) == 2
         and int(a.get("bit_rate", 0)) >= 128000, "stereo AAC >= 128 kbps",
         "none" if a is None else f'{a["codec_name"]} {a.get("channels")}ch {int(a.get("bit_rate", 0)) // 1000} kbps')
+    res(a is not None and int(a.get("sample_rate", 0)) == 48000, "48 kHz audio",
+        "none" if a is None else f'{a.get("sample_rate")} Hz')
     res(size < 4 * 1024 ** 3, "under 4 GB", f"{size / 1048576:.1f} MB")
     res(not has_edit_list(video), "no edit list (elst)")
     res(6 <= dur <= 60, "6-60 s", f"{dur:.1f} s")

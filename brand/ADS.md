@@ -58,8 +58,9 @@ band at the top of the world. The script now catches that, plus the edit-list bo
 and safe-zone misses it also found in the same file.
 
 Machine-checked (`engine/preflight.py`):
-- 9:16 at 1080x1920 (or 1440x2560), H.264 yuv420p, constant 30 fps, stereo AAC
-  >= 128 kbps, under 4 GB, **no edit list** — every encoder passes `-use_editlist 0`
+- 9:16 at 1080x1920 (or 1440x2560), H.264 high profile yuv420p bt709, constant 30 fps,
+  closed 2 s GOP, stereo AAC-LC 48 kHz >= 128 kbps, under 4 GB, **no edit list** —
+  every encoder passes `-use_editlist 0`
 - 6–60 s, cover image beside the file
 - **no flat band along any edge** on frames sampled across the reel (border /
   reused-content flag): vignette no stronger than 0.10, texture visible to the edge,
