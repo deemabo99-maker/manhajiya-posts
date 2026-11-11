@@ -8,7 +8,7 @@ Elements are pre-rendered sprites (2x supersampled) animated with slide / pop /
 slam / fade / pulse. Text stays inside the Reels safe zone (y 250-1460).
 Music: an original Hijaz-mode plucked melody over a frame-drum groove.
 
-Ad-01 (Nov 2026) added: bookwall / chapter / hardcover / veil sprites, a counting-up
+Output is Meta-Reels-compliant (see render(), 11 Nov 2026): closed 2 s GOP, 48 kHz stereo\nAAC-LC, ~10 Mbps VBR, bt709, faststart.\n\nAd-01 (Nov 2026) added: bookwall / chapter / hardcover / veil sprites, a counting-up
 `counter`, a `shine` foil glint, a scene camera (pull-back / push) with HUD elements drawn
 above it, impact booms on slams and counters, and spec-level fadein / cover_t.
 """
@@ -1302,9 +1302,27 @@ def render(spec_path, out_path):
           mood=spec.get("mood", "hijaz"))
     if spec.get("vo"):
         mix_voice(wav, spec["vo"], reel.total, duck=spec.get("duck", 0.22))
+    # Encoded to Meta's published Reels requirements (checked 11 Nov 2026):
+    #   container mp4 / H.264 High, progressive, 4:2:0, fixed 30 fps (Meta accepts 24-60)
+    #   closed GOP of 2 s -- Facebook's Reels API asks for 2-5 s and rejects open GOP
+    #   AAC-LC 48 kHz stereo, >= 128 kbps (Meta's minimum; we send 192)
+    #   VBR around 10 Mbps, inside Instagram's recommended 8-12 and under Facebook's 25 cap
+    #   bt709 tagged, moov up front so the upload can be scanned without the whole file
+    # Meta re-encodes everything it receives, so a generous master is what survives that pass;
+    # `vbitrate` lets a spec dial it down when a batch has to stay light in git.
+    vb = spec.get("vbitrate", "10M")
+    gop = int(round(FPS * spec.get("gop_seconds", 2)))
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{RW}x{RH}",
-           "-r", str(FPS), "-i", "-", "-i", wav, "-c:v", "libx264", "-preset", "veryfast", "-crf", str(spec.get("crf", 20)),
-           "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", out_path]
+           "-r", str(FPS), "-i", "-", "-i", wav,
+           "-c:v", "libx264", "-preset", spec.get("preset", "medium"),
+           "-profile:v", "high", "-level", "4.0",
+           "-b:v", vb, "-maxrate", spec.get("maxrate", "12M"), "-bufsize", spec.get("bufsize", "20M"),
+           "-g", str(gop), "-keyint_min", str(gop), "-sc_threshold", "0", "-flags", "+cgop",
+           "-r", str(FPS), "-fps_mode", "cfr", "-pix_fmt", "yuv420p",
+           "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
+           "-c:a", "aac", "-profile:a", "aac_low", "-ar", "48000", "-ac", "2",
+           "-b:a", spec.get("abitrate", "192k"),
+           "-shortest", "-movflags", "+faststart", out_path]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     nframes = int(reel.total * FPS)
     for i in range(nframes):
