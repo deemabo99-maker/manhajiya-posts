@@ -1322,7 +1322,7 @@ def render(spec_path, out_path):
            "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
            "-c:a", "aac", "-profile:a", "aac_low", "-ar", "48000", "-ac", "2",
            "-b:a", spec.get("abitrate", "192k"),
-           "-shortest", "-movflags", "+faststart", out_path]
+           "-shortest", "-movflags", "+faststart", "-use_editlist", "0", out_path]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     nframes = int(reel.total * FPS)
     for i in range(nframes):

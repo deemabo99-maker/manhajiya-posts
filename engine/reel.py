@@ -1311,7 +1311,7 @@ def render(spec_path, out_path):
     music(wav, reel.total, bpm=m.get("bpm", 96), mood=m.get("mood", "calm"), sfx=reel.sfx)
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{RW}x{RH}",
            "-r", str(FPS), "-i", "-", "-i", wav, "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
-           "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", out_path]
+           "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", "-use_editlist", "0", out_path]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     nframes = int(reel.total * FPS)
     for i in range(nframes):

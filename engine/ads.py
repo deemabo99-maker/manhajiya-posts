@@ -49,7 +49,7 @@ def build(spec_path):
         out = f"{stem}-{name}.mp4"
         run("ffmpeg", "-y", "-loglevel", "error", "-i", wide, "-vf", vf,
             "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p",
-            "-c:a", "copy", "-movflags", "+faststart", out)
+            "-c:a", "copy", "-movflags", "+faststart", "-use_editlist", "0", out)
         print("wrote", os.path.relpath(out, ROOT))
     print("wrote", os.path.relpath(wide, ROOT), "and", os.path.relpath(cover, ROOT))
 

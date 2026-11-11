@@ -69,23 +69,23 @@ def main():
                 dict(type="counter", value=400, prefix="", suffix=" استجابة", size=140,
                      x=540, dy=-150, t=0.15, dur=1.0, step=5),
                 T("استبانة محكّمة وعيّنة مكتملة", dy=60, size=50, t=0.8, color=IVORY),
-                dict(type="bar", text="Excel / SPSS", w=820, x=540, dy=230,
+                dict(type="bar", text="Excel / SPSS", w=820, x=540, dy=150,
                      t=1.0, dur=0.5, anim="wipe")),
 
         # 5
         station(3300, H, TR,
                 T("٤ · التحليل الإحصائي", dy=-300, size=52, t=0.05, color=GOLD_LT, anim="fade", dur=0.3),
                 T("أرقامك تحكي", dy=-190, size=96, t=0.12, grad="gold", anim="zoom", dur=0.5),
-                dict(type="bar", text="الصدق والثبات", w=840, x=540, dy=10, t=0.4, dur=0.45, anim="wipe"),
-                dict(type="bar", text="اختبار الفرضيات", w=840, x=540, dy=150, t=0.65, dur=0.45, anim="wipe"),
-                dict(type="scale5", text="النتيجة", mark=4, w=840, x=540, dy=320, t=0.95, dur=0.5, anim="up")),
+                dict(type="bar", text="الصدق والثبات", w=840, x=540, dy=-30, t=0.4, dur=0.45, anim="wipe"),
+                dict(type="bar", text="اختبار الفرضيات", w=840, x=540, dy=100, t=0.65, dur=0.45, anim="wipe"),
+                dict(type="scale5", text="النتيجة", mark=4, w=840, x=540, dy=215, t=0.95, dur=0.5, anim="up")),
 
         # 6
         station(2050, H, TR,
                 T("٥ · النشر العلمي", dy=-300, size=52, t=0.05, color=GOLD_LT, anim="fade", dur=0.3),
                 T("Scopus", dy=-180, size=120, t=0.12, grad="gold", anim="zoom", dur=0.5),
                 T("Q1 · Q2 · Q3 · Q4 ومجلات Arcif", dy=-40, size=48, t=0.5, color=GOLD_LT),
-                dict(type="seal", big="مقبول", small="للنشر", r=120, x=540, dy=250,
+                dict(type="seal", big="مقبول", small="للنشر", r=120, x=540, dy=150,
                      t=0.85, dur=0.55, anim="slam")),
 
         # 7 — graduation. the camera ends here and holds.
@@ -125,7 +125,7 @@ def main():
                "graduation, holding at each stage and whipping between them, with four "
                "parallax depths, speed-scaled motion blur and a light sweep on arrival.",
         mood="resolve", bpm=120, music_seed=41, world_h=9400, near=True,
-        grain=3.0, vignette=0.42, crf=22, cover_station=6, lead=0.5, tail=0.5,
+        grain=3.0, vignette=0.10, crf=20, cover_station=6, lead=0.5, tail=0.5,
         caption=caption, stations=stations)
 
     p = os.path.join(HERE, "oneshot-1.json")

@@ -48,6 +48,36 @@ So the rule is now the opposite, and `engine/ads.py` enforces it:
 - Check both ratios with a contact sheet before shipping. A claim in the spec's `format`
   string that the text is crop-safe proves nothing; look at the frames.
 
+## Meta pre-flight — owner's standing rule (12 Nov 2026)
+
+**Nothing reaches the owner — ad or reel, either brand — without passing
+`python3 engine/preflight.py <video.mp4> <spec.json>` and the manual list below.**
+The rule came from a real hit: Instagram flagged the first one-shot reel as
+"contains a border" and throttled it, because of a heavy vignette and a flat dark
+band at the top of the world. The script now catches that, plus the edit-list box
+and safe-zone misses it also found in the same file.
+
+Machine-checked (`engine/preflight.py`):
+- 9:16 at 1080x1920 (or 1440x2560), H.264 yuv420p, constant 30 fps, stereo AAC
+  >= 128 kbps, under 4 GB, **no edit list** — every encoder passes `-use_editlist 0`
+- 6–60 s, cover image beside the file
+- **no flat band along any edge** on frames sampled across the reel (border /
+  reused-content flag): vignette no stronger than 0.10, texture visible to the edge,
+  no layer may run out and show flat fill, whip blur clamps to the edge
+- **unified safe zone**: every text, CTA, logo, number and stamp clear of the top 14 %,
+  the bottom 35 % and 6 % each side. Imagery may bleed; words may not.
+
+Checked by eye before sending:
+- hook readable in the first second; the first 40 characters of the caption carry the
+  hook on their own (Reels placements truncate primary text there)
+- original audio only; no licensed music, no other app's watermark, no face effects
+- edge-to-edge design avoided: Meta may zoom to fill ultra-tall screens
+- for a boosted reel: the brand's WhatsApp number is connected to the page, or the
+  WhatsApp button will be missing from the boost options
+
+Sources: Meta Reels ad specs and the unified 9:16 safe zone as documented in 2026
+(billo.app/blog/meta-ads-safe-zones, knowlify.com/articles/meta-video-ad-specs).
+
 ## What makes it an ad rather than a post
 
 1. **A hook in the first second**, as a question the researcher is already asking

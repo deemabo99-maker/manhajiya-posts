@@ -40,6 +40,7 @@ from kit import C, GOLD, rgb  # noqa: E402
 
 RW, RH, FPS = 1080, 1920, 30
 LAYERS = {"far": 0.38, "mid": 0.72, "main": 1.0, "near": 1.55}
+PAD = RH          # headroom above and below the world on every scrolling layer
 
 
 def smooth(p):
@@ -79,11 +80,26 @@ class Camera:
 def world_bg(world_h):
     """Far layer: the brand's girih field running the full height, dark to deep."""
     img = Image.new("RGBA", (RW, world_h))
-    g = kit.linear_gradient((RW, world_h), [C["night"], C["deep"], C["emerald"], C["deep"]], 90)
+    # the girih must stay visible right to the frame edge: a near-flat dark band at the
+    # top or bottom reads to Instagram as a border and the reel gets throttled
+    g = kit.linear_gradient((RW, world_h), ["#0B3A25", C["emerald"], "#0B3A25", C["emerald"]], 90)
     img.alpha_composite(g)
+    # soft clouds of emerald light and gold haze drifting through the field, so the
+    # luminance keeps moving right out to every edge (Meta's border check measures
+    # exactly that: a band with nothing happening in it)
+    rng = np.random.default_rng(11)
+    for color, amp, scale in ((rgb(C["gold_lt"])[:3], 60, 48), ((110, 215, 160), 140, 24)):
+        small = rng.uniform(0, 1, (world_h // scale + 2, RW // scale + 2)).astype(np.float32)
+        cloud = Image.fromarray((small * 255).astype(np.uint8), "L").resize((RW, world_h), Image.BICUBIC)
+        cloud = cloud.filter(ImageFilter.GaussianBlur(scale * 0.6))
+        arr = np.asarray(cloud).astype(np.float32)
+        arr = (arr - arr.min()) / max(arr.max() - arr.min(), 1e-6)
+        layer = Image.new("RGBA", (RW, world_h), color + (0,))
+        layer.putalpha(Image.fromarray((arr * amp).astype(np.uint8), "L"))
+        img.alpha_composite(layer)
     d = ImageDraw.Draw(img)
     cell, rr = 190, 190 * 0.42
-    col = rgb(C["gold"])[:3] + (26,)
+    col = rgb(C["gold"])[:3] + (110,)
     y, row = 0, 0
     while y < world_h + cell:
         x = cell / 2 if row % 2 else 0
@@ -93,7 +109,7 @@ def world_bg(world_h):
                 q = rr if k % 2 == 0 else rr * 0.76
                 a = math.radians(k * 22.5)
                 pts.append((x + q * math.cos(a), y + q * math.sin(a)))
-            d.line(pts + [pts[0]], fill=col, width=2)
+            d.line(pts + [pts[0]], fill=col, width=3)
             x += cell
         y += cell * 0.866
         row += 1
@@ -104,7 +120,7 @@ def world_route(world_h, stations):
     """Mid layer: a thin gold thread joining the stations, with a glow at each."""
     img = Image.new("RGBA", (RW, world_h), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    pts = [(540 + 160 * math.sin(i * 1.9), st["y"] * LAYERS["mid"]) for i, st in enumerate(stations)]
+    pts = [(540 + 160 * math.sin(i * 1.9), st["y"] * LAYERS["mid"] + PAD) for i, st in enumerate(stations)]
     for a, b in zip(pts, pts[1:]):
         d.line([a, b], fill=rgb(C["gold"])[:3] + (120,), width=3)
     glow = Image.new("RGBA", img.size, (0, 0, 0, 0))
@@ -154,9 +170,10 @@ def whip_blur(frame, speed):
     if k < 2:
         return frame
     a = np.asarray(frame).astype(np.float32)
+    padded = np.concatenate([np.repeat(a[:1], k, axis=0), a, np.repeat(a[-1:], k, axis=0)])
     acc = np.zeros_like(a)
-    for i in range(-k, k + 1):
-        acc += np.roll(a, i, axis=0)
+    for i in range(2 * k + 1):
+        acc += padded[i:i + a.shape[0]]
     return Image.fromarray((acc / (2 * k + 1)).astype(np.uint8), frame.mode)
 
 
@@ -167,11 +184,15 @@ class OneShot:
         self.stations = spec["stations"]
         self.cam = Camera(self.stations, spec.get("lead", 0.4), spec.get("tail", 0.7))
         self.total = self.cam.total
+        # PAD rows of headroom above the world's top (and below its bottom) on every
+        # scrolling layer: Instagram read the flat fill that showed when the camera
+        # reached the top of the world as a border, and throttled the reel for it.
         self.layers = {
-            "far": world_bg(int(self.world_h * LAYERS["far"]) + RH),
-            "mid": world_route(int(self.world_h * LAYERS["mid"]) + RH, self.stations),
+            "far": world_bg(int(self.world_h * LAYERS["far"]) + 2 * PAD + RH),
+            "mid": world_route(int(self.world_h * LAYERS["mid"]) + 2 * PAD + RH, self.stations),
             "main": Image.new("RGBA", (RW, self.world_h + RH), (0, 0, 0, 0)),
-            "near": bokeh_layer(int(self.world_h * LAYERS["near"]) + RH) if spec.get("near", True) else None,
+            "near": bokeh_layer(int(self.world_h * LAYERS["near"]) + 2 * PAD + RH, seed=5)
+            if spec.get("near", True) else None,
         }
         # elements: build sprites once; each remembers its station's arrival time
         self.items = []
@@ -201,6 +222,8 @@ class OneShot:
             top = int(cy * k - RH / 2)
             if name == "near":
                 top -= int(t * 26)          # bokeh drifts past on its own
+            if name != "main":
+                top += PAD                   # the scrolling layers carry headroom
             win = lay.crop((0, max(top, 0), RW, max(top, 0) + RH))
             if top < 0:
                 pad = Image.new("RGBA", (RW, RH), (0, 0, 0, 0))
@@ -260,7 +283,7 @@ def render(spec_path, out_path):
            "-s", f"{RW}x{RH}", "-r", str(FPS), "-i", "-", "-i", wav,
            "-c:v", "libx264", "-preset", "veryfast", "-crf", str(spec.get("crf", 22)),
            "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-shortest",
-           "-movflags", "+faststart", out_path]
+           "-movflags", "+faststart", "-use_editlist", "0", out_path]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     n = int(shot.total * FPS)
     for i in range(n):
