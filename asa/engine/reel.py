@@ -875,6 +875,148 @@ def sprite_scrollsheet(e):
     return _finish(img)
 
 
+# ------------------------------------------------------------------ bank sprites (Nov 2026)
+def sprite_hypocard(e):
+    """A hypothesis card that carries its own verdict: the claim, a rule, and a gold or red
+    chip reading مقبولة / مرفوضة. Pair with `flip` and it turns over to show the result."""
+    w, h = e.get("w", 820), e.get("h", 230)
+    img, m = rrect(w, h, 26, gradient=["#FFFFFF", "#F2EADA"], angle=90)
+    d = ImageDraw.Draw(img)
+    d.text((m + (w - 44) * SS, m + 68 * SS), e["label"], font=font("cairo", 26, 800),
+           fill=rgb(C["muted"]), anchor="rm", **_kw(e["label"]))
+    d.text((m + (w - 44) * SS, m + 138 * SS), e["text"], font=font("cairo", e.get("size", 38), 900),
+           fill=rgb(C["ink"]), anchor="rm", **_kw(e["text"]))
+    verdict = e.get("verdict")
+    if verdict:
+        ok = e.get("ok", True)
+        f = font("cairo", 28, 900)
+        l, t, r, b = f.getbbox(verdict, **_kw(verdict))
+        cw = (r - l) / SS + 64
+        chip = Image.new("L", img.size, 0)
+        ImageDraw.Draw(chip).rounded_rectangle([m + 40 * SS, m + (h - 86) * SS,
+                                                m + (40 + cw) * SS, m + (h - 28) * SS],
+                                               radius=29 * SS, fill=255)
+        if ok:
+            fill_mask(img, chip, None, GOLD_SOFT, 0)
+            fg = C["deep"]
+        else:
+            fill_mask(img, chip, C["red_lt"])
+            fg = C["red"]
+        d.text((m + (40 + cw / 2) * SS, m + (h - 57) * SS), verdict, font=f, fill=rgb(fg),
+               anchor="mm", **_kw(verdict))
+    return _finish(img)
+
+
+def sprite_paperstack(e):
+    """A real pile of papers: each sheet is built on its own, tilted about its own centre and
+    laid down with a small offset, so the stack leans the way a read-through pile actually
+    does. (The first version rotated every sheet about the image centre, which fanned them
+    out like a comb instead of stacking them.)"""
+    n = e.get("n", 7)
+    w, h = e.get("w", 560), e.get("h", 700)
+    pad = 120
+    img, m = canvas(w + pad, h + pad, 30)
+    cx, cy = img.width / 2, img.height / 2
+    rng = np.random.default_rng(5)
+    for k in range(n - 1, -1, -1):          # back sheet first
+        sheet = Image.new("RGBA", (int(w * SS) + 40, int(h * SS) + 40), (0, 0, 0, 0))
+        sd = ImageDraw.Draw(sheet)
+        box = [20, 20, 20 + w * SS, 20 + h * SS]
+        sd.rounded_rectangle([box[0] + 6, box[1] + 10, box[2] + 6, box[3] + 10],
+                             radius=14 * SS, fill=(90, 74, 40, 70))
+        sd.rounded_rectangle(box, radius=14 * SS, fill=(255, 255, 255, 255),
+                             outline=rgb("#DED4BD"), width=2 * SS)
+        sd.rounded_rectangle([box[2] - 180 * SS, box[1] + 44 * SS, box[2] - 44 * SS,
+                              box[1] + 76 * SS], radius=8 * SS, fill=rgb("#C9BD9C"))
+        for j in range(11):
+            yy = box[1] + (118 + j * 50) * SS
+            ww = (w - 100) * (0.92 if j % 3 else 0.54)
+            sd.rounded_rectangle([box[2] - 50 * SS - ww * SS, yy, box[2] - 50 * SS, yy + 12 * SS],
+                                 radius=6 * SS, fill=rgb("#E7DFCE"))
+        ang = -7 + 14 * (k / max(n - 1, 1)) + float(rng.normal(0, 1.1))
+        sheet = sheet.rotate(ang, resample=Image.BICUBIC, expand=True)
+        ox = int(cx - sheet.width / 2 + (k - (n - 1) / 2) * 9 * SS)
+        oy = int(cy - sheet.height / 2 - (k - (n - 1) / 2) * 7 * SS)
+        img.alpha_composite(sheet, (max(ox, 0), max(oy, 0)),
+                            (max(-ox, 0), max(-oy, 0)))
+    if e.get("label"):
+        f = font("cairo", 34, 900)
+        l, t, r, b = f.getbbox(e["label"], **_kw(e["label"]))
+        cw = (r - l) / SS + 86
+        chip = Image.new("L", img.size, 0)
+        ImageDraw.Draw(chip).rounded_rectangle(
+            [cx - cw / 2 * SS, cy + (h / 2 - 18) * SS, cx + cw / 2 * SS, cy + (h / 2 + 62) * SS],
+            radius=40 * SS, fill=255)
+        drop_shadow(img, chip, alpha=0.45, blur=14, dy=8)
+        fill_mask(img, chip, None, GOLD, 0)
+        ImageDraw.Draw(img).text((cx, cy + (h / 2 + 22) * SS), e["label"], font=f,
+                                 fill=rgb(C["deep"]), anchor="mm", **_kw(e["label"]))
+    return _finish(img)
+
+
+def sprite_quartile(e):
+    """The Scopus quartile ladder: four rungs, the named one lit in foil."""
+    w = e.get("w", 760)
+    rung, gap = 104, 20
+    h = 4 * rung + 3 * gap
+    img, m = canvas(w, h, 36)
+    d = ImageDraw.Draw(img)
+    on = e.get("on", "Q1")
+    for i, q in enumerate(("Q4", "Q3", "Q2", "Q1")):
+        yy = m + (h - (i + 1) * rung - i * gap) * SS
+        ww = (0.62 + 0.125 * i) * w
+        box = [m + (w - ww) * SS, yy, m + w * SS, yy + rung * SS]
+        if q == on:
+            mk = Image.new("L", img.size, 0)
+            ImageDraw.Draw(mk).rounded_rectangle(box, radius=18 * SS, fill=255)
+            drop_shadow(img, mk, alpha=0.5, blur=16, dy=10)
+            fill_mask(img, mk, None, GOLD, 0)
+            fg, sub = C["deep"], C["deep"]
+        else:
+            d.rounded_rectangle(box, radius=18 * SS, fill=(255, 255, 255, 26),
+                                outline=rgb(C["gold"]), width=2 * SS)
+            fg, sub = C["ivory"], C["gold_lt"]
+        d.text((box[0] + 40 * SS, (box[1] + box[3]) / 2), q, font=font("latin", 40),
+               fill=rgb(fg), anchor="lm")
+        lab = e.get("labels", {}).get(q)
+        if lab:
+            d.text((box[2] - 40 * SS, (box[1] + box[3]) / 2), lab, font=font("cairo", 26, 800),
+                   fill=rgb(sub), anchor="rm", **_kw(lab))
+    return _finish(img)
+
+
+def sprite_player(e):
+    """A course window: title bar, a foil play disc, and the module chips under it."""
+    w, h = e.get("w", 820), e.get("h", 470)
+    img, m = rrect(w, h, 26, fill="#FFFFFF")
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([m, m, m + w * SS, m + 70 * SS], radius=26 * SS, fill=rgb("#E7E0D0"))
+    d.rectangle([m, m + 44 * SS, m + w * SS, m + 70 * SS], fill=rgb("#E7E0D0"))
+    for i, col in enumerate((C["red"], C["gold"], C["jade"])):
+        d.ellipse([m + (22 + i * 28) * SS, m + 24 * SS, m + (40 + i * 28) * SS, m + 42 * SS],
+                  fill=rgb(col))
+    if e.get("url"):
+        d.rounded_rectangle([m + 130 * SS, m + 14 * SS, m + (w - 22) * SS, m + 56 * SS],
+                            radius=21 * SS, fill=rgb("#FFFFFF"))
+        d.text((m + (w - 42) * SS, m + 35 * SS), e["url"], font=font("cairo", 20, 700),
+               fill=rgb(C["muted"]), anchor="rm", **_kw(e["url"]))
+    vx0, vy0, vx1, vy1 = m + 24 * SS, m + 92 * SS, m + (w - 24) * SS, m + (h - 24) * SS
+    scr = Image.new("L", img.size, 0)
+    ImageDraw.Draw(scr).rounded_rectangle([vx0, vy0, vx1, vy1], radius=18 * SS, fill=255)
+    fill_mask(img, scr, None, [C["emerald"], C["deep"]], 90)
+    pcx, pcy = (vx0 + vx1) / 2, (vy0 + vy1) / 2
+    disc = Image.new("L", img.size, 0)
+    ImageDraw.Draw(disc).ellipse([pcx - 82 * SS, pcy - 82 * SS, pcx + 82 * SS, pcy + 82 * SS], fill=255)
+    drop_shadow(img, disc, alpha=0.5, blur=18, dy=10)
+    fill_mask(img, disc, None, GOLD_SOFT, 45)
+    d.polygon([(pcx - 26 * SS, pcy - 42 * SS), (pcx - 26 * SS, pcy + 42 * SS),
+               (pcx + 46 * SS, pcy)], fill=rgb(C["deep"]))
+    if e.get("caption"):
+        d.text((pcx, vy1 - 44 * SS), e["caption"], font=font("cairo", 26, 800),
+               fill=rgb(C["gold_lt"]), anchor="mm", **_kw(e["caption"]))
+    return _finish(img)
+
+
 SPRITES = {
     "text": sprite_text, "pill": sprite_pill, "whatsapp": sprite_whatsapp, "emblem": sprite_emblem,
     "doc": sprite_doc, "stamp": sprite_stamp, "note": sprite_note, "check": sprite_check_row,
@@ -886,6 +1028,8 @@ SPRITES = {
     "bookwall": sprite_bookwall, "chapter": sprite_chapter, "hardcover": sprite_hardcover, "veil": sprite_veil,
     "lensview": sprite_lensview, "fancard": sprite_fancard, "ticket": sprite_ticket,
     "monthcard": sprite_monthcard, "crowd": sprite_crowd, "scroll": sprite_scrollsheet,
+    "hypocard": sprite_hypocard, "paperstack": sprite_paperstack, "quartile": sprite_quartile,
+    "player": sprite_player,
 }
 
 
@@ -933,12 +1077,13 @@ def glow_sprite(color, r, alpha):
 
 
 # ------------------------------------------------------------------ animation
-def place(frame, spr, cx, cy, alpha=1.0, scale=1.0, reveal=1.0, reveal_v=1.0):
+def place(frame, spr, cx, cy, alpha=1.0, scale=1.0, reveal=1.0, reveal_v=1.0, sx=1.0):
     if alpha <= 0.01:
         return
     s = spr
-    if abs(scale - 1.0) > 0.005:
-        s = spr.resize((max(1, int(spr.width * scale)), max(1, int(spr.height * scale))), Image.BILINEAR)
+    if abs(scale - 1.0) > 0.005 or abs(sx - 1.0) > 0.005:
+        s = spr.resize((max(1, int(spr.width * scale * sx)), max(1, int(spr.height * scale))),
+                       Image.BILINEAR)
     x, y = int(cx - s.width / 2), int(cy - s.height / 2)
     if reveal < 0.999:
         keep = max(1, int(s.width * reveal))
@@ -1002,6 +1147,10 @@ def animate(e, t):
         return (1 - q) * 150 + rock, 0, clamp(p * 2.4), 1.0
     if anim == "unroll":  # opens downward from its top edge -- for the scroll
         return 0, 0, 1.0, 1.0, 1.0, ease_out_cubic(p)
+    if anim == "flip":   # turns over on its vertical axis, the way a card is flipped
+        q = ease_out_cubic(p)
+        sx = abs(math.cos(q * math.pi))
+        return 0, 0, 1.0, 1.0, 1.0, 1.0, max(sx, 0.02)
     if anim == "float":  # eases up, then breathes in place
         q = ease_out_cubic(p)
         bob = 0.0 if p < 1 else 9 * math.sin((t - t0 - dur) * 1.7)
@@ -1046,11 +1195,11 @@ class Reel:
             a = animate(e, t)
             if a is None:
                 return
-            a = tuple(a) + (1.0,) * (6 - len(a))
-            dx, dy, al, scale, rev, rev_v = a
+            a = tuple(a) + (1.0,) * (7 - len(a))
+            dx, dy, al, scale, rev, rev_v, sx = a
             if "shine" in e and e["shine"] <= t < e["shine"] + e.get("shine_dur", 0.8):
                 spr = add_shine(spr, (t - e["shine"]) / e.get("shine_dur", 0.8))
-            place(fr, spr, x + dx, y + dy, al, scale, rev, rev_v)
+            place(fr, spr, x + dx, y + dy, al, scale, rev, rev_v, sx)
 
         holder = [f]
         for e, spr, x, y in sc["els"]:
@@ -1130,6 +1279,14 @@ MOODS = {
     "market": dict(root=110.00, semis=[0, 2, 3, 5, 7, 8, 11, 12, 14, 15, 17], lead="pizz",
                    drum="drive", phrase=[0, 0, 3, 2, 0, 5, 3, 2, 0, 0, 7, 5, 3, 2, 0, 0],
                    swing=0.0, air="sub", bright=0.9),
+    # warm and unhurried, a major key that simply reassures — for the closing/service reels
+    "noor": dict(root=174.61, semis=[0, 2, 4, 5, 7, 9, 11, 12, 14, 16, 17, 19], lead="felt",
+                 drum="wahda", phrase=[0, 2, 4, 2, 5, 4, 2, 0, 4, 5, 7, 5, 4, 2, 0, 2],
+                 swing=0.08, air="pad", bright=0.95),
+    # classical Arabic colour, slow and dignified — for publishing and certification
+    "saba": dict(root=138.59, semis=[0, 1, 3, 4, 7, 8, 10, 12, 13, 15, 16], lead="oud",
+                 drum="wahda", phrase=[0, 1, 2, 3, 2, 1, 0, 3, 4, 3, 2, 1, 2, 1, 0, 0],
+                 swing=0.0, air="drone", bright=0.8),
     # the research question: bright, climbing, each phrase a step higher — "it comes together"
     "ascent": dict(root=155.56, semis=[0, 2, 3, 5, 7, 9, 10, 12, 14, 15, 17, 19], lead="bell",
                    drum="maqsum", phrase=[0, 2, 4, 5, 7, 5, 4, 2, 4, 5, 7, 9, 7, 5, 4, 2],

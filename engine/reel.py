@@ -304,7 +304,7 @@ def build_sprite(e):
     if k == "card":
         return sprite_card(e["icon"], e["title"], e["desc"])
     if k == "doc":
-        return sprite_doc()
+        return sprite_doc(e.get("w", 150), e.get("h", 186))
     if k == "thead":
         return sprite_table_header(e["cols"])
     if k == "trow":
@@ -851,17 +851,169 @@ class DynFly:
             place(frame, spr, x, y, a, 1.0 + 0.12 * math.sin(math.pi * clamp(q)))
 
 
+class DynSplit:
+    """Two states of the same page, with a divider that sweeps across: right of it the page
+    as it came back (red marks and queries), left of it the page after the work (ticks and a
+    clean rule). The sweep is the whole idea — one page turning into the other.
+
+    Everything is drawn on a 2x layer and downsampled, because kit's fonts are already 2x:
+    drawing them straight onto the 1080x1920 frame renders every label at double size.
+    batch-04 format: split screen."""
+
+    K = 2
+
+    def __init__(self, e):
+        self.e = e
+        self.w = e.get("w", 760)
+        self.h = e.get("h", 900)
+        self.t0 = e.get("t", 0.0)
+        self.dur = e.get("dur", 2.4)
+        self.before = e.get("before", "قبل")
+        self.after = e.get("after", "بعد")
+        self._cache = {}
+
+    def _page(self, clean):
+        if clean in self._cache:
+            return self._cache[clean]
+        k = self.K
+        w, h = self.w * k, self.h * k
+        img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle([0, 0, w - 1, h - 1], radius=26 * k, fill="#FFFFFF")
+        d.rounded_rectangle([46 * k, 50 * k, w - 46 * k, 96 * k], radius=10 * k,
+                            fill=rgb(C["purple"]) if clean else rgb("#D9D2DE"))
+        rng = np.random.default_rng(4)
+        rows = int((self.h - 190) // 56)
+        for i in range(rows):
+            yy = (150 + i * 56) * k
+            ww = (self.w - 120) * (0.9 if i % 3 else 0.52) * k
+            d.rounded_rectangle([w - 60 * k - ww, yy, w - 60 * k, yy + 14 * k],
+                                radius=7 * k, fill=rgb("#E4DEEA") if clean else rgb("#DED7E4"))
+            if not clean and i % 3 == 1:
+                x0 = w - 60 * k - ww * float(rng.uniform(0.8, 0.95))
+                x1 = w - 60 * k - ww * float(rng.uniform(0.08, 0.25))
+                d.line([(x0, yy + 22 * k), (x1, yy + 26 * k)], fill=rgb("#E03B3B"), width=5 * k)
+            if clean and i % 3 == 1:
+                cx, cy = 92 * k, yy + 8 * k
+                d.line([(cx - 13 * k, cy), (cx - 3 * k, cy + 12 * k), (cx + 17 * k, cy - 13 * k)],
+                       fill=rgb(C["green"]) if "green" in C else rgb("#1FAF5A"), width=6 * k)
+        if not clean:
+            for (cx, cy) in ((100, 260), (108, 540), (96, 806)):
+                if cy > self.h - 60:
+                    continue
+                d.ellipse([(cx - 21) * k, (cy - 21) * k, (cx + 21) * k, (cy + 21) * k],
+                          outline=rgb("#E03B3B"), width=4 * k)
+                d.text((cx * k, cy * k), "?", font=font("latin", 22), fill=rgb("#E03B3B"),
+                       anchor="mm")
+        self._cache[clean] = img
+        return img
+
+    def draw(self, frame, t):
+        if t < self.t0:
+            return
+        p = clamp((t - self.t0) / self.dur)
+        p = p * p * (3 - 2 * p)
+        k = self.K
+        x, y = self.e.get("x", 540), self.e.get("y", 960)
+        padx, padt, padb = 46, 100, 46
+        bx0 = int(x - self.w / 2 - padx)
+        by0 = int(y - self.h / 2 - padt)
+        bw, bh = self.w + 2 * padx, self.h + padt + padb
+        lay = Image.new("RGBA", (bw * k, bh * k), (0, 0, 0, 0))
+        px, py = padx * k, padt * k
+
+        sh = Image.new("RGBA", lay.size, (0, 0, 0, 0))
+        ImageDraw.Draw(sh).rounded_rectangle(
+            [px + 8 * k, py + 18 * k, px + self.w * k + 8 * k, py + self.h * k + 18 * k],
+            radius=26 * k, fill=(20, 6, 28, 120))
+        lay.alpha_composite(sh.filter(ImageFilter.GaussianBlur(16 * k)))
+        lay.alpha_composite(self._page(False), (px, py))
+        cut = int(self.w * k * p)
+        if cut > 0:
+            lay.alpha_composite(self._page(True).crop((0, 0, cut, self.h * k)), (px, py))
+        d = ImageDraw.Draw(lay)
+        if 0 < cut < self.w * k:
+            dx = px + cut
+            d.rectangle([dx - 3 * k, py - 16 * k, dx + 3 * k, py + (self.h + 16) * k],
+                        fill=rgb(C["yellow"]))
+            cy = py + self.h * k / 2
+            d.ellipse([dx - 27 * k, cy - 27 * k, dx + 27 * k, cy + 27 * k], fill=rgb(C["yellow"]))
+            d.polygon([(dx - 14 * k, cy), (dx - 3 * k, cy - 10 * k), (dx - 3 * k, cy + 10 * k)],
+                      fill=rgb(C["plum"]))
+            d.polygon([(dx + 14 * k, cy), (dx + 3 * k, cy - 10 * k), (dx + 3 * k, cy + 10 * k)],
+                      fill=rgb(C["plum"]))
+        f = font("almarai-xb", 30)
+        for txt, lx, show, col in ((self.after, px + 150 * k, p > 0.14, rgb(C["purple"])),
+                                   (self.before, px + (self.w - 150) * k, p < 0.92, rgb("#6B5B74"))):
+            if not show:
+                continue
+            b = f.getbbox(txt, direction="rtl", language="ar")
+            ww = (b[2] - b[0]) + 54 * k
+            d.rounded_rectangle([lx - ww / 2, py - 84 * k, lx + ww / 2, py - 20 * k],
+                                radius=32 * k, fill=col)
+            d.text((lx, py - 52 * k), txt, font=f, fill="#FFFFFF", anchor="mm",
+                   direction="rtl", language="ar")
+        frame.alpha_composite(lay.resize((bw, bh), Image.LANCZOS), (max(bx0, 0), max(by0, 0)))
+
+
+class DynTimer:
+    """A ring that drains to empty, with a label inside: the deadline the work is running
+    against. Turns from gold to pink in the last quarter. batch-04 format: a countdown
+    driving the edit."""
+
+    K = 2
+
+    def __init__(self, e):
+        self.e = e
+        self.r = e.get("r", 160)
+        self.t0 = e.get("t", 0.0)
+        self.dur = e.get("dur", 3.0)
+
+    def draw(self, frame, t):
+        if t < self.t0:
+            return
+        p = clamp((t - self.t0) / self.dur)
+        k = self.K
+        x, y = self.e.get("x", 540), self.e.get("y", 760)
+        r = self.r
+        pad = 40
+        bw = bh = int((r + pad) * 2)
+        lay = Image.new("RGBA", (bw * k, bh * k), (0, 0, 0, 0))
+        d = ImageDraw.Draw(lay)
+        c = bw * k / 2
+        box = [c - r * k, c - r * k, c + r * k, c + r * k]
+        d.ellipse(box, fill=(255, 255, 255, 28))
+        d.arc(box, 0, 360, fill=(255, 255, 255, 70), width=3 * k)
+        sweep = 360 * (1 - p)
+        if sweep > 0.5:
+            d.arc(box, -90, -90 + sweep,
+                  fill=rgb(C["pink"]) if p > 0.74 else rgb(C["yellow"]), width=20 * k)
+        txt = self.e.get("text", "")
+        if txt:
+            d.text((c, c - 18 * k), txt, font=font("kufi", self.e.get("size", 44), 900),
+                   fill="#FFFFFF", anchor="mm", direction="rtl", language="ar")
+        sub = self.e.get("sub")
+        if sub:
+            d.text((c, c + 42 * k), sub, font=font("almarai-xb", 24),
+                   fill=rgb(C["yellow"]) if p <= 0.74 else rgb(C["pink"]),
+                   anchor="mm", direction="rtl", language="ar")
+        frame.alpha_composite(lay.resize((bw, bh), Image.LANCZOS),
+                              (max(int(x - bw / 2), 0), max(int(y - bh / 2), 0)))
+
+
 DYNAMIC = {"path": DynPath, "chart": DynChart, "typewriter": DynTypewriter, "scatter": DynScatter, "burst": DynBurst,
-           "likert": DynLikert, "mark": DynMark, "fly": DynFly}
+           "likert": DynLikert, "mark": DynMark, "fly": DynFly,
+           "split": DynSplit, "timer": DynTimer}
 
 
 # ------------------------------------------------------------------ animation
-def place(frame, spr, cx, cy, alpha=1.0, scale=1.0):
+def place(frame, spr, cx, cy, alpha=1.0, scale=1.0, sx=1.0):
     if alpha <= 0.01:
         return
     s = spr
-    if abs(scale - 1.0) > 0.005:
-        s = spr.resize((max(1, int(spr.width * scale)), max(1, int(spr.height * scale))), Image.BILINEAR)
+    if abs(scale - 1.0) > 0.005 or abs(sx - 1.0) > 0.005:
+        s = spr.resize((max(1, int(spr.width * scale * sx)), max(1, int(spr.height * scale))),
+                       Image.BILINEAR)
     if alpha < 0.999:
         a = s.getchannel("A").point(lambda v: int(v * alpha))
         s = s.copy()
@@ -936,7 +1088,8 @@ def animate(e, t):
     a = _animate_in(e, t)
     if a is None:
         return None
-    dx, dy, al, sc = a
+    dx, dy, al, sc = a[:4]
+    sx = a[4] if len(a) > 4 else 1.0
     if "press" in e:
         q = (t - e["press"]) / 0.4
         if 0 <= q < 1:
@@ -945,7 +1098,7 @@ def animate(e, t):
         q = clamp((t - e["out"]) / e.get("out_dur", 0.25))
         al *= 1 - q
         sc *= 1 + 0.25 * q
-    return dx, dy, al, sc
+    return dx, dy, al, sc, sx
 
 
 def _animate_in(e, t):
@@ -991,6 +1144,9 @@ def _animate_in(e, t):
     if anim == "wipe":
         # mask reveal from the right edge (RTL reading direction); handled in scene_frame
         return 0, 0, 1.0, 1.0
+    if anim == "flip":   # turns over on its vertical axis, the way a page is turned
+        q = ease_out_cubic(p)
+        return 0, 0, 1.0, 1.0, max(abs(math.cos(q * math.pi)), 0.02)
     if anim == "pulse":
         q = ease_out_back(p)
         base = 0.55 + 0.45 * q
@@ -1080,7 +1236,7 @@ class Reel:
             a = animate(e, t)
             if a is None:
                 continue
-            dx, dy, al, scale = a
+            dx, dy, al, scale, sx = a
             if "cycle" in e:
                 k = min(int(max(t - e["t"], 0) / e["every"]), len(e["cycle"]) - 1)
                 spr = e["cycle"][k]
@@ -1099,7 +1255,7 @@ class Reel:
                 part = spr.crop((spr.width - keep, 0, spr.width, spr.height))
                 place(f, part, x + spr.width / 2 - keep / 2, y)
                 continue
-            place(f, spr, x + dx, y + dy, al, scale)
+            place(f, spr, x + dx, y + dy, al, scale, sx)
         f = self.camera(sc, f, t)
         # HUD elements sit on top of the camera move (titles, brand bug)
         for e, spr, x, y in hud:
@@ -1109,8 +1265,8 @@ class Reel:
             a = animate(e, t)
             if a is None:
                 continue
-            dx, dy, al, scale = a
-            place(f, spr, x + dx, y + dy, al, scale)
+            dx, dy, al, scale, sx = a
+            place(f, spr, x + dx, y + dy, al, scale, sx)
         return f
 
     @staticmethod
@@ -1177,6 +1333,12 @@ MOODS = {
     "rise": [[164.81, 196.0, 246.94], [130.81, 164.81, 196.0], [196.0, 246.94, 293.66], [146.83, 185.0, 220.0]],
     # batch-03 — B minor, focused/tense: Bm - G - D - A (a questionnaire under review)
     "focus": [[123.47, 146.83, 185.0], [98.0, 123.47, 146.83], [146.83, 185.0, 220.0], [110.0, 138.59, 164.81]],
+    # batch-04 — F major, warm and settled: F - Dm - Bb - C (a page put right)
+    "bloom": [[174.61, 220.0, 261.63], [146.83, 174.61, 220.0], [116.54, 146.83, 174.61], [130.81, 164.81, 196.0]],
+    # batch-04 — E major, bright and quick: E - A - C#m - B (a deadline met)
+    "spark": [[164.81, 207.65, 246.94], [110.0, 138.59, 164.81], [138.59, 164.81, 207.65], [123.47, 155.56, 185.0]],
+    # batch-04 — C major, steady and wide: C - Am - F - G (a long road walked end to end)
+    "steady": [[130.81, 164.81, 196.0], [110.0, 130.81, 164.81], [174.61, 220.0, 261.63], [196.0, 246.94, 293.66]],
     # batch-03 — G major, open/bright: G - D - Em - C (a library opening up)
     "lift": [[196.0, 246.94, 293.66], [146.83, 185.0, 220.0], [164.81, 196.0, 246.94], [130.81, 164.81, 196.0]],
 }
@@ -1309,16 +1471,30 @@ def render(spec_path, out_path):
     wav = out_path.replace(".mp4", ".wav")
     m = spec.get("music", {})
     music(wav, reel.total, bpm=m.get("bpm", 96), mood=m.get("mood", "calm"), sfx=reel.sfx)
+    # Meta's published Reels requirements (checked 11 Nov 2026): H.264 High, progressive,
+    # 4:2:0, fixed 30 fps, closed GOP of 2 s (Facebook's Reels API asks for 2-5 s), AAC-LC at
+    # 48 kHz stereo and at least 128 kbps, VBR inside Instagram's recommended 8-12 Mbps and
+    # under Facebook's 25 Mbps cap, bt709 tagged, moov up front.
+    gop = int(round(FPS * spec.get("gop_seconds", 2)))
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{RW}x{RH}",
            "-r", str(FPS), "-i", "-", "-i", wav,
-           # Meta's published Reels spec: H.264 high, closed 2 s GOP, bt709,
-           # 48 kHz AAC-LC stereo >= 128 kbps, faststart, no edit list
-           "-c:v", "libx264", "-preset", "veryfast", "-crf", str(spec.get("crf", 20)),
-           "-profile:v", "high", "-level", "4.0", "-maxrate", "12M", "-bufsize", "20M",
-           "-g", str(2 * FPS), "-keyint_min", str(2 * FPS), "-sc_threshold", "0", "-flags", "+cgop",
-           "-pix_fmt", "yuv420p", "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
-           "-c:a", "aac", "-profile:a", "aac_low", "-ar", "48000", "-ac", "2", "-b:a", "192k", "-shortest",
-           "-movflags", "+faststart", "-use_editlist", "0", out_path]
+           # Both sides of this merge implemented the same Meta spec; this keeps the other
+           # session's `-use_editlist 0` (some ingests mishandle an edit list) and takes the
+           # spec-overridable knobs. Bitrate mode by default, because CRF on this kind of
+           # flat vector content lands around 3 Mbps -- well under Instagram's recommended
+           # 8-12 -- and Meta re-encodes whatever it is handed. A spec that sets `crf`
+           # explicitly still gets quality mode, capped by maxrate.
+           "-c:v", "libx264", "-preset", spec.get("preset", "medium"),
+           "-profile:v", "high", "-level", "4.0",
+           *(["-crf", str(spec["crf"])] if spec.get("crf") is not None
+             else ["-b:v", spec.get("vbitrate", "10M")]),
+           "-maxrate", spec.get("maxrate", "12M"), "-bufsize", spec.get("bufsize", "20M"),
+           "-g", str(gop), "-keyint_min", str(gop), "-sc_threshold", "0", "-flags", "+cgop",
+           "-r", str(FPS), "-fps_mode", "cfr", "-pix_fmt", "yuv420p",
+           "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
+           "-c:a", "aac", "-profile:a", "aac_low", "-ar", "48000", "-ac", "2",
+           "-b:a", spec.get("abitrate", "192k"),
+           "-shortest", "-movflags", "+faststart", "-use_editlist", "0", out_path]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     nframes = int(reel.total * FPS)
     for i in range(nframes):
