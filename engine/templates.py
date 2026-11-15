@@ -691,6 +691,224 @@ def diagonal_split(p):
     return c
 
 
+# ------------------------------------------------------------------ batch-04
+def big_number(p):
+    """Vivid purple: one giant ring-gradient numeral is the focal point; the items it counts
+    stack beside it as white tabs that grow out of the number (big-number typography)."""
+    from PIL import Image as _I, ImageDraw as _D
+    from kit import S as _S, linear_gradient as _lg
+    c = Canvas(C["purple"])
+    c.gradient_bg([C["violet"], C["purple"], "#B02FB8"], angle=125)
+    c.glow(300, 700, 460, C["magenta"], 120)
+    c.glow(950, 1150, 300, C["orange"], 60)
+    c.dots(860, 1090, 6, 3, gap=22, color="#FFFFFF", alpha=80)
+    c.plus(70, 300, color="#FFFFFF")
+    c.tri(1010, 330, 18, color=C["gold"], rot=30)
+
+    c.logo(150, 112, 150)
+    c.text((W - 66, 44), p["title1"], font("kufi", 78, 900), fill="#FFFFFF", anchor="ra",
+           shadow=dict(offset=(0, 8), blur=18, alpha=80, color="#2A0838"))
+    c.text((W - 66, 158), p["title2"], font("kufi", 64, 900), fill=C["gold"], anchor="ra")
+
+    # the numeral: a thick white ring behind, the digit in the ring gradient on top
+    nx, ny = 300, 720
+    c.shape("ellipse", [nx - 250, ny - 250, nx + 250, ny + 250], fill=(255, 255, 255, 30))
+    c.ring(nx, ny, 250, 16, stops=list(reversed(WARM)), angle=40)
+    nf = font("latin", 470)
+    mask = _I.new("L", c.im.size, 0)
+    _D.Draw(mask).text((_S * nx, _S * (ny + 10)), p["number"], font=nf, fill=255, anchor="mm")
+    c.shadow_from(mask, offset=(0, 18), blur=26, alpha=120, color="#2A0838")
+    c.paste_masked(c.grad_for(mask, ["#FFFFFF", "#FFE7A0", C["gold"]], 90), mask)
+    c.text((nx, ny + 300), p["number_label"], font("almarai-xb", 34), fill="#FFFFFF", anchor="mm")
+
+    # tabs (RTL: right aligned), each joined to the ring by a thin connector
+    items = p["items"]
+    step = 118 if len(items) <= 5 else 112
+    y0 = ny - (len(items) - 1) * step / 2
+    x1 = W - 66
+    f = font("almarai-xb", 34)
+    x0 = min(600, x1 - max(measure(it, f)[0] for it in items) - 120)
+    for i, it in enumerate(items):
+        y = y0 + i * step
+        ang_y = ny - 250 + 500 * (i + 0.5) / len(items)
+        c.line([(nx + 250 * 0.96, ang_y), (x0 - 4, y)], "#FFFFFF", 2)
+        c.shape("round", [x0, y - 40, x1, y + 40], fill="#FFFFFF", radius=40,
+                shadow=dict(offset=(0, 10), blur=16, alpha=70, color="#2A0838"))
+        r = 26
+        cx = x1 - 14 - r
+        c.shape("ellipse", [cx - r, y - r, cx + r, y + r], gradient=list(reversed(WARM)), angle=45)
+        c.text((cx, y + 2), str(i + 1), font("latin", 26), fill="#FFFFFF", anchor="mm")
+        c.text((cx - r - 20, y), it, f, fill=C["ink"], anchor="rm")
+    c.footer(y=1262, dark=True, cta=p["cta"])
+    return c
+
+
+def _sheet(w, h, rot, draw_fn, shadow=True):
+    """A paper sheet drawn at 2x by draw_fn(d, img), rotated, with its own soft shadow."""
+    from PIL import Image as _I, ImageDraw as _D, ImageFilter as _F
+    from kit import S as _S
+    W2, H2 = int(w * _S), int(h * _S)
+    pad = 80 * _S
+    img = _I.new("RGBA", (W2 + 2 * pad, H2 + 2 * pad), (0, 0, 0, 0))
+    if shadow:
+        sh = _I.new("L", img.size, 0)
+        _D.Draw(sh).rounded_rectangle([pad, pad + 24 * _S, pad + W2, pad + H2 + 24 * _S], radius=22 * _S, fill=95)
+        sh = sh.filter(_F.GaussianBlur(22 * _S))
+        img.paste((42, 12, 58, 255), (0, 0), sh)
+    page = _I.new("RGBA", (W2, H2), (0, 0, 0, 0))
+    d = _D.Draw(page)
+    d.rounded_rectangle([0, 0, W2 - 1, H2 - 1], radius=22 * _S, fill="#FFFFFF")
+    draw_fn(d, page)
+    img.alpha_composite(page, (pad, pad))
+    return img.rotate(rot, resample=_I.BICUBIC, expand=True)
+
+
+def layered_papers(p):
+    """Light: three paper sheets fanned on top of each other — raw data, the statistical
+    output, the interpreted result with the hypothesis ticked — the story of an analysis."""
+    from kit import S as _S, rgb as _rgb
+    c = Canvas("#FFFFFF")
+    c.gradient_bg(["#FFFFFF", C["paper"], C["mist"]], angle=90)
+    c.glow(260, 760, 380, C["purple"], 50)
+    c.glow(900, 1000, 300, C["orange"], 40)
+    c.dots(70, 1090, 6, 3, gap=22, color=C["purple"], alpha=90)
+    c.plus(1000, 1120, color=C["ink"])
+    c.tri(980, 420, 18, color=C["pink"], rot=0)
+
+    c.logo(150, 112, 150)
+    c.text((W - 66, 44), p["title1"], font("kufi", 80, 900), fill=C["ink"], anchor="ra")
+    c.text((W - 66, 160), p["title2"], font("kufi", 80, 900), gradient=[C["violet"], C["purple"], C["magenta"]],
+           angle=0, anchor="ra")
+    c.text((W - 70, 300), p["kicker"], font("almarai-xb", 32), fill=C["muted"], anchor="ra")
+    S_ = _S
+    grey = _rgb("#E3DAEA")
+
+    def raw(d, img):          # sheet 1: a grid of raw data
+        w, h = img.size
+        d.rectangle([0, 0, w, 54 * S_], fill=_rgb("#D9CFE2"))
+        d.text((w - 26 * S_, 27 * S_), p["sheets"][0], font=font("almarai-xb", 24), fill=_rgb(C["ink"]),
+               anchor="rm", direction="rtl", language="ar")
+        for r in range(9):
+            for k in range(5):
+                x = 28 * S_ + k * (w - 56 * S_) / 5
+                y = 80 * S_ + r * 40 * S_
+                d.rounded_rectangle([x, y, x + (w - 56 * S_) / 5 - 14 * S_, y + 14 * S_], radius=6 * S_, fill=grey)
+
+    def out(d, img):          # sheet 2: an output table with a highlighted column
+        w, h = img.size
+        d.rectangle([0, 0, w, 54 * S_], fill=_rgb(C["plum"]))
+        d.text((w - 26 * S_, 27 * S_), p["sheets"][1], font=font("almarai-xb", 24), fill="#FFFFFF",
+               anchor="rm", direction="rtl", language="ar")
+        cw = (w - 56 * S_) / 4
+        d.rounded_rectangle([28 * S_ + 0 * cw - 6 * S_, 70 * S_, 28 * S_ + cw - 8 * S_, h - 24 * S_], radius=10 * S_,
+                            fill=_rgb("#FFF1C7"))
+        for r in range(8):
+            for k in range(4):
+                x = 28 * S_ + k * cw
+                y = 86 * S_ + r * 44 * S_
+                col = _rgb(C["orange"]) if k == 0 and r in (2, 5) else grey
+                d.rounded_rectangle([x, y, x + cw - 22 * S_, y + 14 * S_], radius=6 * S_, fill=col)
+
+    def res(d, img):          # sheet 3: a bar chart + the hypothesis line, ticked
+        w, h = img.size
+        d.rectangle([0, 0, w, 54 * S_], fill=_rgb(C["purple"]))
+        d.text((w - 26 * S_, 27 * S_), p["sheets"][2], font=font("almarai-xb", 24), fill="#FFFFFF",
+               anchor="rm", direction="rtl", language="ar")
+        cols = [C["purple"], C["magenta"], C["pink"], C["orange"], C["yellow"]]
+        base = 300 * S_
+        bw = (w - 120 * S_) / 5
+        for k, hh in enumerate([90, 130, 112, 170, 205]):
+            x = 60 * S_ + k * bw
+            d.rounded_rectangle([x + 10 * S_, base - hh * S_, x + bw - 10 * S_, base], radius=8 * S_, fill=_rgb(cols[k]))
+        d.line([(40 * S_, base), (w - 40 * S_, base)], fill=_rgb("#CFC3D8"), width=3 * S_)
+        # hypothesis row
+        y = 350 * S_
+        d.rounded_rectangle([28 * S_, y, w - 28 * S_, y + 66 * S_], radius=33 * S_, fill=_rgb("#E7F7EE"))
+        cx, cy, r = w - 64 * S_, y + 33 * S_, 22 * S_
+        d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=_rgb(C["green"]))
+        d.line([(cx - 10 * S_, cy), (cx - 2 * S_, cy + 9 * S_), (cx + 12 * S_, cy - 9 * S_)], fill="#FFFFFF", width=5 * S_)
+        d.text((cx - 36 * S_, cy), p["hypothesis"], font=font("almarai-xb", 26), fill=_rgb("#146B3A"),
+               anchor="rm", direction="rtl", language="ar")
+
+    for (w, h, rot, fn, cx, cy) in ((470, 470, 9, raw, 330, 690),
+                                    (470, 440, -5, out, 470, 770),
+                                    (560, 440, 2.5, res, 600, 850)):
+        sh = _sheet(w, h, rot, fn)
+        c.im.alpha_composite(sh, (int(cx * _S - sh.width / 2), int(cy * _S - sh.height / 2)))
+    # chips
+    lf = font("almarai-bold", 28)
+    y = 1100
+    xr = W - 66
+    for b in p["chips"]:
+        wv = measure(b, lf)[0] + 50
+        c.shape("round", [xr - wv, y, xr, y + 54], fill=C["purple"], radius=27)
+        c.text((xr - wv / 2, y + 27), b, lf, fill="#FFFFFF", anchor="mm")
+        xr -= wv + 12
+    c.footer(y=1262, dark=False, cta=p["cta"])
+    return c
+
+
+def quartile_stairs(p):
+    """Dark: an isometric staircase of four blocks Q4 → Q1, a journal landing on the top
+    step; the climb is the focal point (isometric-style stacks)."""
+    c = Canvas(C["night"])
+    c.gradient_bg([C["night"], "#3A1250", C["plum"]], angle=115)
+    c.glow(760, 640, 420, C["purple"], 150)
+    c.glow(150, 1150, 300, C["pink"], 60)
+    c.dots(70, 470, 6, 4, gap=22, color="#FFFFFF", alpha=70)
+    c.plus(1010, 420, color="#FFFFFF")
+    c.plus(400, 360, size=18, thick=6, color=C["gold"])
+
+    c.logo(150, 112, 150)
+    kf = font("almarai-xb", 26)
+    kw, _ = measure(p["kicker"], kf)
+    c.shape("round", [W - 66 - kw - 44, 40, W - 66, 90], outline=C["gold"], width=2.5, radius=25,
+            fill=(255, 255, 255, 0))
+    c.text((W - 88, 66), p["kicker"], kf, fill=C["gold"], anchor="rm")
+    c.text((W - 66, 104), p["title1"], font("kufi", 84, 900), fill="#FFFFFF", anchor="ra",
+           shadow=dict(offset=(0, 8), blur=18, alpha=90, color="#000000"))
+    c.text((W - 66, 222), p["title2"], font("kufi", 84, 900), gradient=list(reversed(WARM)), angle=0, anchor="ra")
+
+    # isometric steps, left (Q4, low) to right (Q1, high)
+    base_y = 1010
+    bw, dx, dy = 200, 70, 46
+    heights = [110, 200, 290, 380]
+    labels = ["Q4", "Q3", "Q2", "Q1"]
+    fronts = [["#5A2A72", "#47205C"], ["#7B1FA2", "#5E1880"], ["#A62BB5", "#7E2290"], ["#E8457E", "#C2309E"]]
+    x_left = 110
+    for i, (h, lab) in enumerate(zip(heights, labels)):
+        x0 = x_left + i * bw
+        x1 = x0 + bw
+        top = base_y - h
+        c.shape("poly", [(x0, top), (x1, top), (x1 + dx, top - dy), (x0 + dx, top - dy)],
+                gradient=["#FFFFFF", "#E9D8F2"] if i == 3 else ["#B98ACB", "#9C6AB2"], angle=0)
+        c.shape("poly", [(x1, top), (x1 + dx, top - dy), (x1 + dx, base_y - dy), (x1, base_y)], fill=fronts[i][1])
+        c.shape("rect", [x0, top, x1, base_y], gradient=fronts[i], angle=90)
+        c.text(((x0 + x1) / 2, top + 70), lab, font("latin", 58), fill="#FFFFFF", anchor="mm")
+        c.shape("rect", [x0 + 30, top + 112, x1 - 30, top + 116], fill=(255, 255, 255, 90))
+    # journal on the top step
+    jx0, jy1 = x_left + 3 * bw + 42, base_y - heights[3] - dy / 2 - 6
+    jw, jh = 150, 196
+    c.shape("round", [jx0, jy1 - jh, jx0 + jw, jy1], gradient=[C["gold"], C["orange"]], angle=90, radius=12,
+            shadow=dict(offset=(0, 14), blur=20, alpha=120, color="#000000"))
+    c.shape("rect", [jx0 + 16, jy1 - jh + 26, jx0 + jw - 16, jy1 - jh + 66], fill="#FFFFFF")
+    c.text((jx0 + jw / 2, jy1 - jh + 47), "JOURNAL", font("latin", 20), fill=C["plum"], anchor="mm")
+    for k in range(3):
+        c.shape("rect", [jx0 + 22, jy1 - 100 + k * 22, jx0 + jw - 22 - (k % 2) * 30, jy1 - 92 + k * 22],
+                fill=(255, 255, 255, 170))
+    # caption line under the stairs
+    c.text((W - 66, 1050), p["line"], font("almarai-xb", 34), fill="#FFFFFF", anchor="ra")
+    lf = font("almarai-bold", 27)
+    xr, y = W - 66, 1110
+    for b in p["chips"]:
+        wv = measure(b, lf)[0] + 46
+        c.shape("round", [xr - wv, y, xr, y + 52], fill=(255, 255, 255, 34), outline=C["gold"], width=2, radius=26)
+        c.text((xr - wv / 2, y + 26), b, lf, fill="#FFFFFF", anchor="mm")
+        xr -= wv + 12
+    c.footer(y=1262, dark=True, cta=p["cta"])
+    return c
+
+
 TEMPLATES = {
     "spotlight_dark": spotlight_dark,
     "steps_light": steps_light,
@@ -703,4 +921,7 @@ TEMPLATES = {
     "ticker_board": ticker_board,
     "clipboard_check": clipboard_check,
     "diagonal_split": diagonal_split,
+    "big_number": big_number,
+    "layered_papers": layered_papers,
+    "quartile_stairs": quartile_stairs,
 }

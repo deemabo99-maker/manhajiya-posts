@@ -13,6 +13,14 @@ reference cards (`fly`), a world-space `dolly` camera for scale reveals (zoom in
 or out by any factor, sprites built hi-res with `res`), the `iris` mask reveal,
 a button `press`, a generic `out` exit and new sfx (tick, pen, flick, tap, swell).
 
+Batch-04 added the `phone` chat screen that is typed into (letters land in the input,
+the message flies up, "typing…" dots, replies pop, auto-scroll, a WhatsApp contact
+bubble), the `proof` page (a magnifying `loupe` that leaves corrected words behind it,
+or a `scan` beam with highlighter strokes and source tags), the `snap` page whose
+crooked blocks snap onto dashed margin guides, a full-bleed edge texture on every
+background (Meta border guard), the lower-third `orbit` imagery, and sfx
+send/pop/scan/fix/snap.
+
 Batch-02 added self-drawing ("dynamic") elements — path, chart, typewriter,
 scatter, burst — plus box/stamp sprites, the slam/drop/wipe animations, a
 scene camera (push-in + shake on impact), hard cuts, per-reel music moods
@@ -340,7 +348,40 @@ def background(kind, seed=0, tint=None):
     for (px, py) in ([(960, 240), (110, 1500)] if seed % 2 == 0 else [(120, 260), (980, 1480)]):
         d.rectangle([px - 13, py - 4, px + 13, py + 4], fill=ink)
         d.rectangle([px - 4, py - 13, px + 4, py + 13], fill=ink)
-    return bg
+    return edge_texture(bg, kind)
+
+
+_TEX = {}
+
+
+def edge_texture(bg, kind):
+    """batch-04 — Meta border guard. A full-bleed brand texture (dot lattice + soft diagonal
+    ribbons) that is strongest at the frame edges and quiet behind the text, so no edge of
+    any frame is ever a flat band of colour (Instagram read the old flat edges as a
+    "border"). Every scene background goes through this."""
+    if kind not in _TEX:
+        lay = Image.new("L", (RW, RH), 0)
+        d = ImageDraw.Draw(lay)
+        for yy in range(-30, RH + 60, 60):          # diagonal ribbons, 45 degrees
+            d.line([(-60, yy), (RW + 60, yy - RW - 120)], fill=40, width=16)
+        for yy in range(-RW, RH, 60):
+            d.line([(-60, yy), (RW + 60, yy - RW - 120)], fill=40, width=16)
+        for j in range(0, RH + 30, 30):              # dot lattice, offset rows
+            for i in range(0, RW + 30, 30):
+                cx = i + (15 if (j // 30) % 2 else 0)
+                d.ellipse([cx - 3.2, j - 3.2, cx + 3.2, j + 3.2], fill=255)
+        a = np.asarray(lay, dtype=np.float32) / 255.0
+        yy, xx = np.mgrid[0:RH, 0:RW].astype(np.float32)
+        edge = np.minimum.reduce([xx, RW - 1 - xx, yy, RH - 1 - yy])
+        w = 0.35 + 0.65 * np.clip(1 - edge / 260.0, 0, 1)   # 1.0 at the edge, 0.35 inside
+        _TEX[kind] = (a * w)
+    a = _TEX[kind]
+    col = (255, 255, 255) if kind != "light" else rgb(C["purple"])[:3]
+    strength = 0.36 if kind != "light" else 0.34
+    base = np.asarray(bg.convert("RGB"), dtype=np.float32)
+    m = (a * strength)[..., None]
+    out = base * (1 - m) + np.array(col, dtype=np.float32) * m
+    return Image.fromarray(out.clip(0, 255).astype("uint8")).convert("RGBA")
 
 
 def glow_sprite(color, r, alpha):
@@ -1001,9 +1042,669 @@ class DynTimer:
                               (max(int(x - bw / 2), 0), max(int(y - bh / 2), 0)))
 
 
+# ------------------------------------------------------------------ batch-04 elements
+# phone  — a chat screen that is typed into: letters land in the input field one by one,
+#          the message flies up as a bubble, the other side shows "typing…" dots, replies
+#          pop in and the chat auto-scrolls; a `contact` bubble carries the WhatsApp CTA.
+# proof  — a page of real Arabic text inspected two ways: `loupe` (a magnifier reads the
+#          page right to left and leaves corrected words behind it) and `scan` (a beam
+#          sweeps down and highlighter strokes mark quoted passages, each getting a
+#          source tag).
+# snap   — a page whose blocks start crooked and scattered, then snap one by one onto
+#          dashed margin guides (formatting to a university's style guide).
+
+def _wrap(text, f, maxw):
+    """Greedy RTL word wrap; widths in the font's own (2x) pixels."""
+    words, lines, cur = text.split(), [], ""
+    for w in words:
+        trial = (cur + " " + w).strip()
+        if cur and f.getlength(trial, **_kw(trial)) > maxw:
+            lines.append(cur)
+            cur = w
+        else:
+            cur = trial
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def _mul_alpha(img, a):
+    if a >= 0.999:
+        return img
+    out = img.copy()
+    out.putalpha(out.getchannel("A").point(lambda v: int(v * a)))
+    return out
+
+
+class DynPhone:
+    K = 2
+
+    def __init__(self, e):
+        self.e = e
+        self.w, self.h = e.get("w", 600), e.get("h", 950)
+        k = self.K
+        self.f_msg = font("almarai-bold", e.get("msg_size", 29))
+        self.f_in = font("almarai-bold", e.get("msg_size", 29))
+        self.bez = 18
+        self.sw, self.sh = self.w - 2 * self.bez, self.h - 2 * self.bez
+        self.head_h, self.in_h = 118, 108
+        self.area_h = self.sh - self.head_h - self.in_h
+        self.maxw = (self.sw * 0.74 - 44) * k
+        self.msgs = []
+        for m in e["messages"]:
+            m = dict(m)
+            if m.get("from") == "me" and m.get("typed", True):
+                m["type0"] = m["t"]
+                m["show"] = m["t"] + m.get("type_dur", 0.05 * len(m["text"]))
+            else:
+                m["dots0"] = m["t"]
+                m["show"] = m["t"] + m.get("dots", 0.75 if m.get("from") != "me" else 0)
+            m["spr"] = self._bubble(m)
+            self.msgs.append(m)
+        self.frame_img = self._body()
+
+    # ---- static parts
+    def _body(self):
+        k = self.K
+        W, H = self.w * k, self.h * k
+        img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        d.rounded_rectangle([0, 0, W - 1, H - 1], radius=74 * k, fill=rgb("#17091F"))
+        d.rounded_rectangle([3 * k, 3 * k, W - 4 * k, H - 4 * k], radius=72 * k, outline=rgb("#4B2A5C"), width=3 * k)
+        b = self.bez * k
+        sx1, sy1 = W - b, H - b
+        # wallpaper: soft lilac with a faint dot pattern
+        wall = linear_gradient((sx1 - b, sy1 - b), ["#F4EEF8", "#EDE3F3"], 90)
+        wd = ImageDraw.Draw(wall)
+        for j in range(0, wall.height, 44):
+            for i in range(0, wall.width, 44):
+                cx = i + (22 if (j // 44) % 2 else 0)
+                wd.ellipse([cx - 3, j - 3, cx + 3, j + 3], fill=rgb("#DCCBE6"))
+        mask = Image.new("L", wall.size, 0)
+        ImageDraw.Draw(mask).rounded_rectangle([0, 0, wall.width - 1, wall.height - 1], radius=58 * k, fill=255)
+        img.paste(wall, (b, b), mask)
+        # header
+        hh = self.head_h * k
+        head = linear_gradient((sx1 - b, hh), [C["violet"], C["purple"], C["magenta"]], 0)
+        hm = Image.new("L", head.size, 0)
+        ImageDraw.Draw(hm).rounded_rectangle([0, 0, head.width - 1, hh + 80 * k], radius=58 * k, fill=255)
+        img.paste(head, (b, b), hm)
+        d = ImageDraw.Draw(img)
+        # logo disc on the right (RTL chat header)
+        cx, cy, r = sx1 - 74 * k, b + hh / 2 + 8 * k, 38 * k
+        d.ellipse([cx - r, cy - r, cx + r, cy + r], fill="#FFFFFF")
+        lg = Image.open(kit.LOGO).convert("RGBA")
+        lw = int(r * 1.5)
+        lg = lg.resize((lw, int(lw * lg.height / lg.width)), Image.LANCZOS)
+        img.alpha_composite(lg, (int(cx - lg.width / 2), int(cy - lg.height / 2)))
+        title = self.e.get("title", "المنهجية")
+        d.text((cx - 56 * k, cy - 14 * k), title, font=font("kufi", 30, 800), fill="#FFFFFF", anchor="rm", **_kw(title))
+        sub = self.e.get("status", "متصل الآن")
+        d.text((cx - 56 * k, cy + 26 * k), sub, font=font("almarai", 22), fill=rgb("#F3D9FF"), anchor="rm", **_kw(sub))
+        # back chevron on the left
+        d.line([(b + 52 * k, cy - 16 * k), (b + 36 * k, cy), (b + 52 * k, cy + 16 * k)], fill="#FFFFFF", width=5 * k)
+        # notch
+        d.rounded_rectangle([W / 2 - 70 * k, b + 10 * k, W / 2 + 70 * k, b + 34 * k], radius=12 * k, fill=rgb("#17091F"))
+        return img
+
+    def _bubble(self, m):
+        k = self.K
+        me = m.get("from") == "me"
+        if m.get("kind") == "contact":
+            w, h = int(self.sw * 0.78) * k, 214 * k
+            img = Image.new("RGBA", (w + 24 * k, h + 24 * k), (0, 0, 0, 0))
+            sh = Image.new("RGBA", img.size, (0, 0, 0, 0))
+            ImageDraw.Draw(sh).rounded_rectangle([12 * k, 18 * k, w + 12 * k, h + 18 * k], radius=30 * k, fill=(40, 10, 50, 70))
+            img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(8 * k)))
+            d = ImageDraw.Draw(img)
+            d.rounded_rectangle([12 * k, 10 * k, w + 12 * k, h + 10 * k], radius=30 * k, fill="#FFFFFF")
+            d.rounded_rectangle([12 * k, 10 * k, w + 12 * k, 96 * k], radius=30 * k, fill=rgb(C["green"]))
+            d.rectangle([12 * k, 60 * k, w + 12 * k, 96 * k], fill=rgb(C["green"]))
+            lab = m.get("label", "راسلنا على واتساب")
+            d.text((w - 18 * k, 53 * k), lab, font=font("almarai-xb", 28), fill="#FFFFFF", anchor="rm", **_kw(lab))
+            gx, gy, gr = 62 * k, 53 * k, 24 * k
+            d.ellipse([gx - gr, gy - gr, gx + gr, gy + gr], fill="#FFFFFF")
+            d.text((gx, gy + 2 * k), "☎", font=font("latin", 24), fill=rgb(C["green"]), anchor="mm")
+            d.text((w / 2 + 12 * k, 146 * k), kit.CONTACT["whatsapp"], font=font("latin", 38), fill=rgb(C["ink"]), anchor="mm")
+            sub = m.get("text", "الاستشارة الأولى مجانية")
+            d.text((w / 2 + 12 * k, 192 * k), sub, font=font("almarai-xb", 24), fill=rgb(C["purple"]), anchor="mm", **_kw(sub))
+            return img
+        lines = _wrap(m["text"], self.f_msg, self.maxw)
+        lh = 44 * k
+        tw = max(self.f_msg.getlength(l, **_kw(l)) for l in lines)
+        w, h = int(tw + 44 * k), int(len(lines) * lh + 34 * k)
+        img = Image.new("RGBA", (w + 24 * k, h + 24 * k), (0, 0, 0, 0))
+        sh = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        ImageDraw.Draw(sh).rounded_rectangle([12 * k, 16 * k, w + 12 * k, h + 16 * k], radius=26 * k, fill=(40, 10, 50, 50))
+        img.alpha_composite(sh.filter(ImageFilter.GaussianBlur(6 * k)))
+        d = ImageDraw.Draw(img)
+        fill = rgb("#D9FDD3") if me else rgb(m.get("bg", "#FFFFFF"))
+        d.rounded_rectangle([12 * k, 10 * k, w + 12 * k, h + 10 * k], radius=26 * k, fill=fill)
+        ink = rgb(m.get("color", C["ink"]))
+        for i, l in enumerate(lines):
+            d.text((w - 10 * k, 10 * k + 17 * k + lh * i + lh / 2), l, font=self.f_msg, fill=ink, anchor="rm", **_kw(l))
+        if me:   # double tick, bottom-left
+            for o in (0, 9):
+                x0, y0 = 26 * k + o * k, h - 4 * k
+                d.line([(x0, y0 - 6 * k), (x0 + 6 * k, y0), (x0 + 16 * k, y0 - 12 * k)], fill=rgb("#34B7F1"), width=3 * k)
+        return img
+
+    def times(self):
+        """(time, sfx) pairs: a key click per typed letter, a send swoosh, a pop per reply."""
+        out = []
+        for m in self.msgs:
+            if "type0" in m:
+                n = len(m["text"])
+                step = (m["show"] - m["type0"]) / max(n, 1)
+                out += [(m["type0"] + i * step, "click") for i in range(0, n, 2)]
+                out.append((m["show"], "send"))
+            else:
+                out.append((m["show"], "pop"))
+        return out
+
+    # ---- per frame
+    def draw(self, frame, t):
+        e = self.e
+        t0 = e.get("t", 0)
+        if t < t0:
+            return
+        k = self.K
+        p_in = ease_out_cubic(clamp((t - t0) / e.get("in_dur", 0.5)))
+        lay = self.frame_img.copy()
+        b = self.bez * k
+        ax0, ay0 = b, b + self.head_h * k
+        aw, ah = self.sw * k, self.area_h * k
+        # chat area
+        area = Image.new("RGBA", (aw, ah), (0, 0, 0, 0))
+        gap = 14 * k
+        items = []
+        for m in self.msgs:
+            if t >= m["show"]:
+                q = clamp((t - m["show"]) / 0.32)
+                items.append((m, m["spr"], q))
+            elif "dots0" in m and t >= m["dots0"] and m["show"] > m["dots0"]:
+                items.append((m, None, 1.0))
+        heights = []
+        for m, spr, q in items:
+            hh = (spr.height if spr is not None else 74 * k) + gap
+            heights.append(hh * (ease_out_cubic(q) if spr is not None else 1))
+        total = sum(heights) + 24 * k
+        off = max(0.0, total - ah)
+        y = 18 * k - off
+        for (m, spr, q), hh in zip(items, heights):
+            me = m.get("from") == "me"
+            if spr is None:   # typing dots bubble on the right
+                bw_, bh_ = 128 * k, 64 * k
+                bx = aw - 22 * k - bw_
+                dd = ImageDraw.Draw(area)
+                dd.rounded_rectangle([bx, y, bx + bw_, y + bh_], radius=30 * k, fill="#FFFFFF")
+                for i in range(3):
+                    ph = (t * 4.2 - i * 0.55)
+                    lift = max(0.0, math.sin(ph * math.pi)) * 9 * k
+                    cx = bx + bw_ / 2 + (i - 1) * 28 * k
+                    cy = y + bh_ / 2 - lift
+                    dd.ellipse([cx - 8 * k, cy - 8 * k, cx + 8 * k, cy + 8 * k], fill=rgb("#9A8AA6"))
+                y += hh
+                continue
+            qq = ease_out_back(q, 1.4)
+            s_ = _mul_alpha(spr, clamp(q * 2.2))
+            if q < 1:
+                s_ = s_.resize((max(1, int(spr.width * (0.7 + 0.3 * qq))), max(1, int(spr.height * (0.7 + 0.3 * qq)))), Image.BILINEAR)
+            if me:
+                bx = 10 * k
+                yy = y + (1 - ease_out_cubic(q)) * 70 * k
+            else:
+                bx = aw - 10 * k - s_.width
+                yy = y
+            if yy + s_.height > 1 and yy < area.height:
+                area.alpha_composite(s_, (int(bx), int(yy)) if yy >= 0 else (int(bx), 0),
+                                     (0, int(-yy)) if yy < 0 else (0, 0))
+            y += hh
+        amask = Image.new("L", (aw, ah), 0)
+        ImageDraw.Draw(amask).rectangle([0, 0, aw, ah], fill=255)
+        lay.alpha_composite(area, (ax0, ay0))
+        # input bar
+        d = ImageDraw.Draw(lay)
+        iy0 = ay0 + ah
+        d.rectangle([ax0, iy0, ax0 + aw, iy0 + self.in_h * k - 1], fill=rgb("#F7F2FA"))
+        fx0, fx1 = ax0 + 18 * k, ax0 + aw - 104 * k
+        fy0, fy1 = iy0 + 18 * k, iy0 + 18 * k + 70 * k
+        d.rounded_rectangle([fx0, fy0, fx1, fy1], radius=35 * k, fill="#FFFFFF", outline=rgb("#E2D6EA"), width=2 * k)
+        sx_, sy_ = ax0 + aw - 54 * k, (fy0 + fy1) / 2
+        typing = None
+        for m in self.msgs:
+            if "type0" in m and m["type0"] <= t < m["show"]:
+                typing = m
+        send_hot = any("type0" in m and 0 <= t - m["show"] < 0.25 for m in self.msgs)
+        rr = 38 * k * (0.86 if send_hot else 1)
+        d.ellipse([sx_ - rr, sy_ - rr, sx_ + rr, sy_ + rr], fill=rgb(C["green"]))
+        d.polygon([(sx_ - 15 * k, sy_ - 15 * k), (sx_ + 17 * k, sy_), (sx_ - 15 * k, sy_ + 15 * k), (sx_ - 8 * k, sy_)], fill="#FFFFFF")
+        if typing:
+            n = len(typing["text"])
+            c = int(n * clamp((t - typing["type0"]) / (typing["show"] - typing["type0"])))
+            txt = typing["text"][:c]
+            # show the tail that fits, RTL: text grows leftwards from the right edge of the field
+            maxw = (fx1 - fx0) - 50 * k
+            while txt and self.f_in.getlength(txt, **_kw(txt)) > maxw:
+                sp = txt.find(" ")
+                txt = txt[sp + 1:] if sp >= 0 else txt[1:]
+            tx = fx1 - 26 * k
+            if txt:
+                d.text((tx, (fy0 + fy1) / 2), txt, font=self.f_in, fill=rgb(C["ink"]), anchor="rm", **_kw(txt))
+                lw = self.f_in.getlength(txt, **_kw(txt))
+            else:
+                lw = 0
+            if int(t * 3) % 2 == 0:
+                cx = tx - lw - 6 * k
+                d.rectangle([cx - 2 * k, (fy0 + fy1) / 2 - 20 * k, cx + 2 * k, (fy0 + fy1) / 2 + 20 * k], fill=rgb(C["purple"]))
+        else:
+            ph = self.e.get("placeholder", "اكتب رسالة")
+            d.text((fx1 - 26 * k, (fy0 + fy1) / 2), ph, font=font("almarai", 26), fill=rgb("#A99BB4"), anchor="rm", **_kw(ph))
+        # round the screen corners again (area may have painted over them)
+        out = lay.resize((self.w, self.h), Image.LANCZOS)
+        if p_in < 1:
+            out = _mul_alpha(out, p_in)
+        x, y_ = e.get("x", 540), e.get("y", 760) + (1 - p_in) * 160
+        # soft shadow
+        place(frame, self._shadow(), x, y_ + 26, 0.9 * p_in)
+        place(frame, out, x, y_)
+
+    def _shadow(self):
+        if not hasattr(self, "_sh"):
+            pad = 60
+            sh = Image.new("RGBA", (self.w + 2 * pad, self.h + 2 * pad), (0, 0, 0, 0))
+            ImageDraw.Draw(sh).rounded_rectangle([pad, pad, pad + self.w, pad + self.h], radius=74, fill=(15, 3, 22, 150))
+            self._sh = sh.filter(ImageFilter.GaussianBlur(26))
+        return self._sh
+
+
+class DynProof:
+    K = 2
+
+    def __init__(self, e):
+        self.e = e
+        k = self.K
+        self.w, self.h = e.get("w", 860), e.get("h", 620)
+        self.mode = e.get("mode", "loupe")
+        self.f = font("almarai-bold", e.get("size", 38))
+        self.lh = e.get("line_h", 92)
+        self.top = e.get("pad_top", 96)
+        self.lines = e["lines"]
+        self.dirty, self.clean, self.boxes = self._pages()
+        self.t0, self.dur = e.get("t", 0.0), e.get("dur", 3.0)
+        n = len(self.lines)
+        # loupe timing: one line per slice of the duration
+        self.slice = self.dur / n
+
+    def _line_words(self, words, y, d, errs, mode):
+        """Place words right to left; returns their boxes (2x px)."""
+        k = self.K
+        x = (self.w - 60) * k
+        sp = self.f.getlength(" ")
+        boxes = []
+        for i, w in enumerate(words):
+            wl = self.f.getlength(w, **_kw(w))
+            x0, x1 = x - wl, x
+            boxes.append((x0, x1))
+            col = rgb(C["ink"])
+            if mode == "dirty" and i in errs:
+                col = rgb("#D7263D")
+            if mode == "clean" and i in errs:
+                col = rgb("#128A43")
+            if d is not None:
+                if mode == "clean" and i in errs:
+                    d.rounded_rectangle([x0 - 8 * k, y - 30 * k, x1 + 8 * k, y + 30 * k], radius=12 * k, fill=rgb("#DDF6E5"))
+                d.text((x1, y), w, font=self.f, fill=col, anchor="rm", **_kw(w))
+                if mode == "dirty" and i in errs:   # red wavy underline
+                    pts, xx = [], x0
+                    while xx <= x1:
+                        pts.append((xx, y + 30 * k + 5 * k * math.sin((xx - x0) / (6 * k))))
+                        xx += 2 * k
+                    if len(pts) > 1:
+                        d.line(pts, fill=rgb("#D7263D"), width=3 * k)
+            x = x0 - sp
+        return boxes
+
+    def _pages(self):
+        k = self.K
+        W, H = self.w * k, self.h * k
+        out, boxes = [], []
+        for mode in ("dirty", "clean"):
+            img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            d = ImageDraw.Draw(img)
+            d.rounded_rectangle([0, 0, W - 1, H - 1], radius=28 * k, fill="#FFFFFF")
+            # header strip + page fold motif
+            d.rounded_rectangle([60 * k, 34 * k, W - 60 * k, 52 * k], radius=9 * k, fill=rgb(C["purple"]))
+            d.rounded_rectangle([W - 260 * k, 34 * k, W - 60 * k, 52 * k], radius=9 * k, fill=rgb(C["pink"]))
+            bx = []
+            for i, ln in enumerate(self.lines):
+                y = (self.top + i * self.lh + self.lh / 2) * k
+                if self.mode == "loupe":
+                    words = (ln["clean"] if mode == "clean" else ln["dirty"]).split()
+                    bx.append(self._line_words(words, y, d, set(ln.get("errs", [])), mode))
+                else:
+                    words = ln["text"].split()
+                    bx.append(self._line_words(words, y, d, set(), "plain"))
+            out.append(img)
+            boxes.append(bx)
+        return out[0], out[1], boxes[0]
+
+    def times(self):
+        if self.mode == "scan":
+            out = [(self.t0, "scan")]
+            for i, ln in enumerate(self.lines):
+                if ln.get("quote"):
+                    out.append((self._line_t(i) + 0.1, "pen"))
+            return out
+        out = []
+        for i, ln in enumerate(self.lines):
+            for j in ln.get("errs", []):
+                out.append((self._word_t(i, j), "fix"))
+        return out
+
+    # loupe x position along line i at local progress u (RTL: right -> left)
+    def _loupe_x(self, u):
+        return (self.w - 70) - u * (self.w - 140)
+
+    def _word_t(self, i, j):
+        x0, x1 = self.boxes[i][j]
+        cx = (x0 + x1) / 2 / self.K
+        u = ((self.w - 70) - cx) / (self.w - 140)
+        return self.t0 + self.slice * (i + clamp(u))
+
+    def _line_t(self, i):
+        return self.t0 + self.dur * (self.top + i * self.lh + self.lh / 2) / self.h
+
+    def draw(self, frame, t):
+        e = self.e
+        k = self.K
+        appear = e.get("appear", self.t0 - 0.5)
+        if t < appear:
+            return
+        pa = ease_out_cubic(clamp((t - appear) / 0.45))
+        x, y = e.get("x", 540), e.get("y", 760)
+        if self.mode == "loupe":
+            page = self.dirty.copy()
+            if t > self.t0:
+                pos = (t - self.t0) / self.slice
+                li = int(pos)
+                u = pos - li
+                m = Image.new("L", page.size, 0)
+                md = ImageDraw.Draw(m)
+                for i in range(len(self.lines)):
+                    y0 = (self.top + i * self.lh) * k
+                    y1 = y0 + self.lh * k
+                    if i < li:
+                        md.rectangle([0, y0, page.width, y1], fill=255)
+                    elif i == li and li < len(self.lines):
+                        lx = self._loupe_x(clamp(u)) * k
+                        md.rectangle([lx, y0, page.width, y1], fill=255)
+                page.paste(self.clean, (0, 0), m)
+            out = page.resize((self.w, self.h), Image.LANCZOS)
+            place(frame, self._shadow(), x, y + 20 + (1 - pa) * 120, 0.85 * pa)
+            place(frame, _mul_alpha(out, pa), x, y + (1 - pa) * 120)
+            # the loupe
+            if self.t0 <= t < self.t0 + self.dur + 0.6:
+                pos = clamp((t - self.t0) / self.slice, 0, len(self.lines) - 1e-3)
+                li = int(pos)
+                u = clamp(pos - li)
+                lx = self._loupe_x(u)
+                ly = self.top + li * self.lh + self.lh / 2
+                if t >= self.t0 + self.dur:   # leaves to the bottom-left
+                    q = ease_out_cubic(clamp((t - self.t0 - self.dur) / 0.6))
+                    lx -= 300 * q
+                    ly += 260 * q
+                self._loupe(frame, x - self.w / 2 + lx, y - self.h / 2 + ly, lx, ly)
+        else:
+            page = self.dirty.copy()
+            d = ImageDraw.Draw(page)
+            beam_y = self.h * clamp((t - self.t0) / self.dur) if t >= self.t0 else -1
+            for i, ln in enumerate(self.lines):
+                if not ln.get("quote"):
+                    continue
+                lt = self._line_t(i)
+                q = ease_out_cubic(clamp((t - lt) / 0.45))
+                if q <= 0:
+                    continue
+                bxs = self.boxes[i]
+                xr, xl = bxs[0][1] + 10 * k, bxs[-1][0] - 10 * k
+                yc = (self.top + i * self.lh + self.lh / 2) * k
+                cur = xr - (xr - xl) * q
+                hl = Image.new("RGBA", page.size, (0, 0, 0, 0))
+                ImageDraw.Draw(hl).rounded_rectangle([cur, yc - 28 * k, xr, yc + 28 * k], radius=10 * k,
+                                                     fill=rgb(ln.get("hl", C["yellow"]))[:3] + (110,))
+                page = Image.alpha_composite(page, hl)
+                # redraw the words above the highlight
+                self._line_words(ln["text"].split(), yc, ImageDraw.Draw(page), set(), "plain")
+                tag = ln.get("tag")
+                tq = clamp((t - lt - 0.5) / 0.3)
+                if tag and tq > 0:
+                    d2 = ImageDraw.Draw(page)
+                    ft = font("almarai-xb", 22)
+                    tw = ft.getlength(tag, **_kw(tag)) + 34 * k
+                    tx1 = xl - 8 * k
+                    tx0 = tx1 - tw
+                    if tx0 < 30 * k:      # no room on the left: hang it under the line end
+                        tx0, tx1 = 30 * k, 30 * k + tw
+                    col = rgb(ln.get("tagc", C["purple"]))
+                    d2.rounded_rectangle([tx0, yc - 22 * k, tx1, yc + 22 * k], radius=22 * k, fill=col[:3] + (int(255 * tq),))
+                    d2.text(((tx0 + tx1) / 2, yc), tag, font=ft, fill=(255, 255, 255, int(255 * tq)), anchor="mm", **_kw(tag))
+            if 0 <= beam_y <= self.h and t < self.t0 + self.dur:
+                by = beam_y * k
+                glow = Image.new("RGBA", page.size, (0, 0, 0, 0))
+                gd = ImageDraw.Draw(glow)
+                for j in range(14):
+                    a = int(70 * (1 - j / 14))
+                    gd.rectangle([0, by - j * 6 * k, page.width, by - (j - 1) * 6 * k], fill=rgb(C["magenta"])[:3] + (a // 2,))
+                gd.rectangle([0, by - 3 * k, page.width, by + 3 * k], fill=rgb(C["pink"]))
+                gm = Image.new("L", page.size, 0)
+                ImageDraw.Draw(gm).rounded_rectangle([0, 0, page.width - 1, page.height - 1], radius=28 * k, fill=255)
+                glow.putalpha(Image.fromarray(np.minimum(np.asarray(glow.getchannel("A")), np.asarray(gm))))
+                page = Image.alpha_composite(page, glow)
+            out = page.resize((self.w, self.h), Image.LANCZOS)
+            place(frame, self._shadow(), x, y + 20 + (1 - pa) * 120, 0.85 * pa)
+            place(frame, _mul_alpha(out, pa), x, y + (1 - pa) * 120)
+
+    def _loupe(self, frame, fx, fy, lx, ly):
+        """Magnifier at frame (fx, fy) showing page point (lx, ly) of the DIRTY page, 1.9x."""
+        k = self.K
+        r = self.e.get("loupe_r", 120)
+        mag = self.e.get("mag", 1.9)
+        src_r = r / mag * k
+        cx, cy = lx * k, ly * k
+        box = (cx - src_r, cy - src_r, cx + src_r, cy + src_r)
+        pad = Image.new("RGBA", (int(2 * src_r) + 2, int(2 * src_r) + 2), (255, 255, 255, 255))
+        crop = self.dirty.crop(tuple(int(v) for v in box))
+        pad.alpha_composite(crop)
+        zoom = pad.resize((2 * r * k, 2 * r * k), Image.LANCZOS)
+        S2 = 2 * r * k + 120 * k
+        lay = Image.new("RGBA", (S2 + 160 * k, S2 + 160 * k), (0, 0, 0, 0))
+        c = S2 / 2
+        m = Image.new("L", zoom.size, 0)
+        ImageDraw.Draw(m).ellipse([0, 0, zoom.width - 1, zoom.height - 1], fill=255)
+        d = ImageDraw.Draw(lay)
+        # handle toward bottom-left
+        ang = math.radians(135)
+        hx0, hy0 = c + (r + 6) * k * math.cos(ang), c + (r + 6) * k * math.sin(ang)
+        hx1, hy1 = c + (r + 120) * k * math.cos(ang), c + (r + 120) * k * math.sin(ang)
+        d.line([(hx0, hy0), (hx1, hy1)], fill=rgb(C["plum"]), width=30 * k)
+        d.ellipse([hx1 - 15 * k, hy1 - 15 * k, hx1 + 15 * k, hy1 + 15 * k], fill=rgb(C["plum"]))
+        sh = Image.new("RGBA", lay.size, (0, 0, 0, 0))
+        ImageDraw.Draw(sh).ellipse([c - r * k, c - r * k + 14 * k, c + r * k, c + r * k + 14 * k], fill=(20, 4, 30, 110))
+        lay.alpha_composite(sh.filter(ImageFilter.GaussianBlur(12 * k)))
+        lay.paste(zoom, (int(c - r * k), int(c - r * k)), m)
+        d = ImageDraw.Draw(lay)
+        d.ellipse([c - r * k, c - r * k, c + r * k, c + r * k], outline=rgb(C["yellow"]), width=12 * k)
+        d.ellipse([c - (r - 7) * k, c - (r - 7) * k, c + (r - 7) * k, c + (r - 7) * k], outline=rgb(C["orange"]), width=3 * k)
+        # glint
+        d.arc([c - (r - 22) * k, c - (r - 22) * k, c + (r - 22) * k, c + (r - 22) * k], 200, 245, fill=(255, 255, 255, 170), width=7 * k)
+        out = lay.resize((lay.width // k, lay.height // k), Image.LANCZOS)
+        place(frame, out, fx + (out.width / 2 - c / k), fy + (out.height / 2 - c / k))
+
+    def _shadow(self):
+        if not hasattr(self, "_sh"):
+            pad = 60
+            sh = Image.new("RGBA", (self.w + 2 * pad, self.h + 2 * pad), (0, 0, 0, 0))
+            ImageDraw.Draw(sh).rounded_rectangle([pad, pad, pad + self.w, pad + self.h], radius=28, fill=(15, 3, 22, 120))
+            self._sh = sh.filter(ImageFilter.GaussianBlur(24))
+        return self._sh
+
+
+class DynSnap:
+    """Blocks of a page start crooked and scattered; dashed margin guides draw on, then each
+    block snaps onto its place with a small overshoot. Blocks: {kind: title|para|figure|num,
+    y, h, w?, dx, dy, rot, t}."""
+    K = 2
+
+    def __init__(self, e):
+        self.e = e
+        self.w, self.h = e.get("w", 700), e.get("h", 880)
+        self.m = e.get("margin", 70)
+        self.blocks = []
+        for b in e["blocks"]:
+            self.blocks.append((b, self._block(b)))
+
+    def _block(self, b):
+        k = self.K
+        bw = b.get("w", self.w - 2 * self.m)
+        bh = b["h"]
+        img = Image.new("RGBA", ((bw + 20) * k, (bh + 20) * k), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        o = 10 * k
+        kind = b["kind"]
+        if kind == "title":
+            d.rounded_rectangle([o, o, o + bw * k, o + bh * k], radius=14 * k, fill=rgb(C["purple"]))
+            txt = b.get("text", "")
+            if txt:
+                d.text((o + bw * k / 2, o + bh * k / 2), txt, font=font("kufi", b.get("size", 30), 800),
+                       fill="#FFFFFF", anchor="mm", **_kw(txt))
+        elif kind == "para":
+            n = max(1, int((bh + 6) // 30))
+            for i in range(n):
+                ww = bw * (0.62 if i == n - 1 else 1.0)
+                d.rounded_rectangle([o + (bw - ww) * k, o + i * 30 * k, o + bw * k, o + (i * 30 + 14) * k],
+                                    radius=7 * k, fill=rgb("#CFC3D8"))
+        elif kind == "figure":
+            d.rounded_rectangle([o, o, o + bw * k, o + bh * k], radius=16 * k, fill=rgb("#F1E9F6"),
+                                outline=rgb("#D8C6E4"), width=2 * k)
+            cols = [C["purple"], C["magenta"], C["pink"], C["orange"], C["yellow"]]
+            n = 5
+            gw = bw / (n * 1.6)
+            for i in range(n):
+                hh = bh * (0.3 + 0.12 * ((i * 3) % 5))
+                x0 = o + (bw * 0.12 + i * gw * 1.5) * k
+                d.rounded_rectangle([x0, o + (bh - 18 - hh) * k, x0 + gw * k, o + (bh - 18) * k], radius=6 * k, fill=rgb(cols[i]))
+        elif kind == "num":
+            d.ellipse([o, o, o + bw * k, o + bh * k], fill=rgb(C["plum"]))
+            d.text((o + bw * k / 2, o + bh * k / 2), b.get("text", "1"), font=font("latin", 20), fill="#FFFFFF", anchor="mm")
+        return img.resize((img.width // k, img.height // k), Image.LANCZOS)
+
+    def times(self):
+        return [(self.e.get("t", 0) + b["t"] + b.get("dur", 0.45) * 0.8, "snap") for b, _ in self.blocks]
+
+    def draw(self, frame, t):
+        e = self.e
+        t0 = e.get("t", 0)
+        if t < t0 - 0.4:
+            return
+        lt = t - t0
+        pa = ease_out_cubic(clamp((lt + 0.4) / 0.4))
+        x, y = e.get("x", 540), e.get("y", 760)
+        px0, py0 = x - self.w / 2, y - self.h / 2
+        k = 2
+        # page
+        if not hasattr(self, "_page"):
+            pg = Image.new("RGBA", (self.w * k + 120, self.h * k + 140), (0, 0, 0, 0))
+            sh = Image.new("RGBA", pg.size, (0, 0, 0, 0))
+            ImageDraw.Draw(sh).rounded_rectangle([60, 80, 60 + self.w * k, 80 + self.h * k], radius=26 * k, fill=(15, 3, 22, 120))
+            pg.alpha_composite(sh.filter(ImageFilter.GaussianBlur(24 * k)))
+            ImageDraw.Draw(pg).rounded_rectangle([60, 60, 60 + self.w * k, 60 + self.h * k], radius=26 * k, fill="#FFFFFF")
+            self._page = pg.resize((pg.width // k, pg.height // k), Image.LANCZOS)
+        place(frame, _mul_alpha(self._page, pa), x, y + 10 + (1 - pa) * 100)
+        # guides: dashed lines drawn on from the corners
+        gq = clamp((lt - e.get("guides_t", 0.0)) / 0.6)
+        if gq > 0:
+            m = self.m
+            col = rgb(C["pink"])
+            def fn(d, ox, oy, kk):
+                L = gq
+                segs = [((px0 + m, py0 + 20), (px0 + m, py0 + 20 + (self.h - 40) * L)),
+                        ((px0 + self.w - m, py0 + 20), (px0 + self.w - m, py0 + 20 + (self.h - 40) * L)),
+                        ((px0 + 20, py0 + m), (px0 + 20 + (self.w - 40) * L, py0 + m)),
+                        ((px0 + 20, py0 + self.h - m), (px0 + 20 + (self.w - 40) * L, py0 + self.h - m))]
+                for (a, b) in segs:
+                    n = int(math.dist(a, b) // 18)
+                    for i in range(n):
+                        if i % 2:
+                            continue
+                        u0, u1 = i / max(n, 1), (i + 1) / max(n, 1)
+                        p0 = (a[0] + (b[0] - a[0]) * u0, a[1] + (b[1] - a[1]) * u0)
+                        p1 = (a[0] + (b[0] - a[0]) * u1, a[1] + (b[1] - a[1]) * u1)
+                        d.line([((p0[0] - ox) * kk, (p0[1] - oy) * kk), ((p1[0] - ox) * kk, (p1[1] - oy) * kk)],
+                               fill=col[:3] + (200,), width=3 * kk)
+            _overlay_draw(frame, (px0, py0, px0 + self.w, py0 + self.h), fn)
+        for b, spr in self.blocks:
+            q = clamp((lt - b["t"]) / b.get("dur", 0.45))
+            qq = ease_out_back(q, 2.0) if q > 0 else 0
+            bw = b.get("w", self.w - 2 * self.m)
+            tx = px0 + self.w - self.m - bw / 2 + b.get("xoff", 0)
+            ty = py0 + b["y"] + b["h"] / 2
+            cx = tx + b.get("dx", 0) * (1 - qq)
+            cy = ty + b.get("dy", 0) * (1 - qq)
+            rot = b.get("rot", 0) * (1 - qq)
+            s_ = spr.rotate(rot, resample=Image.BICUBIC, expand=True) if abs(rot) > 0.2 else spr
+            place(frame, _mul_alpha(s_, pa), cx, cy)
+            if 0 < q < 1 and q > 0.6:   # snap flash
+                fl = 1 - (q - 0.6) / 0.4
+                def fn2(d, ox, oy, kk, cx=cx, cy=cy, bw=bw, bh=b["h"], fl=fl):
+                    d.rounded_rectangle([(cx - bw / 2 - 8 - ox) * kk, (cy - bh / 2 - 8 - oy) * kk,
+                                         (cx + bw / 2 + 8 - ox) * kk, (cy + bh / 2 + 8 - oy) * kk],
+                                        radius=14 * kk, outline=rgb(C["yellow"])[:3] + (int(255 * fl),), width=4 * kk)
+                _overlay_draw(frame, (cx - bw / 2 - 20, cy - b["h"] / 2 - 20, cx + bw / 2 + 20, cy + b["h"] / 2 + 20), fn2)
+
+
+class DynOrbit:
+    """batch-04 `orbit`: decorative imagery for the lower third that Meta's safe zone keeps
+    free of words — broken ring-gradient arcs and a satellite dot turning slowly, so the
+    bottom of the frame keeps moving without carrying text. May bleed off the frame."""
+
+    def __init__(self, e):
+        self.e = e
+        r = e.get("r", 300)
+        size = int(2 * r + 40)
+        k = 2
+        img = Image.new("RGBA", (size * k, size * k), (0, 0, 0, 0))
+        m = Image.new("L", img.size, 0)
+        d = ImageDraw.Draw(m)
+        c = size * k / 2
+        a = e.get("alpha", 120)
+        for rr, w, segs in ((r, e.get("width", 26), [(10, 120), (150, 250), (275, 335)]),
+                            (r * 0.72, 8, [(40, 200), (230, 350)])):
+            for a0, a1 in segs:
+                d.arc([c - rr * k, c - rr * k, c + rr * k, c + rr * k], a0, a1, fill=a, width=int(w * k))
+        img.paste(linear_gradient(img.size, RING, 45), (0, 0), m)
+        dd = ImageDraw.Draw(img)
+        sr = 14 * k
+        dd.ellipse([c + r * k - sr, c - sr, c + r * k + sr, c + sr], fill=rgb(C["yellow"])[:3] + (min(255, a + 80),))
+        self.spr = img.resize((size, size), Image.LANCZOS)
+
+    def times(self):
+        return []
+
+    def draw(self, frame, t):
+        e = self.e
+        al = clamp((t - e.get("t", 0)) / 0.5)
+        if al <= 0:
+            return
+        ang = e.get("a0", 0) + t * e.get("spin", 14)
+        spr = self.spr.rotate(ang, resample=Image.BILINEAR)
+        place(frame, spr, e["x"], e["y"], al)
+
+
 DYNAMIC = {"path": DynPath, "chart": DynChart, "typewriter": DynTypewriter, "scatter": DynScatter, "burst": DynBurst,
            "likert": DynLikert, "mark": DynMark, "fly": DynFly,
-           "split": DynSplit, "timer": DynTimer}
+           "split": DynSplit, "timer": DynTimer,
+           "phone": DynPhone, "proof": DynProof, "snap": DynSnap, "orbit": DynOrbit}
 
 
 # ------------------------------------------------------------------ animation
@@ -1209,6 +1910,8 @@ class Reel:
                                  for i in range(len(e["items"]))]
                 elif e.get("anim") == "iris":
                     self.sfx.append((t0, "whoosh"))
+                elif e["type"] in ("phone", "proof", "snap"):   # batch-04: scene-local (time, sfx) pairs
+                    self.sfx += [(sc["start"] + tt, kd) for tt, kd in DYNAMIC[e["type"]](e).times()]
                 if "press" in e:
                     self.sfx.append((sc["start"] + e["press"], "tap"))
             if raw.get("dolly"):
@@ -1339,6 +2042,10 @@ MOODS = {
     "spark": [[164.81, 207.65, 246.94], [110.0, 138.59, 164.81], [138.59, 164.81, 207.65], [123.47, 155.56, 185.0]],
     # batch-04 — C major, steady and wide: C - Am - F - G (a long road walked end to end)
     "steady": [[130.81, 164.81, 196.0], [110.0, 130.81, 164.81], [174.61, 220.0, 261.63], [196.0, 246.94, 293.66]],
+    # batch-04 — C# minor, glassy and exact: C#m - A - E - B (a page read under the loupe)
+    "glass": [[138.59, 164.81, 207.65], [110.0, 138.59, 164.81], [164.81, 207.65, 246.94], [123.47, 155.56, 185.0]],
+    # batch-04 — D major, light and chatty: D - Bm - G - A (a conversation that gets answered)
+    "chat": [[146.83, 185.0, 220.0], [123.47, 146.83, 185.0], [196.0, 246.94, 293.66], [110.0, 138.59, 164.81]],
     # batch-03 — G major, open/bright: G - D - Em - C (a library opening up)
     "lift": [[196.0, 246.94, 293.66], [146.83, 185.0, 220.0], [164.81, 196.0, 246.94], [130.81, 164.81, 196.0]],
 }
@@ -1402,6 +2109,32 @@ def _sfx(out, sr, kind, t0):
         tone = np.sin(2 * np.pi * np.cumsum(f) / sr)
         air = np.convolve(rng.standard_normal(ln), np.ones(30) / 30, mode="same")
         sig = env * (0.05 * tone + 0.6 * air)
+    elif kind == "send":     # batch-04: message sent — short upward chirp + air
+        ln = min(int(0.22 * sr), n - p0)
+        pt = np.arange(ln) / sr
+        f = 700 + 1600 * (pt / 0.22)
+        sig = 0.13 * np.sin(np.pi * pt / 0.22) * np.sin(2 * np.pi * np.cumsum(f) / sr)
+        sig += 0.05 * np.sin(np.pi * pt / 0.22) * np.convolve(rng.standard_normal(ln), np.ones(8) / 8, mode="same")
+    elif kind == "pop":      # batch-04: chat bubble arrives — round two-note blip
+        ln = min(int(0.18 * sr), n - p0)
+        pt = np.arange(ln) / sr
+        f = np.where(pt < 0.06, 880, 1320)
+        sig = 0.16 * np.exp(-pt * 22) * np.sin(2 * np.pi * np.cumsum(f) / sr)
+    elif kind == "scan":     # batch-04: scanner beam — soft hum that glides up
+        ln = min(int(2.4 * sr), n - p0)
+        pt = np.arange(ln) / sr
+        env = np.sin(np.pi * np.minimum(pt / 2.4, 1)) ** 2
+        f = 180 + 120 * (pt / 2.4)
+        sig = 0.06 * env * (np.sin(2 * np.pi * np.cumsum(f) / sr) + 0.5 * np.sin(2 * np.pi * np.cumsum(3 * f) / sr))
+    elif kind == "fix":      # batch-04: a wrong word turns right — bright glassy chime
+        ln = min(int(0.5 * sr), n - p0)
+        pt = np.arange(ln) / sr
+        sig = 0.12 * np.exp(-pt * 9) * (np.sin(2 * np.pi * 1568 * pt) + 0.6 * np.sin(2 * np.pi * 2093 * pt))
+    elif kind == "snap":     # batch-04: block snaps onto the guide — tight click + thump
+        ln = min(int(0.16 * sr), n - p0)
+        pt = np.arange(ln) / sr
+        sig = 0.3 * np.exp(-pt * 60) * np.sin(2 * np.pi * (140 + 200 * np.exp(-pt * 80)) * pt)
+        sig += 0.12 * np.exp(-pt * 400) * rng.standard_normal(ln)
     else:
         return
     out[p0:p0 + ln] += sig

@@ -26,6 +26,8 @@ import sys
 import numpy as np
 
 TOP, BOTTOM, SIDE = 0.14, 0.35, 0.06
+# batch-04: elements whose whole box carries readable text (a chat screen, a page)
+BOX_TYPES = {"phone", "proof", "snap"}
 TEXT_TYPES = {"text", "whatsapp", "pill", "check", "step", "chapter", "bar", "scale5",
               "counter", "badge", "seal", "stamp", "quote", "note", "emblem", "logo"}
 
@@ -70,6 +72,12 @@ def spec_safe_zone(spec, w=1080, h=1920):
     left, right = SIDE * w, w - SIDE * w
 
     def check(e, cy, where):
+        if e.get("type") in BOX_TYPES:
+            ew, eh = e.get("w", 600), e.get("h", 900)
+            ex = e.get("x", w / 2)
+            if cy - eh / 2 < top or cy + eh / 2 > bot or ex - ew / 2 < left or ex + ew / 2 > right:
+                bad.append(f'{where}: {e["type"]} box y {cy - eh / 2:.0f}-{cy + eh / 2:.0f} x {ex - ew / 2:.0f}-{ex + ew / 2:.0f}')
+            return
         if e.get("type") not in TEXT_TYPES:
             return
         size = e.get("size", 60)

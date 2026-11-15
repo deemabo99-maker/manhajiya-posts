@@ -217,11 +217,19 @@ owner will: in the first second on a phone, does this stop the scroll? Three har
    hard cuts, music moods (calm/drive/rise) and synthesised sfx (batch-02); likert questionnaire row,
    reviewer pen `mark` (circle/underline/strike/tick/arrow), flying `fly` cards, `refcard`, world-space
    `dolly` camera for scale reveals (hi-res sprites via `res`), `iris` mask reveal, button `press`,
-   generic `out` exit, moods focus/lift and sfx tick/pen/flick/tap/swell (batch-03). Formats used:
+   generic `out` exit, moods focus/lift and sfx tick/pen/flick/tap/swell (batch-03); the `phone` chat screen
+   typed into (letters land in the input, send, "typing…" dots, reply bubbles, auto-scroll, WhatsApp contact
+   bubble), the `proof` page (magnifying `loupe` that leaves corrected words behind it / `scan` beam with
+   highlighter strokes and source tags), the `snap` page whose crooked blocks snap onto margin guides, the
+   lower-third `orbit` imagery, a full-bleed edge texture on every background (Meta border guard), moods
+   glass/chat and sfx send/pop/scan/fix/snap (batch-04). Formats used:
    batch-01 text cards + table; batch-02 chart drawing itself (statistics), journal cover
    assembling → stamp climax (Scopus); batch-03 document filling itself in → red-pen review →
    submit-button CTA (study tools), unexpected scale reveal / powers-of-ten pull-back → cards
-   sorted → research gap filled (references). Reusing only these means the reel will move like last week's — so write the
+   sorted → research gap filled (references); batch-04 question fired and answered — three
+   sub-questions answered on a live page under a loupe / scanner / snapping guides (proofreading,
+   Turnitin, formatting), phone screen being typed into with the CTA landing inside the chat as a
+   WhatsApp contact bubble (bachelor graduation projects). Reusing only these means the reel will move like last week's — so write the
    new one the format actually needs (a counter, a typewriter, a wipe, a mask reveal, a
    draw-on line, a camera push, a shake on impact) rather than forcing the idea into the
    existing set.
@@ -254,3 +262,6 @@ them by hand.
 | `ticker_board` | dark, trading-terminal panel: candles + a ticked financial-items sheet, 3 chips (batch-03) |
 | `clipboard_check` | vivid purple, giant gradient tick behind a clipboard checklist + sticker (batch-03) |
 | `diagonal_split` | light/purple diagonal cut: giant Arabic word above, giant English word below, band (batch-03) |
+| `big_number` | vivid purple, one giant ring-gradient numeral in a ring + the items it counts as white tabs (batch-04) |
+| `layered_papers` | light, three fanned paper sheets: raw data → statistical output → result with the hypothesis ticked (batch-04) |
+| `quartile_stairs` | dark, isometric staircase Q4 → Q1 with a journal landing on the top step (batch-04) |

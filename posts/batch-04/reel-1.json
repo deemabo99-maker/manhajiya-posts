@@ -1,0 +1,593 @@
+{
+ "title": "التدقيق وTurnitin والتنسيق — سؤال يُطلق ثم يُجاب تحت العدسة",
+ "service": "التدقيق اللغوي وفحص Turnitin والتنسيق",
+ "format": "a question fired at the viewer and answered: 'رسالتك جاهزة للتسليم؟' → three sub-questions, each answered on a live page — a magnifying loupe reads the page right to left and leaves corrected words behind it, a scanner beam sweeps down and highlighter strokes tag quoted lines as documented, crooked page blocks snap onto dashed margin guides → the answer lands as the CTA at the end",
+ "music": {
+  "mood": "glass",
+  "bpm": 104
+ },
+ "fadein": 0.04,
+ "cover": {
+  "scene": 4,
+  "t": 4.5
+ },
+ "scenes": [
+  {
+   "bg": "dark",
+   "dur": 2.8,
+   "glow": "#C2309E",
+   "shake": [
+    {
+     "t": 0.46,
+     "amp": 24
+    }
+   ],
+   "elements": [
+    {
+     "type": "orbit",
+     "x": 860,
+     "y": 1640,
+     "r": 330,
+     "alpha": 150,
+     "spin": 16,
+     "a0": 50,
+     "t": 0
+    },
+    {
+     "type": "orbit",
+     "x": 150,
+     "y": 1480,
+     "r": 150,
+     "alpha": 120,
+     "spin": -24,
+     "a0": 60,
+     "t": 0
+    },
+    {
+     "type": "logo",
+     "width": 150,
+     "x": 540,
+     "y": 360,
+     "t": 0,
+     "anim": "fade",
+     "dur": 0.2
+    },
+    {
+     "type": "text",
+     "text": "رسالتك",
+     "font": "kufi",
+     "size": 112,
+     "x": 540,
+     "y": 540,
+     "t": 0,
+     "anim": "pop",
+     "dur": 0.25,
+     "wght": 900
+    },
+    {
+     "type": "text",
+     "text": "جاهزة للتسليم؟",
+     "font": "kufi",
+     "size": 112,
+     "x": 540,
+     "y": 720,
+     "t": 0.1,
+     "anim": "slam",
+     "dur": 0.38,
+     "wght": 900,
+     "gradient": "warm"
+    },
+    {
+     "type": "pill",
+     "text": "قبل أن تضغط «إرسال».. أجب عن ثلاثة أسئلة",
+     "size": 34,
+     "bg": "#FFFFFF",
+     "fg": "#4B1A5E",
+     "x": 540,
+     "y": 900,
+     "t": 0.85,
+     "anim": "up"
+    },
+    {
+     "type": "pill",
+     "text": "إملاء؟",
+     "size": 34,
+     "outline": "#FFC21A",
+     "x": 800,
+     "y": 1060,
+     "t": 1.3,
+     "anim": "pop",
+     "dur": 0.35
+    },
+    {
+     "type": "pill",
+     "text": "اقتباس؟",
+     "size": 34,
+     "outline": "#FFC21A",
+     "x": 540,
+     "y": 1060,
+     "t": 1.45,
+     "anim": "pop",
+     "dur": 0.35
+    },
+    {
+     "type": "pill",
+     "text": "تنسيق؟",
+     "size": 34,
+     "outline": "#FFC21A",
+     "x": 280,
+     "y": 1060,
+     "t": 1.6,
+     "anim": "pop",
+     "dur": 0.35
+    }
+   ]
+  },
+  {
+   "bg": "light",
+   "dur": 4.2,
+   "cut": true,
+   "glow": "#9627C4",
+   "elements": [
+    {
+     "type": "orbit",
+     "x": 200,
+     "y": 1660,
+     "r": 320,
+     "alpha": 140,
+     "spin": -14,
+     "a0": 20,
+     "t": 0
+    },
+    {
+     "type": "orbit",
+     "x": 930,
+     "y": 1450,
+     "r": 130,
+     "alpha": 130,
+     "spin": 26,
+     "a0": 30,
+     "t": 0
+    },
+    {
+     "type": "pill",
+     "text": "السؤال ١",
+     "size": 30,
+     "gradient": "ring",
+     "x": 540,
+     "y": 345,
+     "t": 0,
+     "anim": "pop",
+     "dur": 0.3
+    },
+    {
+     "type": "text",
+     "text": "أخطاء لغوية؟",
+     "font": "kufi",
+     "size": 84,
+     "x": 540,
+     "y": 455,
+     "t": 0.05,
+     "anim": "slam",
+     "dur": 0.35,
+     "wght": 900,
+     "color": "#4B1A5E",
+     "shadow": false
+    },
+    {
+     "type": "proof",
+     "mode": "loupe",
+     "x": 540,
+     "y": 800,
+     "w": 900,
+     "h": 470,
+     "size": 38,
+     "line_h": 92,
+     "pad_top": 66,
+     "appear": 0.15,
+     "t": 0.65,
+     "dur": 2.8,
+     "loupe_r": 118,
+     "mag": 1.9,
+     "lines": [
+      {
+       "dirty": "هاذا البحث يهدف الى قياس أثر التعلم",
+       "clean": "هذا البحث يهدف إلى قياس أثر التعلم",
+       "errs": [
+        0,
+        3
+       ]
+      },
+      {
+       "dirty": "وقد اظهرت النتايج فروقاً دالة إحصائياً",
+       "clean": "وقد أظهرت النتائج فروقاً دالة إحصائياً",
+       "errs": [
+        1,
+        2
+       ]
+      },
+      {
+       "dirty": "لاكن العينة لم تشمل جميع المراحل",
+       "clean": "لكن العينة لم تشمل جميع المراحل",
+       "errs": [
+        0
+       ]
+      },
+      {
+       "dirty": "ويوصي الباحث بأجراء دراسات مماثلة",
+       "clean": "ويوصي الباحث بإجراء دراسات مماثلة",
+       "errs": [
+        2
+       ]
+      }
+     ]
+    },
+    {
+     "type": "pill",
+     "text": "الجواب: تدقيق إملائي ولغوي لرسالتك",
+     "size": 36,
+     "gradient": "ring",
+     "x": 540,
+     "y": 1160,
+     "t": 3.4,
+     "anim": "up",
+     "dur": 0.4
+    }
+   ]
+  },
+  {
+   "bg": "dark",
+   "dur": 4.2,
+   "cut": true,
+   "glow": "#E8457E",
+   "elements": [
+    {
+     "type": "orbit",
+     "x": 880,
+     "y": 1650,
+     "r": 340,
+     "alpha": 140,
+     "spin": 15,
+     "a0": 70,
+     "t": 0
+    },
+    {
+     "type": "orbit",
+     "x": 170,
+     "y": 1430,
+     "r": 120,
+     "alpha": 110,
+     "spin": -28,
+     "a0": 80,
+     "t": 0
+    },
+    {
+     "type": "pill",
+     "text": "السؤال ٢",
+     "size": 30,
+     "gradient": "ring",
+     "x": 540,
+     "y": 345,
+     "t": 0,
+     "anim": "pop",
+     "dur": 0.3
+    },
+    {
+     "type": "text",
+     "text": "اقتباس غير موثّق؟",
+     "font": "kufi",
+     "size": 80,
+     "x": 540,
+     "y": 455,
+     "t": 0.05,
+     "anim": "slam",
+     "dur": 0.35,
+     "wght": 900
+    },
+    {
+     "type": "proof",
+     "mode": "scan",
+     "x": 540,
+     "y": 800,
+     "w": 900,
+     "h": 470,
+     "size": 36,
+     "line_h": 92,
+     "pad_top": 66,
+     "appear": 0.15,
+     "t": 0.6,
+     "dur": 2.4,
+     "lines": [
+      {
+       "text": "تشير الأدبيات إلى أهمية التعلم النشط",
+       "quote": true,
+       "tag": "موثّق",
+       "hl": "#FFC21A"
+      },
+      {
+       "text": "ويتفق ذلك مع ما توصلت إليه الدراسة"
+      },
+      {
+       "text": "إذ يرى الباحثون أن الدافعية عامل حاسم",
+       "quote": true,
+       "tag": "موثّق",
+       "hl": "#E8457E"
+      },
+      {
+       "text": "وهو ما تسعى الدراسة الحالية لاختباره"
+      }
+     ]
+    },
+    {
+     "type": "pill",
+     "text": "الجواب: فحص الاقتباس ببرنامج Turnitin",
+     "size": 36,
+     "bg": "#FFFFFF",
+     "fg": "#4B1A5E",
+     "x": 540,
+     "y": 1160,
+     "t": 3.2,
+     "anim": "up",
+     "dur": 0.4
+    }
+   ]
+  },
+  {
+   "bg": "light",
+   "dur": 4.4,
+   "cut": true,
+   "glow": "#F28C28",
+   "elements": [
+    {
+     "type": "orbit",
+     "x": 170,
+     "y": 1640,
+     "r": 330,
+     "alpha": 140,
+     "spin": 14,
+     "a0": 80,
+     "t": 0
+    },
+    {
+     "type": "orbit",
+     "x": 920,
+     "y": 1470,
+     "r": 140,
+     "alpha": 130,
+     "spin": -22,
+     "a0": 20,
+     "t": 0
+    },
+    {
+     "type": "pill",
+     "text": "السؤال ٣",
+     "size": 30,
+     "gradient": "ring",
+     "x": 540,
+     "y": 340,
+     "t": 0,
+     "anim": "pop",
+     "dur": 0.3
+    },
+    {
+     "type": "text",
+     "text": "تنسيق مخالف؟",
+     "font": "kufi",
+     "size": 80,
+     "x": 540,
+     "y": 445,
+     "t": 0.05,
+     "anim": "slam",
+     "dur": 0.35,
+     "wght": 900,
+     "color": "#4B1A5E",
+     "shadow": false
+    },
+    {
+     "type": "snap",
+     "x": 540,
+     "y": 815,
+     "w": 560,
+     "h": 600,
+     "margin": 64,
+     "t": 0,
+     "guides_t": 0.35,
+     "blocks": [
+      {
+       "kind": "title",
+       "text": "الفصل الأول",
+       "size": 28,
+       "y": 46,
+       "h": 60,
+       "dx": -250,
+       "dy": -90,
+       "rot": -14,
+       "t": 0.75
+      },
+      {
+       "kind": "para",
+       "y": 132,
+       "h": 104,
+       "dx": 230,
+       "dy": 50,
+       "rot": 9,
+       "t": 1.05
+      },
+      {
+       "kind": "figure",
+       "y": 258,
+       "h": 160,
+       "dx": -190,
+       "dy": 120,
+       "rot": -8,
+       "t": 1.35
+      },
+      {
+       "kind": "para",
+       "y": 438,
+       "h": 74,
+       "dx": 250,
+       "dy": -70,
+       "rot": 12,
+       "t": 1.65
+      },
+      {
+       "kind": "num",
+       "text": "1",
+       "y": 538,
+       "h": 40,
+       "w": 40,
+       "xoff": -176,
+       "dx": 160,
+       "dy": 60,
+       "rot": 30,
+       "t": 1.95
+      }
+     ]
+    },
+    {
+     "type": "pill",
+     "text": "الجواب: تنسيق حسب دليل جامعتك",
+     "size": 36,
+     "gradient": "ring",
+     "x": 540,
+     "y": 1170,
+     "t": 2.7,
+     "anim": "up",
+     "dur": 0.4
+    }
+   ]
+  },
+  {
+   "bg": "purple",
+   "dur": 4.6,
+   "glow": "#FFC21A",
+   "shake": [
+    {
+     "t": 0.78,
+     "amp": 20
+    }
+   ],
+   "elements": [
+    {
+     "type": "orbit",
+     "x": 540,
+     "y": 1720,
+     "r": 380,
+     "alpha": 150,
+     "spin": -12,
+     "a0": 0,
+     "t": 0
+    },
+    {
+     "type": "orbit",
+     "x": 120,
+     "y": 1420,
+     "r": 110,
+     "alpha": 120,
+     "spin": 30,
+     "a0": 30,
+     "t": 0
+    },
+    {
+     "type": "logo",
+     "width": 190,
+     "x": 540,
+     "y": 420,
+     "t": 0,
+     "anim": "pop",
+     "dur": 0.35
+    },
+    {
+     "type": "text",
+     "text": "الآن رسالتك",
+     "font": "kufi",
+     "size": 86,
+     "x": 540,
+     "y": 610,
+     "t": 0.2,
+     "anim": "up",
+     "dur": 0.4,
+     "wght": 900
+    },
+    {
+     "type": "text",
+     "text": "جاهزة للتسليم",
+     "font": "kufi",
+     "size": 104,
+     "x": 540,
+     "y": 760,
+     "t": 0.45,
+     "anim": "slam",
+     "dur": 0.36,
+     "wght": 900,
+     "gradient": "warm"
+    },
+    {
+     "type": "pill",
+     "text": "تدقيق",
+     "size": 32,
+     "bg": "#FFFFFF",
+     "fg": "#7B1FA2",
+     "x": 790,
+     "y": 900,
+     "t": 1.0,
+     "anim": "pop",
+     "dur": 0.35
+    },
+    {
+     "type": "pill",
+     "text": "Turnitin",
+     "size": 32,
+     "bg": "#FFFFFF",
+     "fg": "#7B1FA2",
+     "x": 540,
+     "y": 900,
+     "t": 1.12,
+     "anim": "pop",
+     "dur": 0.35
+    },
+    {
+     "type": "pill",
+     "text": "تنسيق",
+     "size": 32,
+     "bg": "#FFFFFF",
+     "fg": "#7B1FA2",
+     "x": 290,
+     "y": 900,
+     "t": 1.24,
+     "anim": "pop",
+     "dur": 0.35
+    },
+    {
+     "type": "whatsapp",
+     "scale": 1.0,
+     "x": 540,
+     "y": 1040,
+     "t": 1.5,
+     "anim": "pulse",
+     "dur": 0.5
+    },
+    {
+     "type": "text",
+     "text": "استشارتك الأولى مجانية",
+     "font": "almarai-xb",
+     "size": 44,
+     "x": 540,
+     "y": 1160,
+     "t": 1.9,
+     "anim": "up",
+     "dur": 0.55,
+     "color": "#FFE7A0"
+    }
+   ],
+   "sfx": [
+    {
+     "t": 1.5,
+     "kind": "ding"
+    }
+   ]
+  }
+ ],
+ "caption": "✍️ رسالتك جاهزة للتسليم؟ أجب أولاً عن 3 أسئلة\n\nكلمة فيها خطأ إملائي، أو فقرة مقتبسة بلا توثيق، أو هامش لا يطابق دليل الجامعة.. تفاصيل صغيرة، لكنها أول ما تلاحظه لجنة المناقشة.\n\nفي المنهجية نراجع رسالتك قبل أن تسلّمها:\n✅ التدقيق الإملائي واللغوي للأبحاث والرسائل\n✅ فحص نسبة الاقتباس ببرنامج Turnitin\n✅ توثيق الاقتباسات ومطابقتها مع قائمة المراجع\n✅ التنسيق الشكلي والتنضيد حسب دليل جامعتك\n\n🎯 أرسل رسالتك اليوم.. والاستشارة الأولى مجانية\n\n📞 للتواصل والاستفسار:\n📱 رقم الهاتف: 00962778707204\n💬 تواصل معنا مباشرة عبر واتساب: wa.me/962778707204\n\n🌍 نخدمكم أونلاين في الأردن وجميع الدول العربية\n\n#المنهجية #تدقيق_لغوي #Turnitin #فحص_الاقتباس #تنسيق_الرسالة #رسائل_ماجستير #دكتوراه #بحث_علمي"
+}
