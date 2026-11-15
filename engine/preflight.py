@@ -27,7 +27,9 @@ import numpy as np
 
 TOP, BOTTOM, SIDE = 0.14, 0.35, 0.06
 # batch-04: elements whose whole box carries readable text (a chat screen, a page)
-BOX_TYPES = {"phone", "proof", "snap"}
+BOX_TYPES = {"phone", "proof", "snap",
+             # asa batch-04: cards whose whole box carries readable text
+             "varnode", "steprow", "modelmini", "datasheet"}
 TEXT_TYPES = {"text", "whatsapp", "pill", "check", "step", "chapter", "bar", "scale5",
               "counter", "badge", "seal", "stamp", "quote", "note", "emblem", "logo"}
 
