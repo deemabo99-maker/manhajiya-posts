@@ -1017,6 +1017,160 @@ def sprite_player(e):
     return _finish(img)
 
 
+# ------------------------------------------------------------------ week-4 sprites (Nov 2026)
+def sprite_varnode(e):
+    """A variable in the study's model: role on top, what it means underneath.
+    style: emerald (independent) | gold (mediator/moderator) | night (dependent)."""
+    w, h = e.get("w", 620), e.get("h", 150)
+    style = e.get("style", "emerald")
+    if style == "gold":
+        img, m = rrect(w, h, 24, gradient=GOLD, angle=120)
+        fg, sub = rgb(C["deep"]), rgb("#5C4714")
+    elif style == "night":
+        img, m = rrect(w, h, 24, gradient=[C["night"], C["forest"]], angle=120, outline=GOLD, ow=2.2)
+        fg, sub = rgb(C["ivory"]), rgb(C["mint"])
+    elif style == "paper":
+        img, m = rrect(w, h, 24, fill="#FFFFFF", outline=C["gold"], ow=2.4)
+        fg, sub = rgb(C["forest"]), rgb(C["muted"])
+    else:
+        img, m = rrect(w, h, 24, gradient=[C["emerald"], C["deep"]], angle=120, outline=GOLD, ow=2.2)
+        fg, sub = rgb(C["ivory"]), rgb(C["mint"])
+    d = ImageDraw.Draw(img)
+    note = e.get("note")
+    cy = m + h / 2 * SS
+    if note:
+        d.text((m + w / 2 * SS, cy - 26 * SS), e["text"], font=font("cairo", e.get("size", 46), 900),
+               fill=fg, anchor="mm", **_kw(e["text"]))
+        d.text((m + w / 2 * SS, cy + 34 * SS), note, font=font("cairo", e.get("nsize", 30), 700),
+               fill=sub, anchor="mm", **_kw(note))
+    else:
+        d.text((m + w / 2 * SS, cy), e["text"], font=font("cairo", e.get("size", 46), 900),
+               fill=fg, anchor="mm", **_kw(e["text"]))
+    return _finish(img)
+
+
+def sprite_arrowdn(e):
+    """A gold arrow running down the model, from one variable to the next. Pair it with
+    `unroll` and it draws itself from the box above."""
+    w, h = e.get("w", 58), e.get("h", 110)
+    img, m = canvas(w, h, 14)
+    mask = Image.new("L", img.size, 0)
+    d = ImageDraw.Draw(mask)
+    stem = e.get("stem", 11)
+    d.rounded_rectangle([m + (w / 2 - stem / 2) * SS, m, m + (w / 2 + stem / 2) * SS, m + (h - 34) * SS],
+                        radius=stem / 2 * SS, fill=255)
+    d.polygon([(m + w / 2 * SS, m + h * SS), (m, m + (h - 40) * SS), (m + w * SS, m + (h - 40) * SS)], fill=255)
+    drop_shadow(img, mask, alpha=0.35, blur=10, dy=6)
+    fill_mask(img, mask, None, GOLD, 90)
+    return _finish(img)
+
+
+def sprite_column(e):
+    """One column of a chart. With the `sprout` animation it grows out of its own base."""
+    w, h = e.get("w", 86), e.get("h", 240)
+    hot = e.get("hot")
+    if hot:
+        img, m = rrect(w, h, 12, gradient=GOLD, angle=110)
+    else:
+        img, m = rrect(w, h, 12, gradient=[C["jade"], C["emerald"], C["forest"]], angle=110,
+                       outline=C["gold"], ow=2)
+    cap = Image.new("L", img.size, 0)
+    ImageDraw.Draw(cap).rounded_rectangle([m + 10 * SS, m + 10 * SS, m + (w - 10) * SS, m + 24 * SS],
+                                          radius=7 * SS, fill=255)
+    fill_mask(img, cap, None, GOLD_SOFT if not hot else ["#FFF4D2", "#F7E7B4"], 90)
+    return _finish(img)
+
+
+def sprite_datasheet(e):
+    """The table the columns were computed from: a header band and rows of ruled cells."""
+    w, h = e.get("w", 820), e.get("h", 180)
+    img, m = rrect(w, h, 18, fill=C["ivory"])
+    d = ImageDraw.Draw(img)
+    cols, rows = e.get("cols", 4), e.get("rows", 3)
+    d.rounded_rectangle([m, m, m + w * SS, m + 46 * SS], radius=18 * SS, fill=rgb(C["sand"]))
+    d.rectangle([m, m + 30 * SS, m + w * SS, m + 46 * SS], fill=rgb(C["sand"]))
+    cw = w / cols
+    for k in range(1, cols):
+        d.rectangle([m + (k * cw - 1) * SS, m, m + (k * cw + 1) * SS, m + h * SS], fill=rgb("#E3DAC6"))
+    for k in range(cols):
+        d.rounded_rectangle([m + (w - (k + 1) * cw + 20) * SS, m + 14 * SS,
+                             m + (w - k * cw - 20) * SS, m + 32 * SS], radius=9 * SS, fill=rgb(C["gold_dk"]))
+    for r in range(rows):
+        yy = m + (66 + r * 36) * SS
+        for k in range(cols):
+            wd = (cw - 48) * (0.9 if (r + k) % 3 else 0.52)
+            d.rounded_rectangle([m + (w - k * cw - 24) * SS - wd * SS, yy,
+                                 m + (w - k * cw - 24) * SS, yy + 16 * SS], radius=8 * SS, fill=rgb("#CFC6B2"))
+    return _finish(img)
+
+
+def sprite_steprow(e):
+    """A numbered stage of the work: gold index disc, label, and a thin progress rule.
+    Pair it with `wipe` so the row writes itself right-to-left."""
+    w, h = e.get("w", 820), e.get("h", 130)
+    if e.get("light"):
+        img, m = rrect(w, h, 26, fill="#FFFFFF", outline=C["gold"], ow=2)
+        label, note = rgb(C["forest"]), rgb(C["muted"])
+    else:
+        img, m = rrect(w, h, 26, fill=(255, 255, 255, 34), outline=C["gold"], ow=2, shadow=False)
+        label, note = rgb(C["ivory"]), rgb(C["mint"])
+    d = ImageDraw.Draw(img)
+    cx, cy = m + (w - 68) * SS, m + h / 2 * SS
+    disc = Image.new("L", img.size, 0)
+    ImageDraw.Draw(disc).ellipse([cx - 40 * SS, cy - 40 * SS, cx + 40 * SS, cy + 40 * SS], fill=255)
+    fill_mask(img, disc, None, GOLD, 45)
+    d.text((cx, cy + 2 * SS), str(e["n"]), font=font("cairo", 44, 900), fill=rgb(C["deep"]), anchor="mm")
+    d.text((cx - 74 * SS, cy - 20 * SS), e["text"], font=font("cairo", e.get("size", 42), 900),
+           fill=label, anchor="rm", **_kw(e["text"]))
+    if e.get("note"):
+        d.text((cx - 74 * SS, cy + 30 * SS), e["note"], font=font("cairo", 28, 700), fill=note,
+               anchor="rm", **_kw(e["note"]))
+    return _finish(img)
+
+
+def sprite_modelmini(e):
+    """The finished model on one card: three variables, two arrows and the moderator
+    hanging off the path it changes -- the payoff frame of the model reel."""
+    w, h = e.get("w", 860), e.get("h", 520)
+    img, m = rrect(w, h, 26, fill="#FFFFFF", outline=C["gold"], ow=2.6)
+    d = ImageDraw.Draw(img)
+    for gx in range(1, int(w // 34)):
+        for gy in range(1, int(h // 34)):
+            d.ellipse([m + (gx * 34 - 2) * SS, m + (gy * 34 - 2) * SS,
+                       m + (gx * 34 + 2) * SS, m + (gy * 34 + 2) * SS], fill=rgb("#E7DFCC"))
+    bw, bh, by = 212, 112, 118
+    xs = [(w - 28 - bw, w - 28), ((w - bw) / 2, (w + bw) / 2), (28, 28 + bw)]
+    styles = [([C["emerald"], C["deep"]], C["ivory"]), (GOLD, C["deep"]), ([C["night"], C["forest"]], C["ivory"])]
+    for (x0, x1), (grad, fg), label in zip(xs, styles, e["nodes"]):
+        box = Image.new("L", img.size, 0)
+        ImageDraw.Draw(box).rounded_rectangle([m + x0 * SS, m + by * SS, m + x1 * SS, m + (by + bh) * SS],
+                                              radius=16 * SS, fill=255)
+        fill_mask(img, box, None, grad, 120)
+        d.text((m + (x0 + x1) / 2 * SS, m + (by + bh / 2) * SS), label, font=font("cairo", 34, 900),
+               fill=rgb(fg), anchor="mm", **_kw(label))
+    for xa, xb in ((xs[0][0] - 6, xs[1][1] + 6), (xs[1][0] - 6, xs[2][1] + 6)):
+        ar = Image.new("L", img.size, 0)
+        da = ImageDraw.Draw(ar)
+        yy = m + (by + bh / 2) * SS
+        da.rectangle([m + (xb + 20) * SS, yy - 4 * SS, m + xa * SS, yy + 4 * SS], fill=255)
+        da.polygon([(m + xb * SS, yy), (m + (xb + 22) * SS, yy - 15 * SS),
+                    (m + (xb + 22) * SS, yy + 15 * SS)], fill=255)
+        fill_mask(img, ar, None, GOLD, 0)
+    mx0, mx1, my = (w - 250) / 2 + 70, (w + 250) / 2 + 70, by + bh + 128
+    d.rounded_rectangle([m + mx0 * SS, m + my * SS, m + mx1 * SS, m + (my + 96) * SS], radius=16 * SS,
+                        fill=rgb(C["cream"]), outline=rgb(C["gold"]), width=2 * SS)
+    d.text((m + (mx0 + mx1) / 2 * SS, m + (my + 48) * SS), e["mod"], font=font("cairo", 30, 900),
+           fill=rgb(C["forest"]), anchor="mm", **_kw(e["mod"]))
+    dx = m + (mx0 + mx1) / 2 * SS
+    yy = m + (by + bh / 2) * SS
+    for k in range(7):
+        y0 = m + (my - 8) * SS - k * 22 * SS
+        if y0 < yy + 20 * SS:
+            break
+        d.rectangle([dx - 3 * SS, y0 - 12 * SS, dx + 3 * SS, y0], fill=rgb(C["gold"]))
+    return _finish(img)
+
+
 SPRITES = {
     "text": sprite_text, "pill": sprite_pill, "whatsapp": sprite_whatsapp, "emblem": sprite_emblem,
     "doc": sprite_doc, "stamp": sprite_stamp, "note": sprite_note, "check": sprite_check_row,
@@ -1030,6 +1184,8 @@ SPRITES = {
     "monthcard": sprite_monthcard, "crowd": sprite_crowd, "scroll": sprite_scrollsheet,
     "hypocard": sprite_hypocard, "paperstack": sprite_paperstack, "quartile": sprite_quartile,
     "player": sprite_player,
+    "varnode": sprite_varnode, "arrowdn": sprite_arrowdn, "column": sprite_column,
+    "datasheet": sprite_datasheet, "steprow": sprite_steprow, "modelmini": sprite_modelmini,
 }
 
 
@@ -1151,6 +1307,11 @@ def animate(e, t):
         q = ease_out_cubic(p)
         sx = abs(math.cos(q * math.pi))
         return 0, 0, 1.0, 1.0, 1.0, 1.0, max(sx, 0.02)
+    if anim == "sprout":  # grows upward out of its own base -- a column rising from its table
+        q = ease_out_cubic(p)
+        hh = e.get("h", e.get("height", 200))
+        qq = max(q, 0.03)
+        return 0, hh * (1 - qq) / 2, clamp(p * 4), qq, 1.0, 1.0, 1 / qq
     if anim == "float":  # eases up, then breathes in place
         q = ease_out_cubic(p)
         bob = 0.0 if p < 1 else 9 * math.sin((t - t0 - dur) * 1.7)

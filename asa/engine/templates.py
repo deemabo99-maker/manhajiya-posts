@@ -1445,3 +1445,326 @@ TEMPLATES.update({
     "calendar_plan": calendar_plan,
     "pass_ticket": pass_ticket,
 })
+
+
+# ======================================================== batch-04 templates (week 4)
+# Week 3's heroes were physical objects with their own edge. This week the hero is an
+# *instrument a researcher actually reads*: a conceptual model on a drafting sheet, a
+# database search over a wall of journal spines, an abstract broken into its five moves,
+# a column chart growing straight out of its own data table, and a reach constellation.
+# Nothing from weeks 1-3 is reused. Two helpers are new: a left-pointing gold arrow (the
+# direction an Arabic reader follows an effect) and a dashed gold connector.
+
+def arrow_l(c, x_from, x_to, y, stops=GOLD, width=5, head=22):
+    """A gold arrow running right-to-left -- the way an Arabic reader follows an effect."""
+    c.shape("rect", [x_to + head - 2, y - width / 2, x_from, y + width / 2], gradient=stops, angle=0)
+    c.shape("poly", [(x_to, y), (x_to + head, y - head * 0.62), (x_to + head, y + head * 0.62)],
+            gradient=stops, angle=0)
+
+
+def dashed(c, pts, color=None, width=3, dash=14, gap=10):
+    """A dashed polyline, for a connector that is implied rather than measured."""
+    col = color or C["gold"]
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        seg = math.hypot(x1 - x0, y1 - y0)
+        n = max(int(seg // (dash + gap)), 1)
+        for i in range(n + 1):
+            a = i * (dash + gap) / seg
+            b = min(a + dash / seg, 1.0)
+            if a >= 1:
+                break
+            c.line([(x0 + (x1 - x0) * a, y0 + (y1 - y0) * a),
+                    (x0 + (x1 - x0) * b, y0 + (y1 - y0) * b)], col, width)
+
+
+def chip(c, cx, cy, text, f, fill=None, gradient=None, fg="#FFFFFF", padx=26, h=56,
+         outline=None, ow=2, shadow=None):
+    """A rounded label sized to its own text. Returns its half-width."""
+    hw = measure(text, f)[0] / 2 + padx
+    c.shape("round", [cx - hw, cy - h / 2, cx + hw, cy + h / 2], fill=fill, gradient=gradient,
+            angle=0, radius=h / 2, outline=outline, width=ow, shadow=shadow)
+    c.text((cx, cy + 1), text, f, fill=fg, anchor="mm")
+    return hw
+
+
+# ------------------------------------------------------------------ D1 the study's model
+def model_board(p):
+    """The conceptual model on a drafting sheet: three boxes, gold arrows carrying the
+    numbered hypotheses, and the moderator hanging off the path it changes."""
+    c = Canvas(C["ivory"])
+    c.gradient_bg([C["ivory"], C["cream"], C["sand"]], angle=100)
+    c.girih(alpha=24, cell=162, color=C["gold"])
+    c.lockup(W - 66, 96, size=94)
+    head_block(c, p, y0=150, size=74, subw=760)
+
+    bx0, by0, bx1, by1 = 64, 506, W - 64, 1124
+    c.shape("round", [bx0, by0, bx1, by1], fill="#FFFFFF", radius=26,
+            shadow=dict(offset=(0, 16), blur=30, alpha=90, color="#6B5C3A"))
+    c.dots(bx0 + 30, by0 + 30, 29, 17, gap=32, r=1.8, color="#B6AB8E", alpha=130)
+    c.shape("round", [bx0 + 14, by0 + 14, bx1 - 14, by1 - 14], outline=C["sand"], width=2, radius=18)
+
+    nw, nh, ny = 230, 142, 600
+    xs = [(715, 945), (425, 655), (135, 365)]          # independent, mediator, dependent
+    looks = [dict(gradient=[C["emerald"], C["deep"]], fg=C["ivory"], sub=C["mint"]),
+             dict(gradient=GOLD, fg=C["deep"], sub="#5C4714"),
+             dict(gradient=[C["night"], C["forest"]], fg=C["ivory"], sub=C["mint"])]
+    for (x0, x1), look, node in zip(xs, looks, p["nodes"]):
+        c.shape("round", [x0, ny, x1, ny + nh], gradient=look["gradient"], angle=120, radius=20,
+                shadow=dict(offset=(0, 10), blur=18, alpha=85, color="#6B5C3A"))
+        c.shape("round", [x0 + 8, ny + 8, x1 - 8, ny + nh - 8], outline=C["gold_lt"], width=1.6, radius=14)
+        fs = 32
+        while fs > 22 and measure(node["role"], font("cairo", fs, 900))[0] > nw - 36:
+            fs -= 1
+        c.text(((x0 + x1) / 2, ny + 52), node["role"], font("cairo", fs, 900), fill=look["fg"], anchor="mm")
+        fs = 24
+        while fs > 17 and measure(node["example"], font("cairo", fs, 700))[0] > nw - 28:
+            fs -= 1
+        c.text(((x0 + x1) / 2, ny + 100), node["example"], font("cairo", fs, 700), fill=look["sub"], anchor="mm")
+
+    fh = font("cairo", 25, 900)
+    for xa, xb, lab in ((715, 655, p["h1"]), (425, 365, p["h2"])):
+        arrow_l(c, xa - 2, xb + 2, ny + nh / 2)
+        chip(c, (xa + xb) / 2, ny - 44, lab, fh, fill=C["ivory"], fg=C["gold_dk"],
+             outline=C["gold"], ow=2, padx=18, h=48)
+
+    mx0, mx1, my = 570, 800, 876
+    c.shape("round", [mx0, my, mx1, my + 118], fill=C["cream"], radius=18,
+            outline=C["gold"], width=2.4,
+            shadow=dict(offset=(0, 8), blur=14, alpha=70, color="#6B5C3A"))
+    c.text(((mx0 + mx1) / 2, my + 40), p["mod"]["role"], font("cairo", 28, 900), fill=C["forest"], anchor="mm")
+    fs = 22
+    while fs > 16 and measure(p["mod"]["example"], font("cairo", fs, 700))[0] > 206:
+        fs -= 1
+    c.text(((mx0 + mx1) / 2, my + 80), p["mod"]["example"], font("cairo", fs, 700), fill=C["muted"], anchor="mm")
+    dashed(c, [(685, my - 6), (685, ny + nh / 2 + 26)], width=3.4)
+    c.diamond(685, ny + nh / 2 + 22, 9, gradient=GOLD_SOFT)
+    chip(c, 766, my - 44, p["h3"], fh, fill=C["ivory"], fg=C["gold_dk"], outline=C["gold"], ow=2, padx=16, h=46)
+
+    chip(c, 540, 1060, p["note"], font("cairo", 29, 800), gradient=[C["emerald"], C["forest"]],
+         fg=C["ivory"], h=62, padx=34, shadow=dict(offset=(0, 8), blur=14, alpha=70, color="#6B5C3A"))
+
+    c.footer(y=1262, dark=False, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ D2 database search
+def shelf_search(p):
+    """A search field over a wall of journal spines: three come forward, the rest stay dim --
+    what a database filter actually does to a reading list."""
+    c = Canvas(C["emerald"])
+    c.gradient_bg([C["forest"], C["emerald"], C["deep"]], angle=120)
+    c.girih(alpha=26, cell=168)
+    c.glow(700, 700, 360, C["jade"], 60)
+    c.lockup(W - 66, 96, size=94, dark=True)
+    head_block(c, p, y0=150, size=74, dark=True, subw=620)
+
+    sx0, sx1, sy = 330, W - 64, 502
+    c.shape("round", [sx0, sy, sx1, sy + 88], fill=C["ivory"], radius=44,
+            shadow=dict(offset=(0, 12), blur=22, alpha=110, color="#04140C"))
+    gx, gy = sx1 - 52, sy + 44
+    c.ring(gx, gy, 19, 5, stops=GOLD, angle=40)
+    c.line([(gx - 13, gy + 13), (gx - 24, gy + 24)], C["gold_dk"], 6)
+    fs = 30
+    while fs > 21 and measure(p["query"], font("cairo", fs, 800))[0] > sx1 - sx0 - 140:
+        fs -= 1
+    c.text((sx1 - 86, gy + 1), p["query"], font("cairo", fs, 800), fill=C["ink"], anchor="rm")
+
+    shx0, shy1 = 352, 1010
+    n = len(p["spines"])
+    sw, gap = 52, 12
+    total = n * sw + (n - 1) * gap
+    start = shx0 + (sx1 - 10 - shx0 - total) / 2
+    for i, sp in enumerate(p["spines"]):
+        x0 = start + i * (sw + gap)
+        hit = bool(sp)
+        h = 330 if hit else 258
+        lift = 26 if hit else 0
+        y0 = shy1 - lift - h
+        if hit:
+            c.shape("round", [x0, y0, x0 + sw, shy1 - lift], gradient=GOLD, angle=110, radius=8,
+                    shadow=dict(offset=(0, 10), blur=18, alpha=110, color="#04140C"))
+            c.shape("round", [x0 + 6, y0 + 14, x0 + sw - 6, shy1 - lift - 14], outline=C["deep"], width=1.6, radius=4)
+            c.shape("ellipse", [x0 + sw / 2 - 15, y0 - 38, x0 + sw / 2 + 15, y0 - 8], fill=C["jade"])
+            c.text((x0 + sw / 2, y0 - 22), "✓", font("latin", 17), fill="#FFFFFF", anchor="mm")
+        else:
+            c.shape("round", [x0, y0, x0 + sw, shy1], fill=(251, 248, 241, 46), radius=8,
+                    outline=(251, 248, 241, 110), width=1.6)
+            c.shape("rect", [x0 + 10, y0 + 26, x0 + sw - 10, y0 + 30], fill=(251, 248, 241, 90))
+    c.shape("round", [shx0 - 14, shy1 + 6, sx1 - 2, shy1 + 24], gradient=GOLD, angle=100, radius=8)
+
+    fc = font("cairo", 25, 800)
+    cy = 1082
+    xr = sx1 - 4
+    for t in p["filters"]:
+        hw = measure(t, fc)[0] / 2 + 24
+        chip(c, xr - hw, cy, t, fc, fill=(200, 160, 46, 46), fg=C["gold_lt"],
+             outline=C["gold"], ow=1.8, padx=24, h=52)
+        xr -= 2 * hw + 14
+
+    c.photo(p["photo"], cx=168, bottom=1150, height=534)
+    gold_rule(c)
+    c.footer(y=1262, dark=True, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ D3 the abstract
+def abstract_frame(p):
+    """One page with five moves colour-coded down its margin: the only part of a thesis
+    every reader reads, taken apart line by line."""
+    c = Canvas(C["ivory"])
+    c.gradient_bg([C["ivory"], C["cream"], C["sand"]], angle=95)
+    c.girih(alpha=26, cell=150, color=C["gold"])
+    c.paper_noise(4)
+    c.lockup(W - 66, 96, size=94)
+    head_center(c, p, y0=146, size=62, dark=False, maxw=900)
+
+    px0, py0, px1, py1 = 148, 452, 932, 1042
+    c.shape("round", [px0, py0, px1, py1], fill="#FFFFFF", radius=20,
+            shadow=dict(offset=(0, 16), blur=30, alpha=95, color="#6B5C3A"))
+    c.shape("round", [px1 - 58, py0 + 14, px1 - 14, py1 - 14], gradient=GOLD, angle=120, radius=14)
+    c.text((px1 - 94, py0 + 52), p["page_title"], font("cairo", 34, 900), fill=C["forest"], anchor="rm")
+    c.shape("rect", [px0 + 36, py0 + 80, px1 - 94, py0 + 84], fill=C["sand"])
+
+    cols = [C["red"], C["gold_dk"], C["jade"], C["emerald"], C["forest"]]
+    fp = font("cairo", 26, 900)
+    y = py0 + 118
+    for i, part in enumerate(p["parts"]):
+        col = cols[i % len(cols)]
+        c.shape("ellipse", [px1 - 44, y + 14, px1 - 28, y + 30], fill=col)
+        hw = measure(part["tag"], fp)[0] / 2 + 22
+        c.shape("round", [px1 - 94 - 2 * hw, y, px1 - 94, y + 44], fill=col, radius=22)
+        c.text((px1 - 94 - hw, y + 23), part["tag"], fp, fill="#FFFFFF", anchor="mm")
+        fs = 25
+        while fs > 17 and measure(part["line"], font("cairo", fs, 700))[0] > px1 - 118 - 2 * hw - px0 - 40:
+            fs -= 1
+        c.text((px1 - 110 - 2 * hw, y + 23), part["line"], font("cairo", fs, 700), fill=C["ink"], anchor="rm")
+        y += 66
+
+    c.shape("rect", [px0 + 36, y + 6, px1 - 36, y + 9], fill=C["sand"])
+    fk = font("cairo", 24, 800)
+    c.text((px1 - 40, y + 50), p["kw_label"], fk, fill=C["muted"], anchor="rm")
+    xr = px1 - 40 - measure(p["kw_label"], fk)[0] - 22
+    for t in p["keywords"]:
+        hw = measure(t, fk)[0] / 2 + 20
+        c.shape("round", [xr - 2 * hw, y + 28, xr, y + 72], fill=C["cream"],
+                outline=C["gold"], width=1.8, radius=22)
+        c.text((xr - hw, y + 51), t, fk, fill=C["gold_dk"], anchor="mm")
+        xr -= 2 * hw + 12
+
+    seal(c, 168, 1096, 62, p["seal1"], p["seal2"], light=True)
+    chip(c, 540, 1100, p["note"], font("cairo", 28, 800), gradient=[C["emerald"], C["forest"]],
+         fg=C["ivory"], h=60, padx=32, shadow=dict(offset=(0, 8), blur=14, alpha=70, color="#6B5C3A"))
+    c.footer(y=1262, dark=False, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ D4 secondary data
+def ledger_chart(p):
+    """A column chart growing straight out of the table it was computed from: the whole
+    point of secondary data is that the numbers already exist."""
+    c = Canvas(C["night"])
+    c.gradient_bg([C["night"], C["deep"], C["forest"]], angle=110)
+    c.girih(alpha=24, cell=174)
+    c.glow(720, 640, 340, C["jade"], 55)
+    c.lockup(W - 66, 96, size=94, dark=True)
+    head_block(c, p, y0=150, size=74, dark=True, subw=600)
+
+    gx0, gx1, base = 338, W - 70, 772
+    bars = p["bars"]
+    n = len(bars)
+    bw = (gx1 - gx0 - (n - 1) * 18) / n
+    tops = []
+    for i, v in enumerate(bars):
+        x0 = gx0 + i * (bw + 18)
+        h = 56 + v * 212
+        y0 = base - h
+        tops.append((x0 + bw / 2, y0))
+        if i >= n - 3:
+            c.shape("round", [x0, y0, x0 + bw, base], gradient=GOLD, angle=110, radius=8,
+                    shadow=dict(offset=(0, 8), blur=14, alpha=110, color="#04140C"))
+        else:
+            c.shape("round", [x0, y0, x0 + bw, base], fill=(46, 139, 87, 115), radius=8,
+                    outline=(200, 160, 46, 150), width=1.8)
+    c.line([(x, y - 16) for x, y in tops], C["gold_lt"], 3)
+    for x, y in tops:
+        c.diamond(x, y - 16, 6, gradient=GOLD_SOFT)
+    c.shape("rect", [gx0 - 12, base, gx1 + 4, base + 6], gradient=GOLD, angle=0)
+
+    tx0, ty0, tx1, ty1 = 338, base + 26, W - 70, base + 212
+    c.shape("round", [tx0, ty0, tx1, ty1], fill=C["ivory"], radius=14,
+            shadow=dict(offset=(0, 10), blur=18, alpha=110, color="#04140C"))
+    c.shape("round", [tx0, ty0, tx1, ty0 + 44], fill=C["sand"], radius=14)
+    c.shape("rect", [tx0, ty0 + 30, tx1, ty0 + 44], fill=C["sand"])
+    cw = (tx1 - tx0) / 4
+    for k in range(1, 4):
+        c.shape("rect", [tx0 + k * cw - 1, ty0, tx0 + k * cw + 1, ty1], fill="#E3DAC6")
+    for k in range(4):
+        c.shape("round", [tx1 - (k + 1) * cw + 18, ty0 + 14, tx1 - k * cw - 18, ty0 + 30],
+                fill=C["gold_dk"], radius=8)
+    for r in range(4):
+        yy = ty0 + 62 + r * 32
+        for k in range(4):
+            wdt = (cw - 46) * (0.9 if (r + k) % 3 else 0.55)
+            c.shape("round", [tx1 - k * cw - 22 - wdt, yy, tx1 - k * cw - 22, yy + 14],
+                    fill="#CFC6B2", radius=7)
+
+    fc = font("cairo", 24, 800)
+    xr = tx1
+    for t in p["sources"]:
+        hw = measure(t, fc)[0] / 2 + 22
+        chip(c, xr - hw, 1068, t, fc, fill=(200, 160, 46, 46), fg=C["gold_lt"],
+             outline=C["gold"], ow=1.8, padx=22, h=50)
+        xr -= 2 * hw + 12
+
+    c.photo(p["photo"], cx=170, bottom=1150, height=560)
+    gold_rule(c)
+    c.footer(y=1262, dark=True, cta=p["cta"])
+    return c
+
+
+# ------------------------------------------------------------------ D5 reach constellation
+def reach_map(p):
+    """Eight capitals on one gold ring around the emblem: the academy is wherever the
+    researcher is."""
+    c = Canvas(C["emerald"])
+    c.gradient_bg([C["emerald"], C["forest"], C["deep"]], angle=125)
+    c.girih(alpha=28, cell=160)
+    c.glow(540, 780, 420, C["jade"], 70)
+    c.lockup(W - 66, 96, size=94, dark=True)
+    head_center(c, p, y0=146, size=60, dark=True, maxw=900)
+
+    cx, cy, R = 540, 778, 240
+    for rr, al in ((R + 46, 60), (R, 110), (R - 52, 50)):
+        c.ring(cx, cy, rr, 1.6, stops=[C["gold_dk"], C["gold"], C["gold_dk"]], angle=30)
+    places = p["places"]
+    fp = font("cairo", 27, 800)
+    for i, name in enumerate(places):
+        a = math.radians(-90 + i * (360 / len(places)))
+        px, py = cx + R * math.cos(a), cy + R * math.sin(a)
+        dashed(c, [(cx + 132 * math.cos(a), cy + 132 * math.sin(a)),
+                   (cx + (R - 36) * math.cos(a), cy + (R - 36) * math.sin(a))],
+               color=C["gold_lt"], width=2.4, dash=10, gap=9)
+        chip(c, px, py, name, fp, gradient=[C["ivory"], C["cream"]], fg=C["forest"], h=58, padx=24,
+             shadow=dict(offset=(0, 8), blur=14, alpha=110, color="#04140C"))
+        c.star8(px, py - 40, 9, gradient=GOLD_SOFT)
+
+    c.shape("ellipse", [cx - 126, cy - 126, cx + 126, cy + 126], gradient=[C["night"], C["deep"]],
+            angle=110, shadow=dict(offset=(0, 14), blur=26, alpha=130, color="#04140C"))
+    c.ring(cx, cy, 126, 7, stops=GOLD, angle=35)
+    c.logo(cx, cy - 34, 128)
+    c.text((cx, cy + 62), p["core"], font("cairo", 32, 900), fill=C["gold_lt"], anchor="mm")
+
+    chip(c, 540, 1098, p["note"], font("cairo", 29, 800), gradient=GOLD, fg=C["deep"], h=62, padx=34,
+         shadow=dict(offset=(0, 8), blur=14, alpha=110, color="#04140C"))
+    gold_rule(c)
+    c.footer(y=1262, dark=True, cta=p["cta"])
+    return c
+
+
+TEMPLATES.update({
+    "model_board": model_board,
+    "shelf_search": shelf_search,
+    "abstract_frame": abstract_frame,
+    "ledger_chart": ledger_chart,
+    "reach_map": reach_map,
+})
